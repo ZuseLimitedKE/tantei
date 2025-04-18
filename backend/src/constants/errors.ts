@@ -7,4 +7,6 @@ export class MyError extends Error {
 
 export enum Errors {
     INVALID_SETUP = "Invalid server setup",
+    NOT_REGISTER_USER = "Could not register user",
+    NOT_GET_USER = "Could not get user"
 }
