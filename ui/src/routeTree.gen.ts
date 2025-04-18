@@ -11,22 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as PortfolioImport } from './routes/portfolio'
-import { Route as MarketplaceImport } from './routes/marketplace'
+import { Route as AppRouteImport } from './routes/app/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as DemoTanstackQueryImport } from './routes/demo.tanstack-query'
+import { Route as AppPortfolioImport } from './routes/app/portfolio'
+import { Route as AppMarketplaceImport } from './routes/app/marketplace'
 
 // Create/Update Routes
 
-const PortfolioRoute = PortfolioImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MarketplaceRoute = MarketplaceImport.update({
-  id: '/marketplace',
-  path: '/marketplace',
+const AppRouteRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -36,10 +30,16 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const DemoTanstackQueryRoute = DemoTanstackQueryImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => rootRoute,
+const AppPortfolioRoute = AppPortfolioImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppMarketplaceRoute = AppMarketplaceImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -53,75 +53,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/marketplace': {
-      id: '/marketplace'
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/app/marketplace': {
+      id: '/app/marketplace'
       path: '/marketplace'
-      fullPath: '/marketplace'
-      preLoaderRoute: typeof MarketplaceImport
-      parentRoute: typeof rootRoute
+      fullPath: '/app/marketplace'
+      preLoaderRoute: typeof AppMarketplaceImport
+      parentRoute: typeof AppRouteImport
     }
-    '/portfolio': {
-      id: '/portfolio'
+    '/app/portfolio': {
+      id: '/app/portfolio'
       path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryImport
-      parentRoute: typeof rootRoute
+      fullPath: '/app/portfolio'
+      preLoaderRoute: typeof AppPortfolioImport
+      parentRoute: typeof AppRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AppRouteRouteChildren {
+  AppMarketplaceRoute: typeof AppMarketplaceRoute
+  AppPortfolioRoute: typeof AppPortfolioRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppMarketplaceRoute: AppMarketplaceRoute,
+  AppPortfolioRoute: AppPortfolioRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/marketplace': typeof MarketplaceRoute
-  '/portfolio': typeof PortfolioRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
+  '/app/portfolio': typeof AppPortfolioRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/marketplace': typeof MarketplaceRoute
-  '/portfolio': typeof PortfolioRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
+  '/app/portfolio': typeof AppPortfolioRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/marketplace': typeof MarketplaceRoute
-  '/portfolio': typeof PortfolioRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
+  '/app/portfolio': typeof AppPortfolioRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/marketplace' | '/portfolio' | '/demo/tanstack-query'
+  fullPaths: '/' | '/app' | '/app/marketplace' | '/app/portfolio'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/marketplace' | '/portfolio' | '/demo/tanstack-query'
-  id: '__root__' | '/' | '/marketplace' | '/portfolio' | '/demo/tanstack-query'
+  to: '/' | '/app' | '/app/marketplace' | '/app/portfolio'
+  id: '__root__' | '/' | '/app' | '/app/marketplace' | '/app/portfolio'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MarketplaceRoute: typeof MarketplaceRoute
-  PortfolioRoute: typeof PortfolioRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MarketplaceRoute: MarketplaceRoute,
-  PortfolioRoute: PortfolioRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -135,22 +145,26 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/marketplace",
-        "/portfolio",
-        "/demo/tanstack-query"
+        "/app"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/marketplace": {
-      "filePath": "marketplace.tsx"
+    "/app": {
+      "filePath": "app/route.tsx",
+      "children": [
+        "/app/marketplace",
+        "/app/portfolio"
+      ]
     },
-    "/portfolio": {
-      "filePath": "portfolio.tsx"
+    "/app/marketplace": {
+      "filePath": "app/marketplace.tsx",
+      "parent": "/app"
     },
-    "/demo/tanstack-query": {
-      "filePath": "demo.tanstack-query.tsx"
+    "/app/portfolio": {
+      "filePath": "app/portfolio.tsx",
+      "parent": "/app"
     }
   }
 }
