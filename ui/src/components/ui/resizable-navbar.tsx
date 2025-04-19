@@ -9,7 +9,7 @@ import {
 } from "motion/react";
 
 import React, { useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -115,7 +115,9 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
 
 export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
   const [hovered, setHovered] = useState<number | null>(null);
-
+  const pathname = useLocation({
+    select: (location) => location.pathname,
+  });
   return (
     <motion.div
       onMouseLeave={() => setHovered(null)}
@@ -138,7 +140,11 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
               className="absolute inset-0 h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800"
             />
           )}
-          <span className="relative z-20 font-bold">{item.name}</span>
+          <span
+            className={`relative z-20 font-semibold  ${pathname === item.link ? "text-primary" : "text-black"}`}
+          >
+            {item.name}
+          </span>
         </Link>
       ))}
     </motion.div>
@@ -237,7 +243,7 @@ export const NavbarLogo = () => {
       className="relative z-20 mr-4 flex items-center space-x-1 px-1 py-1 text-sm font-normal text-black"
     >
       <img className="h-12 w-12" src="/logo-no-background.svg" alt="logo" />
-      <span className="font-black  uppercase text-lg text-black dark:text-white">
+      <span className="font-black hidden  uppercase text-lg text-black dark:text-white">
         Tantei
       </span>
     </a>
