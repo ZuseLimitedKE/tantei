@@ -138,7 +138,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
               className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
             />
           )}
-          <span className="relative z-20">{item.name}</span>
+          <span className="relative z-20 font-bold">{item.name}</span>
         </Link>
       ))}
     </motion.div>
@@ -233,16 +233,19 @@ export const MobileNavToggle = ({
 export const NavbarLogo = () => {
   return (
     <a
-      href="#"
-      className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      href="/"
+      className="relative z-20 mr-4 flex items-center space-x-1 px-1 py-1 text-sm font-normal text-black"
     >
       <img
-        src="https://assets.aceternity.com/logo-dark.png"
+        className="h-12 w-12"
+        src="/logo-no-background.svg"
         alt="logo"
-        width={30}
-        height={30}
+        width={60}
+        height={60}
       />
-      <span className="font-medium text-black dark:text-white">Tantei</span>
+      <span className="font-black m uppercase text-lg text-black dark:text-white">
+        Tantei
+      </span>
     </a>
   );
 };

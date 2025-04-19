@@ -4,13 +4,13 @@
 
 @custom-variant dark (&:is(.dark *));
 @font-face {
-  font-family: Plus_Jakarta_Sans;
-  src: url("./assets/fonts/Plus_Jakarta_Sans,Poppins,Special_Gothic_Expanded_One/Plus_Jakarta_Sans/static/PlusJakartaSans-Regular.ttf");
+  font-family: Onest;
+  src: url("./assets/fonts/Onest/static/Onest-Regular.ttf");
 }
 
 body {
   @apply m-0;
-  font-family: Plus_Jakarta_Sans;
+  font-family: Onest;
   /*  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
