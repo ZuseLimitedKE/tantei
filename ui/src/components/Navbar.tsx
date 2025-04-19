@@ -9,21 +9,22 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 export default function AppNavbar() {
   const navItems = [
     {
-      name: "Features",
-      link: "#features",
+      name: "Marketplace",
+      link: "/app/marketplace",
     },
     {
-      name: "Pricing",
-      link: "#pricing",
+      name: "Learn",
+      link: "/app/portfolio",
     },
     {
       name: "Contact",
-      link: "#contact",
+      link: "/app/learn",
     },
   ];
 
@@ -36,8 +37,7 @@ export default function AppNavbar() {
         <NavbarLogo />
         <NavItems items={navItems} />
         <div className="flex items-center gap-4">
-          <NavbarButton variant="secondary">Login</NavbarButton>
-          <NavbarButton variant="primary">Book a call</NavbarButton>
+          <NavbarButton variant="dark">Publish Agent</NavbarButton>
         </div>
       </NavBody>
 
@@ -56,29 +56,22 @@ export default function AppNavbar() {
           onClose={() => setIsMobileMenuOpen(false)}
         >
           {navItems.map((item, idx) => (
-            <a
+            <Link
               key={`mobile-link-${idx}`}
-              href={item.link}
+              to={item.link}
               onClick={() => setIsMobileMenuOpen(false)}
               className="relative text-neutral-600 dark:text-neutral-300"
             >
               <span className="block">{item.name}</span>
-            </a>
+            </Link>
           ))}
           <div className="flex w-full flex-col gap-4">
             <NavbarButton
               onClick={() => setIsMobileMenuOpen(false)}
-              variant="primary"
+              variant="dark"
               className="w-full"
             >
-              Login
-            </NavbarButton>
-            <NavbarButton
-              onClick={() => setIsMobileMenuOpen(false)}
-              variant="primary"
-              className="w-full"
-            >
-              Book a call
+              Publish Agent
             </NavbarButton>
           </div>
         </MobileNavMenu>
