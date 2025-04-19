@@ -135,7 +135,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
+              className="absolute inset-0 h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800"
             />
           )}
           <span className="relative z-20 font-bold">{item.name}</span>
@@ -236,14 +236,8 @@ export const NavbarLogo = () => {
       href="/"
       className="relative z-20 mr-4 flex items-center space-x-1 px-1 py-1 text-sm font-normal text-black"
     >
-      <img
-        className="h-12 w-12"
-        src="/logo-no-background.svg"
-        alt="logo"
-        width={60}
-        height={60}
-      />
-      <span className="font-black m uppercase text-lg text-black dark:text-white">
+      <img className="h-12 w-12" src="/logo-no-background.svg" alt="logo" />
+      <span className="font-black  uppercase text-lg text-black dark:text-white">
         Tantei
       </span>
     </a>
