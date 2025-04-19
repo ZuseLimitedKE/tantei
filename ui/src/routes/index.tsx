@@ -15,7 +15,7 @@ function App() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-gradient-to-b from-hedera-accent/10 to-blue-500/10"
+        className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-gradient-to-b from-white to-primary/15"
       >
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -31,7 +31,10 @@ function App() {
             Hedera ecosystem
           </p>
           <Link to="/app/marketplace">
-            <Button size="lg" className="text-lg px-8">
+            <Button
+              size="lg"
+              className="text-xl font-semibold h-14 p-1 w-56 rounded-full px-8"
+            >
               Explore Agents
             </Button>
           </Link>
@@ -40,9 +43,9 @@ function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.5 }}
-          className="absolute bottom-8"
+          className="absolute bottom-8 animate-bounce p-1 bg-white rounded-full"
         >
-          <ArrowDown className="h-8 w-8 animate-bounce text-muted-foreground" />
+          <ArrowDown className="h-8 w-8  text-muted-foreground" />
         </motion.div>
       </motion.section>
 
@@ -53,6 +56,7 @@ function App() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
         className="py-20 px-4"
+        id="#features"
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
@@ -98,7 +102,7 @@ function App() {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="py-20 px-4 bg-hedera/5"
+        className="py-20 px-4 hidden"
       >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -107,7 +111,7 @@ function App() {
           <p className="text-xl text-muted-foreground mb-8">
             Join the future of algorithmic trading on Hedera
           </p>
-          <Link to="/app/marketplace">
+          <Link to="/app/portfolio">
             <Button size="lg" className="text-lg px-8">
               Get Started
             </Button>
