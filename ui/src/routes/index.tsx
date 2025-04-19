@@ -11,16 +11,16 @@ function App() {
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+      <section
+        // initial={{ opacity: 0 }}
+        // animate={{ opacity: 1 }}
+        // transition={{ duration: 0.8 }}
         className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-gradient-to-b from-white to-primary/15"
       >
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
           className="max-w-3xl mx-auto"
         >
           <h1 className="text-5xl md:text-7xl font-bold mb-6 gradient-text">
@@ -47,16 +47,15 @@ function App() {
         >
           <ArrowDown className="h-8 w-8  text-muted-foreground" />
         </motion.div>
-      </motion.section>
+      </section>
 
       {/* Features Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
+      <section
+        // initial={{ opacity: 0 }}
+        // whileInView={{ opacity: 1 }}
+        // transition={{ duration: 0.8 }}
+        // viewport={{ once: true }}
         className="py-20 px-4"
-        id="#features"
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
@@ -94,30 +93,7 @@ function App() {
             ))}
           </div>
         </div>
-      </motion.section>
-
-      {/* CTA Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="py-20 px-4 hidden"
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to start trading?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            Join the future of algorithmic trading on Hedera
-          </p>
-          <Link to="/app/portfolio">
-            <Button size="lg" className="text-lg px-8">
-              Get Started
-            </Button>
-          </Link>
-        </div>
-      </motion.section>
+      </section>
     </div>
   );
 }
