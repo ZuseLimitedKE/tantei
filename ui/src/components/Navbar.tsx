@@ -9,6 +9,7 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import { IconLibraryPlus } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -37,7 +38,13 @@ export default function AppNavbar() {
         <NavbarLogo />
         <NavItems items={navItems} />
         <div className="flex items-center gap-4">
-          <NavbarButton variant="dark">Publish Agent</NavbarButton>
+          <NavbarButton
+            variant="dark"
+            className="flex items-center justify-center"
+          >
+            <IconLibraryPlus className="w-4 h-4 mr-2 " />
+            Publish Agent
+          </NavbarButton>
         </div>
       </NavBody>
 
@@ -69,8 +76,9 @@ export default function AppNavbar() {
             <NavbarButton
               onClick={() => setIsMobileMenuOpen(false)}
               variant="dark"
-              className="w-full"
+              className="w-full flex items-center items-center justify-center text-lg"
             >
+              <IconLibraryPlus className="w-4 h-4 mr-2" />
               Publish Agent
             </NavbarButton>
           </div>
