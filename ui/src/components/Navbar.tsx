@@ -19,11 +19,11 @@ export default function AppNavbar() {
       link: "/app/marketplace",
     },
     {
-      name: "Learn",
+      name: "Portfolio",
       link: "/app/portfolio",
     },
     {
-      name: "Contact",
+      name: "Learn",
       link: "/app/learn",
     },
   ];
