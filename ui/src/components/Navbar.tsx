@@ -38,7 +38,10 @@ export default function AppNavbar() {
         <NavbarLogo />
         <NavItems items={navItems} />
         <div className="flex items-center gap-4">
-          <NavbarButton className="flex text-white bg-primary items-center justify-center rounded-2xl">
+          <NavbarButton
+            className="flex text-white bg-primary items-center justify-center rounded-2xl"
+            href="/app/publish"
+          >
             <IconLibraryPlus className="w-4 h-4 mr-2 " />
             Publish Agent
           </NavbarButton>
@@ -72,6 +75,7 @@ export default function AppNavbar() {
           <div className="flex w-full flex-col gap-4">
             <NavbarButton
               onClick={() => setIsMobileMenuOpen(false)}
+              href="/app/publish"
               className="w-full text-white bg-primary flex items-center items-center justify-center text-lg rounded-2xl"
             >
               <IconLibraryPlus className="w-4 h-4 mr-2" />
