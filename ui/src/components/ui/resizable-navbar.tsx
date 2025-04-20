@@ -7,7 +7,7 @@ import {
   useMotionValueEvent,
 } from "motion/react";
 
-import React, { useRef, useState, memo, useCallback } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 
 interface NavbarProps {
