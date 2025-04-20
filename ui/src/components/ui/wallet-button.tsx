@@ -36,7 +36,6 @@ export const WalletButton = () => {
       {!isConnected ? (
         <NavbarButton
           className="flex bg-primary text-white items-center justify-center"
-          as="button"
           onClick={handleConnect}
         >
           <IconWallet className="mr-2 h-4 w-4" /> Connect Wallet
@@ -44,7 +43,6 @@ export const WalletButton = () => {
       ) : (
         <NavbarButton
           className="flex bg-primary text-white items-center justify-center"
-          as="button"
           onClick={handleDisconnect}
         >
           <IconWallet className="mr-2 h-4 w-4" /> Disconnect Wallet

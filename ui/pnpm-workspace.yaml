@@ -1,0 +1,4 @@
+overrides:
+  crypto-js@<4.2.0: '>=4.2.0'
+  elliptic@<6.6.0: '>=6.6.0'
+  elliptic@<=6.6.0: '>=6.6.1'
