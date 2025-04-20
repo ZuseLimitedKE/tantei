@@ -9,4 +9,19 @@ export class AgentModel {
       throw new MyError("error:" + Errors.NOT_PUBLISH_AGENT);
     }
   }
+  async GetUserAgents(address: string): Promise<AGENTS[] | undefined> {
+    try {
+      const agents: AGENTS[] = [];
+      const cursor = AGENTS_COLLECTION.find({ owner_wallet_address: address });
+      for await (const doc of cursor) {
+        agents.push({
+          ...doc,
+        });
+      }
+      return agents;
+    } catch (error) {
+      console.error(error);
+      throw new MyError("error" + Errors.NOT_GET_AGENTS);
+    }
+  }
 }
