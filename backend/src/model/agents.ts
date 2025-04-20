@@ -11,7 +11,7 @@ export class AgentModel {
     }
   }
   //gets all the agents associated with an account
-  async GetUserAgents(address: string): Promise<AGENTS[] | undefined> {
+  async GetUserAgents(address: string): Promise<AGENTS[] | null> {
     try {
       const agents: AGENTS[] = [];
       const cursor = AGENTS_COLLECTION.find({ owner_wallet_address: address });
