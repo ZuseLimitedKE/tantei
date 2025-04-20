@@ -15,14 +15,14 @@ function AppLayoutComponent() {
         fallback={
           <div className="h-[80px] w-full flex items-center justify-center">
             {/* Placeholder/Skeleton */}
-            <div className="animate-pulse h-[40px] w-full bg-gray-200 rounded-full dark:bg-neutral-800" />
+            <div className="animate-pulse h-full w-full bg-gray-200 rounded-md dark:bg-neutral-800" />
           </div>
         }
       >
         <AppNavbar />
       </Suspense>
 
-      <div className="mt-20 px-8">
+      <div className="mt-20 md:px-8 px-6">
         <Outlet />
       </div>
     </div>
