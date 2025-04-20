@@ -10,5 +10,9 @@ export enum Errors {
   NOT_REGISTER_USER = "Could not register user",
   NOT_PUBLISH_AGENT = "Could not publish the agent",
   NOT_GET_USER = "Could not get user",
-  NOT_GET_AGENTS = "Could not get the agents associated with this account",
+  NOT_GET_USER_AGENTS = "Could not get the agents associated with this account",
+  NOT_GET_AGENTS = "Could not  get agents from the DB",
+  NOT_GET_AGENT = "Could not get agent",
+  NOT_DELETE_AGENT = "Could not delete the agent",
+  NOT_UPDATE_AGENT = "Could not update the agent",
 }
