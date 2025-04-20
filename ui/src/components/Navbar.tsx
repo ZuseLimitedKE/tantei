@@ -4,14 +4,13 @@ import {
   NavItems,
   MobileNav,
   NavbarLogo,
-  NavbarButton,
   MobileNavHeader,
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import { IconLibraryPlus } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { WalletButton } from "./ui/wallet-button";
 
 export default function AppNavbar() {
   const navItems = [
@@ -27,26 +26,22 @@ export default function AppNavbar() {
       name: "Learn",
       link: "/app/learn",
     },
+    {
+      name: "Publish Agent",
+      link: "/app/publish",
+    },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <Navbar>
+    <Navbar className="md:items-center">
       {/* Desktop Navigation */}
-      <NavBody>
+      <NavBody className="md:items-center">
         <NavbarLogo />
         <NavItems items={navItems} />
         <div className="flex items-center gap-4">
-          <Link to="/app/publish">
-            <NavbarButton
-              className="flex text-white bg-primary items-center justify-center rounded-2xl"
-              as="button"
-            >
-              <IconLibraryPlus className="w-4 h-4 mr-2 " />
-              Publish Agent
-            </NavbarButton>
-          </Link>
+          <WalletButton />
         </div>
       </NavBody>
 
@@ -75,12 +70,7 @@ export default function AppNavbar() {
             </Link>
           ))}
           <div className="flex w-full flex-col gap-4">
-            <Link to="/app/publish" onClick={() => setIsMobileMenuOpen(false)}>
-              <NavbarButton className="w-full text-white bg-primary flex items-center items-center justify-center text-lg rounded-2xl">
-                <IconLibraryPlus className="w-4 h-4 mr-2" />
-                Publish Agent
-              </NavbarButton>
-            </Link>
+            <WalletButton />
           </div>
         </MobileNavMenu>
       </MobileNav>
