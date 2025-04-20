@@ -7,7 +7,7 @@ import {
   useMotionValueEvent,
 } from "motion/react";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, memo, useCallback } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 
 interface NavbarProps {
@@ -68,7 +68,7 @@ export const Navbar = ({ children, className }: NavbarProps) => {
     <motion.div
       ref={ref}
       // IMPORTANT: Change this to class of `fixed` if you want the navbar to be fixed
-      className={cn("sticky   inset-x-0 top-0 z-40 w-full", className)}
+      className={cn("fixed   inset-x-0 top-0 z-40 w-full", className)}
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
@@ -250,22 +250,15 @@ export const NavbarLogo = () => {
 };
 
 export const NavbarButton = ({
-  href,
-  as: Tag = "button",
   children,
   className,
   variant = "primary",
   ...props
 }: {
-  href?: string;
-  as?: React.ElementType;
   children: React.ReactNode;
   className?: string;
   variant?: "primary" | "secondary" | "dark" | "gradient";
-} & (
-    | React.ComponentPropsWithoutRef<"a">
-    | React.ComponentPropsWithoutRef<"button">
-  )) => {
+} & React.ComponentPropsWithoutRef<"button">) => {
   const baseStyles =
     "px-4 py-2 rounded-md bg-white button bg-white text-black text-sm font-semibold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
 
@@ -279,12 +272,11 @@ export const NavbarButton = ({
   };
 
   return (
-    <Tag
-      href={href || undefined}
+    <button
       className={cn(baseStyles, variantStyles[variant], className)}
       {...props}
     >
       {children}
-    </Tag>
+    </button>
   );
 };
