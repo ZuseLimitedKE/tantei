@@ -22,7 +22,7 @@ function AppLayoutComponent() {
       >
         <AppNavbar />
         <ChatDrawer>
-          <div className="rounded-full flex items-center justify-center p-1 w-14 h-14 bg-primary  text-white cursor-pointer  z-10 fixed right-12 bottom-12">
+          <div className="rounded-full flex items-center justify-center p-1 w-14 h-14 bg-primary  text-white cursor-pointer  z-10 fixed right-10 bottom-10">
             <IconMessage className="w-2/3 h-2/3" strokeWidth={1.75} />
           </div>
         </ChatDrawer>

@@ -11,15 +11,18 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "./input";
 import { X } from "lucide-react";
-
+import { IconSend } from "@tabler/icons-react";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 export function ChatDrawer({ children }: { children: React.ReactNode }) {
   return (
     <Drawer>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className="flex flex-row  border border-red-500 justify-between">
+        <DrawerHeader className="flex flex-row  items-center justify-between">
           <div className="space-y-1">
-            <DrawerTitle>Chat</DrawerTitle>
+            <DrawerTitle className="font-semibold text-xl">
+              Tantei Assistant
+            </DrawerTitle>
             <DrawerDescription>Chat with our bot.</DrawerDescription>
           </div>
           <DrawerClose asChild>
@@ -32,13 +35,16 @@ export function ChatDrawer({ children }: { children: React.ReactNode }) {
             </Button>
           </DrawerClose>
         </DrawerHeader>
-        <div className="p-2 min-h-96"></div>
+        <ScrollArea className="flex-1 p-4 min-h-72"></ScrollArea>
 
-        <div className="mx-auto w-full max-w-lg">
-          <DrawerFooter>
-            <Input className="w-full" />
-          </DrawerFooter>
-        </div>
+        <DrawerFooter className="border-t pt-4">
+          <div className="flex items-center space-x-2">
+            <Input placeholder="Ask me anything..." className="flex-1" />
+            <Button size="icon">
+              <IconSend className="h-4 w-4" />
+            </Button>
+          </div>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
