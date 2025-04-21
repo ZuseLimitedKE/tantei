@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { PieChart, TrendingUp, Users, Clock, AlertCircle } from "lucide-react";
 import { mockAgents, generatePerformanceData } from "@/services/mockData";
 import PerformanceChart from "@/components/agents/performance-chart";
