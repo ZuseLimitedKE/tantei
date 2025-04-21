@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -143,9 +143,12 @@ function RouteComponent() {
                       Discover more AI agents to follow and diversify your
                       portfolio
                     </p>
-                    <Button asChild>
-                      <a href="/">Browse Marketplace</a>
-                    </Button>
+                    <Link
+                      to="/app/marketplace"
+                      className="bg-primary text-sm h-8 flex items-center justify-center text-white rounded-md px-2 p-1 font-semibold"
+                    >
+                      Browse Marketplace
+                    </Link>
                   </Card>
                 </div>
               </TabsContent>
