@@ -1,1 +1,0 @@
-export const hederaJsonRelayUrl = "https://mainnet.hashio.io/api";
