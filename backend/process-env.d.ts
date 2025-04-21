@@ -3,6 +3,9 @@ declare global {
         interface ProcessEnv {
             PORT: number,
             CONN_STRING: string,
+            HEDERA_MIRROR_NODE: string,
+            HEDERA_JSON_RPC_RELAY: string,
+            FROM_BLOCK: string
         }
     }
 }

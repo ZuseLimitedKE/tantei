@@ -17,4 +17,6 @@ export enum Errors {
   NOT_UPDATE_AGENT = "Could not update the agent",
   LMDB_STORE = "Could not store in LMDB",
   LMDB_READ = "Could not read from LMDB",
+  NOT_GET_TRANSACTIONS = "Could not get transactions",
+  UNKOWN = "Unkown error",
 }
