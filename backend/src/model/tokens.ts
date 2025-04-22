@@ -4,7 +4,7 @@ import { TOKENS, TOKENS_COLLECTION } from "../mongo/collections";
 import {TokenId} from "@hashgraph/sdk";
 import "dotenv/config";
 
-interface GetTokenDetails {
+export interface GetTokenDetails {
     evm_address: string
 }
 
@@ -19,7 +19,7 @@ export class TokenModel {
         }
     }
 
-    async getTokenDetailsFromMirrorNode(args: GetTokenDetails): Promise<TOKENS> {
+    async getTokenDetailsFromMirrorNode(args: GetTokenDetails): Promise<TOKENS | null> {
         try {
             if (!process.env.HEDERA_MIRROR_NODE) {
                 console.log("Set HEDERA_MIRROR_NODE in env");
@@ -32,7 +32,12 @@ export class TokenModel {
             const res = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/tokens/${tokenIDStr}`);
             
             if (res.status === 200) {
-                const symbol = res.data.symbol;
+                const symbol = res.data?.symbol ?? null;
+
+                if (!symbol) {
+                    return null;
+                }
+
                 return {
                     symbol,
                     hedera_address: tokenIDStr,
@@ -48,13 +53,16 @@ export class TokenModel {
         }
     }
 
+    async storeToken(args: TOKENS) {
+        try {
+            await TOKENS_COLLECTION.insertOne(args);
+        } catch(err) {
+            console.log("Error storing token in db", err);
+            throw new MyError(Errors.NOT_STORE_TOKEN);
+        }
+    }
 
 }
 
 const tokenModel = new TokenModel();
 export default tokenModel;
-(async () => {
-    const tokenid = await tokenModel.getTokenDetailsFromMirrorNode({evm_address: "0x000000000000000000000000000000000042b2e0"});
-    console.log(tokenid);
-    process.exit(0);
-})()
