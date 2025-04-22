@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import abi from "../../abi.json";
 import { Errors, MyError } from "../constants/errors";
+import { DecodedTransaction, decodedTransactionsSchema } from "../schema/transactions";
 import "dotenv/config";
 
 export function decode_transactions(input: string): DecodedTransaction{
@@ -12,9 +13,19 @@ export function decode_transactions(input: string): DecodedTransaction{
     const web3 = new Web3();
     const contract = new web3.eth.Contract(abi, process.env.SWAP_CONTRACT);
     const result = contract.decodeMethodData(input);
-    console.log(result);
-}
 
-(() => {
-    decode_transactions("0x7ff36ab500000000000000000000000000000000000000000000000000000000007deb5c000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000008b11b900000000000000000000000000000000000000000000000000000196594ca4c300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000163b5a0000000000000000000000000000000000000000000000000000000000573b7a000000000000000000000000000000000000000000000000000000000011afa2000000000000000000000000000000000000000000000000000000000042b2e0")
-})();
+    const data = {
+        method: result['__method__'],
+        addresses: result['path'],
+        amountOut: result['amountOutMin'] ? Number(result['amountOutMin'] as BigInt) : result['amountOut'] ? Number(result['amountOut'] as BigInt) : null,
+        amountIn: result['amountIn'] ? Number(result['amountIn'] as BigInt): result['amountInMax'] ? Number(result['amountOutMin'] as BigInt): null
+    }
+
+    const parsed = decodedTransactionsSchema.safeParse(data);
+    if (parsed.success) {
+        return parsed.data;
+    } else {
+        console.log("Issues with data =>", parsed.error);
+        throw new MyError(Errors.NOT_DECODE_TRANSACION);
+    }
+}

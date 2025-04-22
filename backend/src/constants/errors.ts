@@ -18,5 +18,6 @@ export enum Errors {
   LMDB_STORE = "Could not store in LMDB",
   LMDB_READ = "Could not read from LMDB",
   NOT_GET_TRANSACTIONS = "Could not get transactions",
+  NOT_DECODE_TRANSACION = "Could not decode transaction",
   UNKOWN = "Unkown error",
 }

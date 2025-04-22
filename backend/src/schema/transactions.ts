@@ -1,6 +1,5 @@
 import z from "zod";
-
-const hexString = z.string().regex(/0x[0-9a-f]/)
+import { hexString } from "../constants/constants";
 
 export const transactionSchema = z.object({
     blockHash: hexString,
@@ -29,16 +28,12 @@ export const getTransactionsSchema = z.object({
     id: z.number()
 });
 
-export const registerUserSchema = z.object({
-    address: z.string(),
-    evm_address: hexString,
-});
-
 export const decodedTransactionsSchema = z.object({
-    method: z.string(),
-    addresses: z.string().array().optional()
+    method: z.string().nullable(),
+    addresses: z.string().array().nullable(),
+    amountOut: z.number().nullable(),
+    amountIn: z.number().nullable(),
 });
 
 export type DecodedTransaction = z.infer<typeof decodedTransactionsSchema>;
-export type RegisterUser = z.infer<typeof registerUserSchema>;
 export type Transactions = z.infer<typeof transactionSchema>;
