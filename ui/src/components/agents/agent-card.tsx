@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { AgentData } from "@/services/mockData";
+import type { AgentData } from "@/services/types";
 
 interface AgentCardProps {
   agent: AgentData;
