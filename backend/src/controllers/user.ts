@@ -1,4 +1,4 @@
-import { RegisterUser } from "../constants/types";
+import { RegisterUser } from "../schema/user";
 import userModel, { UserModel } from "../model/users";
 
 export class UserController {
