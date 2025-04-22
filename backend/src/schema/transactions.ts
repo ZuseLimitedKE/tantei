@@ -29,7 +29,7 @@ export const getTransactionsSchema = z.object({
 });
 
 export const decodedTransactionsSchema = z.object({
-    method: z.string().nullable(),
+    method: z.string(),
     addresses: z.string().array().nullable(),
     amountOut: z.number().nullable(),
     amountIn: z.number().nullable(),

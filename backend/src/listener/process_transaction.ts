@@ -1,47 +1,90 @@
-import { Transactions } from "../constants/types";
+import { Transactions } from "../schema/transactions";
 import userModel, { UserModel } from "../model/users";
+import { decode_transactions } from "./decode_transaction";
+import tokensController, { TokensController } from "../controllers/tokens";
+import swapsModel, { SwapsModel } from "../model/swap";
+import getAmountOfHBARSentInTransaction from "./get_amount_set_in_transaction";
 
 // Receive a transaction that has a to address belonging to swap contract
-async function process_transaction(transaction: Transactions, userModel: UserModel) {
+async function process_transaction(transaction: Transactions, userModel: UserModel, tokenController: TokensController, swapsModel: SwapsModel) {
     try {
         // Check if transaction called by an address belonging to user of site
-        const user = await userModel.getUser({ evm_address: transaction.to });
+        const user = await userModel.getUser({ evm_address: transaction.from });
+        console.log("User =>", user);
         if (user) {
             // Decode transaction to get method
+            const decoded = decode_transactions(transaction.input);
+            console.log("Decoded =>", decoded);
+            if (decoded.addresses != null && decoded.addresses.length >= 2) {
+                // Get details of first and last transaction in transaction list
+                const inputTokenDetails = await tokenController.getToken({ evm_address: decoded.addresses[0]});
+                console.log("Input token details =>", inputTokenDetails);
+                const outputTokenDetails = await tokenController.getToken({evm_address: decoded.addresses[decoded.addresses.length - 1]});
+                console.log("Output token details ->", outputTokenDetails);
 
-            // Extract address list
+                // Depending on method (HBAR -> Token, Token -> Token, Token -> HBAR)
+                if (inputTokenDetails !== null && outputTokenDetails !== null) {
+                    if (decoded.method.includes("swapExactETHForTokens")) {
+                        console.log("HBAR -> Token found");
+                        // HBAR -> Token
+                        const hbarSent = await getAmountOfHBARSentInTransaction(transaction.hash);
+                        console.log("HBAR sent ->", hbarSent); 
+                        await swapsModel.storeSwapInDB({
+                            in: {
+                                tokenID: "HBAR",
+                                symbol: "HBAR",
+                                amount: hbarSent ?? 0
+                            },
+                            out: {
+                                tokenID: outputTokenDetails.hedera_address,
+                                amount: decoded.amountOut ?? 0,
+                                symbol: outputTokenDetails.symbol
+                            },
+                            time: new Date(),
+                            user_evm_address: transaction.from
+                        })
+                    } else if (decoded.method.includes("swapExactTokensForTokens")) {
+                        console.log("Token -> Token found");
+                        // Token -> Token
+                        await swapsModel.storeSwapInDB({
+                            in: {
+                                tokenID: inputTokenDetails.hedera_address,
+                                amount: decoded.amountIn ?? 0,
+                                symbol: inputTokenDetails.symbol
+                            }, 
+                            out: {
+                                tokenID: outputTokenDetails.hedera_address,
+                                amount: decoded.amountOut ?? 0,
+                                symbol: outputTokenDetails.symbol
+                            },
+                            time: new Date(),
+                            user_evm_address: transaction.from
+                        })
+                    } else if (decoded.method.includes("swapExactTokensForETH")) {
+                        console.log("Token -> HBAR found");
+                        // Token -> HBAR
+                        await swapsModel.storeSwapInDB({
+                            in: {
+                                tokenID: inputTokenDetails.hedera_address,
+                                amount: decoded.amountIn ?? 0,
+                                symbol: inputTokenDetails.symbol
+                            }, 
+                            out: {
+                                tokenID: outputTokenDetails.hedera_address,
+                                amount: decoded.amountOut ?? 0,
+                                symbol: outputTokenDetails.symbol
+                            },
+                            time: new Date(),
+                            user_evm_address: transaction.from
+                        })
+                    }
+                    console.log("Stored succesfully");
+                }
 
-            // Get details of first and last transaction in transaction list
-
-            // Depending on method (HBAR -> Token, Token -> Token, Token -> HBAR)
-
-            // Get amounts of tokens
-
-            // Store where I can retrieve later and in HCS-10
+                // Store where I can retrieve later and in HCS-10
+            }
         }
     } catch (err) {
         console.log("Error processing transaction", err);
     }
 }
-
-// (async () => {
-//     await process_transaction({
-//         "blockHash": "0x66a01e78f7d3e97d5a8e036b7824aaf5d37cf85f6f8413e874da3bf7dee4ab77",
-//         "blockNumber": "0x4aa7773",
-//         "chainId": "0x127",
-//         "from": "0x00000000000000000000000000000000003be991",
-//         "gas": "0x32c80",
-//         "gasPrice": "0x0",
-//         "hash": "0xde44828541061c97edb87f8ad623824484934ac4ef7680545a49f97a74cdc3c4",
-//         "input": "0x60d1e85d00000000000000000000000000000000000000000000000000000000003c7f840000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000babaecd4000000000000000000000000000000000000000000000000000000000050ffa5ec",
-//         "nonce": "0x0",
-//         "r": "0x0",
-//         "s": "0x0",
-//         "to": "test",
-//         "transactionIndex": "0x5",
-//         "type": "0x0",
-//         "v": "0x0",
-//         "value": "0x0"
-//     }, userModel);
-//     process.exit();
-// })()

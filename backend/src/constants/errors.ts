@@ -19,5 +19,9 @@ export enum Errors {
   LMDB_READ = "Could not read from LMDB",
   NOT_GET_TRANSACTIONS = "Could not get transactions",
   NOT_DECODE_TRANSACION = "Could not decode transaction",
+  NOT_GET_TOKEN_DETAILS = "Could not get token details",
+  NOT_STORE_TOKEN = "Could not store token",
+  NOT_STORE_SWAP = "Could not store swap",
+  NOT_GET_AMOUNT_HBAR = "Could not get HBAR sent in transaction",
   UNKOWN = "Unkown error",
 }
