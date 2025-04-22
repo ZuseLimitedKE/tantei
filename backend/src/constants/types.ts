@@ -32,7 +32,13 @@ export const getTransactionsSchema = z.object({
 export const registerUserSchema = z.object({
     address: z.string(),
     evm_address: hexString,
-})
+});
 
+export const decodedTransactionsSchema = z.object({
+    method: z.string(),
+    addresses: z.string().array().optional()
+});
+
+export type DecodedTransaction = z.infer<typeof decodedTransactionsSchema>;
 export type RegisterUser = z.infer<typeof registerUserSchema>;
 export type Transactions = z.infer<typeof transactionSchema>;

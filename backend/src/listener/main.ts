@@ -1,5 +1,3 @@
-import * as ethers from 'ethers'; //V6
-import abi from "../../abi.json";
 import "dotenv/config";
 import { Errors, MyError } from '../constants/errors';
 import lmdb from '../lmdb';
@@ -12,6 +10,11 @@ async function main() {
         if (!process.env.FROM_BLOCK) {
             console.log("Setup FROM_BLOCK in env");
             throw new MyError(Errors.INVALID_SETUP)
+        }
+
+        if (!process.env.SWAP_CONTRACT) {
+            console.log("Setup SWAP_CONTRACT in env");
+            throw new MyError(Errors.INVALID_SETUP);
         }
 
         // Getting the from block
@@ -39,7 +42,7 @@ async function main() {
             const fromBlockStr = getHexStringFromBlock(fromBlock);
             const transactions = await get_transactions(fromBlockStr);
             for (const t of transactions) {
-                if (t.to === "0x00000000000000000000000000000000002e7a5d") {
+                if (t.to === process.env.SWAP_CONTRACT) {
                     console.log("Transaction found", t);
                 }
             }

@@ -5,7 +5,8 @@ declare global {
             CONN_STRING: string,
             HEDERA_MIRROR_NODE: string,
             HEDERA_JSON_RPC_RELAY: string,
-            FROM_BLOCK: string
+            FROM_BLOCK: string,
+            SWAP_CONTRACT: string
         }
     }
 }
