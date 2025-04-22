@@ -33,25 +33,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { publishAgentSchema } from "@/types/zod";
+import { useMutation } from "@tanstack/react-query";
+import { PublishAgent } from "@/services/agents";
 export const Route = createFileRoute("/app/publish")({
   component: RouteComponent,
-});
-const publishAgentSchema = z.object({
-  agent_name: z
-    .string()
-    .min(2, "the agent name must be greater than 2 characters"),
-  strategy_description: z.string().min(20, "strategy description is too short"),
-  strategy_type: z.string(),
-  risk_level: z.string(),
-  address: z.string(),
-  // subscription_fee: z.preprocess(
-  //   (a) => parseInt(z.string().parse(a), 10),
-  //   z.number().gt(0, "the subscription fee must be greater than 0"),
-  // ),
-  subscription_fee: z.coerce
-    .number()
-    .gt(0, "the subscription fee must be greater than 0"),
-  owner_wallet_address: z.string(),
 });
 function RouteComponent() {
   const form = useForm<z.infer<typeof publishAgentSchema>>({
@@ -66,17 +52,20 @@ function RouteComponent() {
       address: "",
     },
   });
+  const mutation = useMutation({
+    mutationFn: PublishAgent,
+    onSuccess(_, variables) {
+      toast.success(`successfully published ${variables.agent_name}`);
+      form.reset();
+    },
+    //TODO : INVALIDATE DATA ON SUCCESS
+  });
   function onSubmit(values: z.infer<typeof publishAgentSchema>) {
     try {
-      // Do something with the form values.
-      console.log(values);
-      toast.success(
-        "your agent has been submitted and will be reviewed shortly",
-      );
-      form.reset();
+      mutation.mutate(values);
     } catch (error) {
       console.error(error);
-      toast.error("unable to submit your agent,contact support");
+      toast.error("unable to publish your agent , please contact support");
     }
   }
   return (

@@ -69,7 +69,7 @@ router.put(
         req.body,
       );
       if (!success) {
-        res.status(404).json({ error: "Agent not found" });
+        res.status(404).json({ error: "Nothing to update or agent not found" });
         return;
       }
       res.json({ message: "Agent updated successfully" });
