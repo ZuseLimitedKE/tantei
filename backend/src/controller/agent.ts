@@ -12,6 +12,7 @@ export class AgentController {
       await this.agentModel.Publish(agent);
     } catch (error) {
       console.error(" agent controller err:", error);
+      throw error;
     }
   }
   async getAllAgents() {
