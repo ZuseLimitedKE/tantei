@@ -24,11 +24,25 @@ export interface TOKENS {
   hedera_address: string;
 }
 
+export interface swappedTokenDetails {
+  tokenID: string,
+  symbol: string,
+  amount: number
+}
+export interface SWAPS {
+  in: swappedTokenDetails,
+  out: swappedTokenDetails,
+  time: Date,
+  user_evm_address: string
+}
+
 // collection names
 const userCollection = "users";
 const agentCollection = "agents";
 const tokensCollection = "tokens";
+const swapsCollection = "swaps";
 
 export const USERS_COLLECTION = database.collection<USERS>(userCollection);
 export const AGENTS_COLLECTION = database.collection<AGENTS>(agentCollection);
 export const TOKENS_COLLECTION = database.collection<TOKENS>(tokensCollection);
+export const SWAPS_COLLECTION = database.collection<SWAPS>(swapsCollection);

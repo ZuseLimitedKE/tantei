@@ -21,5 +21,6 @@ export enum Errors {
   NOT_DECODE_TRANSACION = "Could not decode transaction",
   NOT_GET_TOKEN_DETAILS = "Could not get token details",
   NOT_STORE_TOKEN = "Could not store token",
+  NOT_STORE_SWAP = "Could not store swap",
   UNKOWN = "Unkown error",
 }
