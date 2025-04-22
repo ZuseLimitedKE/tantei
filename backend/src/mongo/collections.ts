@@ -17,8 +17,18 @@ export interface AGENTS {
   subscription_fee: number; // how much users will pay to follow the agent
   owner_wallet_address: string; //the address of the user publishing the agent
 }
+
+export interface TOKENS {
+  evm_address: string;
+  symbol: string;
+  hedera_address: string;
+}
+
 // collection names
 const userCollection = "users";
 const agentCollection = "agents";
+const tokensCollection = "tokens";
+
 export const USERS_COLLECTION = database.collection<USERS>(userCollection);
 export const AGENTS_COLLECTION = database.collection<AGENTS>(agentCollection);
+export const TOKENS_COLLECTION = database.collection<TOKENS>(tokensCollection);
