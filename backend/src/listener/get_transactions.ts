@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Errors, MyError } from "../constants/errors";
-import { getTransactionsSchema, Transactions } from "../constants/types";
+import { getTransactionsSchema, Transactions } from "../schema/transactions";
+import "dotenv/config";
 
 export default async function get_transactions(from_block: string): Promise<Transactions[]> {
     try {
@@ -13,14 +14,14 @@ export default async function get_transactions(from_block: string): Promise<Tran
         const results = await axios.post(process.env.HEDERA_JSON_RPC_RELAY, {
             jsonrpc: "2.0",
             method: "eth_getBlockByNumber",
-            id: 24234,
+            id: 341223,
             params: [
                 from_block,
                 true
             ]
         });
 
-        const parsed = getTransactionsSchema.safeParse(results);
+        const parsed = getTransactionsSchema.safeParse(results.data);
         if (parsed.success) {
             const data = parsed.data;
             return data.result.transactions;
