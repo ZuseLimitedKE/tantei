@@ -22,9 +22,9 @@ export const AgentSchema = z.object({
 export const AgentUpdateSchema = AgentSchema.partial();
 
 export const AgentIdParamSchema = z.object({
-  id: z.string() /*.refine(isValidObjectId, {
+  id: z.string().refine(isValidObjectId, {
     message: "Invalid agent ID format",
-  }),*/,
+  }),
 });
 
 export type Agent = z.infer<typeof AgentSchema>;
