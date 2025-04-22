@@ -88,3 +88,5 @@ export class AgentModel {
     }
   }
 }
+const agentModel = new AgentModel();
+export default agentModel;
