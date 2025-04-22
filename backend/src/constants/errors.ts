@@ -22,5 +22,6 @@ export enum Errors {
   NOT_GET_TOKEN_DETAILS = "Could not get token details",
   NOT_STORE_TOKEN = "Could not store token",
   NOT_STORE_SWAP = "Could not store swap",
+  NOT_GET_AMOUNT_HBAR = "Could not get HBAR sent in transaction",
   UNKOWN = "Unkown error",
 }
