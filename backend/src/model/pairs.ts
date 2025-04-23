@@ -1,5 +1,5 @@
 import { Errors, MyError } from "../constants/errors";
-import { PAIRS } from "../mongo/collections";
+import { PAIRS, PAIRS_COLLECTION } from "../mongo/collections";
 
 export class PairsModel {
     async storePair(args: PAIRS) {
@@ -8,7 +8,7 @@ export class PairsModel {
                 throw new MyError(Errors.INVALID_PAIR);
             }
 
-
+            await PAIRS_COLLECTION.insertOne(args);
         } catch(err) {
             if (err instanceof MyError) {
                 if (err.message === Errors.INVALID_PAIR) {
@@ -27,7 +27,7 @@ export default pairsModel;
 
 (async () => {
     await pairsModel.storePair({
-        pair: ["sdfsf"],
+        pair: ["TEST", "TEST2"],
         price: 0
     });
     process.exit(0);
