@@ -4,6 +4,12 @@ import lmdb from '../lmdb';
 import { FROM_BLOCK_KEY } from '../constants/constants';
 import { getHexStringFromBlock } from './get_hex_start_block';
 import get_transactions from './get_transactions';
+import process_transaction from "./process_transaction";
+import agentModel from "../model/agents";
+import tokensController from "../controllers/tokens";
+import swapsModel from "../model/swap";
+import pairController from "../controllers/pairs";
+import smartContract from "../model/smart_contract";
 
 async function main() {
     try {
@@ -43,7 +49,7 @@ async function main() {
             const transactions = await get_transactions(fromBlockStr);
             for (const t of transactions) {
                 if (t.to === process.env.SWAP_CONTRACT) {
-                    console.log("Transaction found", t);
+                    process_transaction(t, agentModel, tokensController, swapsModel, pairController, smartContract);
                 }
             }
 

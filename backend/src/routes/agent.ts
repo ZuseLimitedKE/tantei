@@ -6,6 +6,7 @@ import {
   AgentIdParamSchema,
 } from "../schema/agents";
 import agentController from "../controllers/agent";
+import smartContract from "../model/smart_contract";
 
 const router: Router = Router();
 
@@ -49,7 +50,7 @@ router.get("/user/:address", async (req, res) => {
 // Create a new agent
 router.post("/", validateBody(AgentSchema), async (req, res) => {
   try {
-    await agentController.publish(req.body);
+    await agentController.publish(req.body, smartContract);
     res.status(201).json({ message: "Agent published successfully" });
   } catch (error) {
     console.error("Error publishing agent:", error);
