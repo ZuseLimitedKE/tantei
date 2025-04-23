@@ -2,7 +2,7 @@ import axios from "axios";
 import { Errors, MyError } from "../constants/errors";
 import "dotenv/config";
 
-const HBAR_DIVIDER = 100000000;
+export const HBAR_DIVIDER = 100000000;
 
 export default async function getAmountOfHBARSentInTransaction(evm_address: string): Promise<number | null> {
     try {

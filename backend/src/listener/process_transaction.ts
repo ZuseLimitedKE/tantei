@@ -54,7 +54,8 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             },
                             token_pair: pair.pair,
                             time: new Date(),
-                            user_evm_address: transaction.from
+                            user_evm_address: transaction.from,
+                            price: pair.price
                         })
                     } else if (decoded.method.includes("swapExactTokensForTokens")) {
                         console.log("Token -> Token found");
@@ -86,7 +87,8 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             },
                             token_pair: pair.pair,
                             time: new Date(),
-                            user_evm_address: transaction.from
+                            user_evm_address: transaction.from,
+                            price: pair.price
                         })
                     } else if (decoded.method.includes("swapExactTokensForETH")) {
                         console.log("Token -> HBAR found");
@@ -116,7 +118,8 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             },
                             token_pair: pair.pair,
                             time: new Date(),
-                            user_evm_address: transaction.from
+                            user_evm_address: transaction.from,
+                            price: pair.price
                         })
                     }
                     console.log("Stored succesfully");

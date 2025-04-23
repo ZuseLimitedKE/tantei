@@ -40,6 +40,7 @@ export interface SWAPS {
   time: Date,
   user_evm_address: string,
   token_pair: string[],
+  price: number,
 }
 
 // collection names
