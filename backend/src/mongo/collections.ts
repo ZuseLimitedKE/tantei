@@ -16,7 +16,8 @@ export interface AGENTS {
   // api_endpoint: string; // a secure endpoint where the strategy is hosted
   subscription_fee: number; // how much users will pay to follow the agent
   owner_wallet_address: string; //the address of the user publishing the agent
-  topic_id: string
+  topic_id: string, // Hedera ID of the topic created for the agent
+  account_id: string // Hedera account ID used by agent
 }
 
 export interface TOKENS {
