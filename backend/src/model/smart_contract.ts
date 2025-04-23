@@ -2,6 +2,8 @@ import { AccountId, Client, Hbar, PrivateKey, TopicCreateTransaction, TopicMessa
 import "dotenv/config";
 import { Errors, MyError } from "../constants/errors";
 import { SWAPS } from "../mongo/collections";
+import axios from "axios";
+import { getTopicSchema, swapsSchema } from "../schema/topic";
 
 export class SmartContract {
     private client: Client;
@@ -60,26 +62,54 @@ export class SmartContract {
             throw new MyError(Errors.NOT_SUBMIT_MESSAGE_TOPIC);
         }
     }
+
+    async getSwapsFromTopic(topicID: string): Promise<SWAPS[]> {
+        try {
+            if (!process.env.TOPIC_HEDERA_MIRROR_NODE) {
+                console.log("Set TOPIC_HEDERA_MIRROR_NODE in env");
+                throw new MyError(Errors.INVALID_SETUP);
+            }
+
+            const res = await axios.get(`${process.env.TOPIC_HEDERA_MIRROR_NODE}api/v1/topics/${topicID}/messages?encoding=base64&order=asc`);
+            if (res.status === 200) {
+                const parsed = getTopicSchema.safeParse(res.data);
+                if (parsed.success) {
+                    const data = parsed.data;
+                    const swaps: SWAPS[] = [];
+                    for (const m of data.messages) {
+                        const decodedMessage = atob(m.message);
+                        const parsedDecoded = swapsSchema.safeParse(JSON.parse(decodedMessage));
+                        if (parsedDecoded.success) {
+                            const decodedData = parsedDecoded.data;
+                            swaps.push(decodedData);
+                        } else {
+                            console.log("Error decoding message", parsedDecoded.error);
+                            continue;
+                        }
+                    }
+
+                    return swaps;
+                } else {
+                    console.log("Error parsing data", parsed.error);
+                    throw new MyError(Errors.NOT_GET_MESSAGES_FROM_TOPIC);
+                }
+            } else {
+                console.log("Error in response", res.data);
+                throw new MyError(Errors.NOT_GET_MESSAGES_FROM_TOPIC);
+            }
+        } catch(err) {
+            if (err instanceof MyError) {
+                if (err.message === Errors.INVALID_SETUP) {
+                    throw err;
+                }
+            }
+
+
+            console.log("Could not get messages from topic", err);
+            throw new MyError(Errors.NOT_GET_MESSAGES_FROM_TOPIC)
+        }
+    }
 }
 
 const smartContract = new SmartContract();
 export default smartContract;
-(async () => {
-    await smartContract.submitMessageToTopic({
-        in: {
-            amount: 1,
-            tokenID: "test",
-            symbol: "TEST"
-        },
-        out: {
-            amount: 1,
-            tokenID: "test",
-            symbol: "TEST"
-        },
-        time: new Date(),
-        token_pair: ["TEST", "TEST"],
-        user_evm_address: "TEST",
-        price: 1
-    }, "0.0.5897088", "Test Agent");
-    process.exit(0);
-})()
