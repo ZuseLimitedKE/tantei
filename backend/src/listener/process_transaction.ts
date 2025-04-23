@@ -3,10 +3,11 @@ import userModel, { UserModel } from "../model/users";
 import { decode_transactions } from "./decode_transaction";
 import tokensController, { TokensController } from "../controllers/tokens";
 import swapsModel, { SwapsModel } from "../model/swap";
-import getAmountOfHBARSentInTransaction from "./get_amount_set_in_transaction";
+import getAmountOfHBARSentInTransaction, { HBAR_DIVIDER } from "./get_amount_set_in_transaction";
+import { PairController } from "../controllers/pairs";
 
 // Receive a transaction that has a to address belonging to swap contract
-async function process_transaction(transaction: Transactions, userModel: UserModel, tokenController: TokensController, swapsModel: SwapsModel) {
+async function process_transaction(transaction: Transactions, userModel: UserModel, tokenController: TokensController, swapsModel: SwapsModel, pairController: PairController) {
     try {
         // Check if transaction called by an address belonging to user of site
         const user = await userModel.getUser({ evm_address: transaction.from });
@@ -29,6 +30,17 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                         // HBAR -> Token
                         const hbarSent = await getAmountOfHBARSentInTransaction(transaction.hash);
                         console.log("HBAR sent ->", hbarSent); 
+                        const outputSymbol = outputTokenDetails.symbol;
+                        const outputPrice = decoded.amountOut ?? 0;
+
+                        const pair = await pairController.process_transaction_pair({
+                            pair: ["HBAR", outputSymbol],
+                            price: {
+                                "HBAR": (hbarSent ?? 0) * HBAR_DIVIDER,
+                                outputSymbol: outputPrice
+                            }
+                        });
+
                         await swapsModel.storeSwapInDB({
                             in: {
                                 tokenID: "HBAR",
@@ -40,11 +52,26 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                                 amount: decoded.amountOut ?? 0,
                                 symbol: outputTokenDetails.symbol
                             },
+                            token_pair: pair.pair,
                             time: new Date(),
                             user_evm_address: transaction.from
                         })
                     } else if (decoded.method.includes("swapExactTokensForTokens")) {
                         console.log("Token -> Token found");
+
+                        const outputSymbol = outputTokenDetails.symbol;
+                        const outputPrice = decoded.amountOut ?? 0;
+                        const inputSymbol = inputTokenDetails.symbol;
+                        const inputPrice = decoded.amountIn ?? 0;
+
+                        const pair = await pairController.process_transaction_pair({
+                            pair: [inputSymbol, outputSymbol],
+                            price: {
+                                inputSymbol: inputPrice,
+                                outputSymbol: outputPrice
+                            }
+                        });
+
                         // Token -> Token
                         await swapsModel.storeSwapInDB({
                             in: {
@@ -57,11 +84,24 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                                 amount: decoded.amountOut ?? 0,
                                 symbol: outputTokenDetails.symbol
                             },
+                            token_pair: pair.pair,
                             time: new Date(),
                             user_evm_address: transaction.from
                         })
                     } else if (decoded.method.includes("swapExactTokensForETH")) {
                         console.log("Token -> HBAR found");
+
+                        const inputSymbol = inputTokenDetails.symbol;
+                        const inputPrice = decoded.amountIn ?? 0;
+
+                        const pair = await pairController.process_transaction_pair({
+                            pair: ["HBAR", inputSymbol],
+                            price: {
+                                "HBAR": decoded.amountOut ?? 0,
+                                inputSymbol: inputPrice
+                            }
+                        });
+
                         // Token -> HBAR
                         await swapsModel.storeSwapInDB({
                             in: {
@@ -70,10 +110,11 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                                 symbol: inputTokenDetails.symbol
                             }, 
                             out: {
-                                tokenID: outputTokenDetails.hedera_address,
-                                amount: decoded.amountOut ?? 0,
-                                symbol: outputTokenDetails.symbol
+                                amount: decoded.amountOut ? decoded.amountOut / HBAR_DIVIDER : 0,
+                                tokenID: "HBAR",
+                                symbol: "HBAR",
                             },
+                            token_pair: pair.pair,
                             time: new Date(),
                             user_evm_address: transaction.from
                         })
