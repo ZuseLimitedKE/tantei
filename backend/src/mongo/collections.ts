@@ -39,7 +39,7 @@ export interface SWAPS {
   out: swappedTokenDetails,
   time: Date,
   user_evm_address: string,
-  token_pair: string,
+  token_pair: string[],
 }
 
 // collection names

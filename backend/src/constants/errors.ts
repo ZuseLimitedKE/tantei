@@ -27,5 +27,8 @@ export enum Errors {
   NOT_GET_SWAPS = "Could not get account's swaps",
   INVALID_PAIR = "A pair should have 2 tokens",
   NOT_STORE_PAIR = "Could not store pair",
+  NOT_UPDATE_PAIR = "Could not update pair",
+  NOT_GET_PAIR = "Could not get pair",
+  NOT_PROCESS_PAIR = "Could not process transaction pair",
   UNKOWN = "Unkown error",
 }
