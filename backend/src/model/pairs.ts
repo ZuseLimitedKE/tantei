@@ -36,17 +36,30 @@ export class PairsModel {
             }
 
             console.log("Could not update pair", err);
+            throw new MyError(Errors.NOT_UPDATE_PAIR);
+        }
+    }
+
+    async getPair(pair: string[]): Promise<PAIRS | null> {
+        try {
+            if (pair.length !== 2) {
+                throw new MyError(Errors.INVALID_PAIR);
+            }
+
+            const doc = await PAIRS_COLLECTION.findOne({pair});
+            return doc;
+        } catch(err) {
+            if (err instanceof MyError) {
+                if (err.message === Errors.INVALID_PAIR) {
+                    throw err;
+                }
+            }
+
+            console.log("Could not get pair", err);
+            throw new MyError(Errors.NOT_GET_PAIR);
         }
     }
 }
 
 const pairsModel = new PairsModel();
 export default pairsModel;
-
-(async () => {
-    await pairsModel.updatePairPrice(
-        0.1,
-        ["TEST", "TEST2"],
-    );
-    process.exit(0);
-})()
