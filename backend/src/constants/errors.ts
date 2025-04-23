@@ -31,5 +31,6 @@ export enum Errors {
   NOT_GET_PAIR = "Could not get pair",
   NOT_PROCESS_PAIR = "Could not process transaction pair",
   NOT_CREATE_TOPIC = "Could not create topic",
+  NOT_SUBMIT_MESSAGE_TOPIC = "Could not submit message to topic",
   UNKOWN = "Unkown error",
 }
