@@ -1,21 +1,27 @@
 import { Transactions } from "../schema/transactions";
-import userModel, { UserModel } from "../model/users";
 import { decode_transactions } from "./decode_transaction";
 import tokensController, { TokensController } from "../controllers/tokens";
 import swapsModel, { SwapsModel } from "../model/swap";
 import getAmountOfHBARSentInTransaction, { HBAR_DIVIDER } from "./get_amount_set_in_transaction";
 import { PairController } from "../controllers/pairs";
+import { AgentModel } from "../model/agents";
+import { TopicId } from "@hashgraph/sdk";
+import { SWAPS } from "../mongo/collections";
+import { SmartContract } from "../model/smart_contract";
 
 // Receive a transaction that has a to address belonging to swap contract
-async function process_transaction(transaction: Transactions, userModel: UserModel, tokenController: TokensController, swapsModel: SwapsModel, pairController: PairController) {
+export default async function process_transaction(transaction: Transactions, agentModel: AgentModel, tokenController: TokensController, swapsModel: SwapsModel, pairController: PairController, smartContract: SmartContract) {
     try {
         // Check if transaction called by an address belonging to user of site
-        const user = await userModel.getUser({ evm_address: transaction.from });
-        console.log("User =>", user);
-        if (user) {
+        const hedera_account_id = TopicId.fromSolidityAddress(transaction.from);
+        const agent = await agentModel.GetAgent({ hedera_account_id: hedera_account_id.toString() });
+        console.log("Agent =>", agent);
+
+        if (agent) {
             // Decode transaction to get method
             const decoded = decode_transactions(transaction.input);
             console.log("Decoded =>", decoded);
+
             if (decoded.addresses != null && decoded.addresses.length >= 2) {
                 // Get details of first and last transaction in transaction list
                 const inputTokenDetails = await tokenController.getToken({ evm_address: decoded.addresses[0]});
@@ -23,6 +29,7 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                 const outputTokenDetails = await tokenController.getToken({evm_address: decoded.addresses[decoded.addresses.length - 1]});
                 console.log("Output token details ->", outputTokenDetails);
 
+                let swapDetails: SWAPS;
                 // Depending on method (HBAR -> Token, Token -> Token, Token -> HBAR)
                 if (inputTokenDetails !== null && outputTokenDetails !== null) {
                     if (decoded.method.includes("swapExactETHForTokens")) {
@@ -41,7 +48,7 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             }
                         });
 
-                        await swapsModel.storeSwapInDB({
+                        swapDetails = {
                             in: {
                                 tokenID: "HBAR",
                                 symbol: "HBAR",
@@ -56,7 +63,7 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             time: new Date(),
                             user_evm_address: transaction.from,
                             price: pair.price
-                        })
+                        };
                     } else if (decoded.method.includes("swapExactTokensForTokens")) {
                         console.log("Token -> Token found");
 
@@ -74,7 +81,7 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                         });
 
                         // Token -> Token
-                        await swapsModel.storeSwapInDB({
+                        swapDetails = {
                             in: {
                                 tokenID: inputTokenDetails.hedera_address,
                                 amount: decoded.amountIn ?? 0,
@@ -89,7 +96,7 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             time: new Date(),
                             user_evm_address: transaction.from,
                             price: pair.price
-                        })
+                        };
                     } else if (decoded.method.includes("swapExactTokensForETH")) {
                         console.log("Token -> HBAR found");
 
@@ -105,7 +112,7 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                         });
 
                         // Token -> HBAR
-                        await swapsModel.storeSwapInDB({
+                        swapDetails = {
                             in: {
                                 tokenID: inputTokenDetails.hedera_address,
                                 amount: decoded.amountIn ?? 0,
@@ -120,12 +127,17 @@ async function process_transaction(transaction: Transactions, userModel: UserMod
                             time: new Date(),
                             user_evm_address: transaction.from,
                             price: pair.price
-                        })
+                        };
+                    } else {
+                        return;
                     }
-                    console.log("Stored succesfully");
-                }
+                    
+                    // Store swap in db
+                    await swapsModel.storeSwapInDB(swapDetails);
 
-                // Store where I can retrieve later and in HCS-10
+                    // Store swap in HCS-10
+                    await smartContract.submitMessageToTopic(swapDetails, agent.topic_id, agent.agent_name);
+                }
             }
         }
     } catch (err) {
