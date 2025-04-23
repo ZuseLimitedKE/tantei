@@ -23,5 +23,7 @@ export enum Errors {
   NOT_STORE_TOKEN = "Could not store token",
   NOT_STORE_SWAP = "Could not store swap",
   NOT_GET_AMOUNT_HBAR = "Could not get HBAR sent in transaction",
+  ACCOUNT_NOT_EXIST = "Account does not exist",
+  NOT_GET_SWAPS = "Could not get account's swaps",
   UNKOWN = "Unkown error",
 }
