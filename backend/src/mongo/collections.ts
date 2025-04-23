@@ -24,6 +24,11 @@ export interface TOKENS {
   hedera_address: string;
 }
 
+export interface PAIRS {
+  pair: string[];
+  price: number;
+}
+
 export interface swappedTokenDetails {
   tokenID: string,
   symbol: string,
@@ -33,7 +38,8 @@ export interface SWAPS {
   in: swappedTokenDetails,
   out: swappedTokenDetails,
   time: Date,
-  user_evm_address: string
+  user_evm_address: string,
+  token_pair: string,
 }
 
 // collection names
@@ -41,8 +47,10 @@ const userCollection = "users";
 const agentCollection = "agents";
 const tokensCollection = "tokens";
 const swapsCollection = "swaps";
+const pairsCollection = "pairs";
 
 export const USERS_COLLECTION = database.collection<USERS>(userCollection);
 export const AGENTS_COLLECTION = database.collection<AGENTS>(agentCollection);
 export const TOKENS_COLLECTION = database.collection<TOKENS>(tokensCollection);
 export const SWAPS_COLLECTION = database.collection<SWAPS>(swapsCollection);
+export const PAIRS_COLLECTION = database.collection<PAIRS>(pairsCollection);
