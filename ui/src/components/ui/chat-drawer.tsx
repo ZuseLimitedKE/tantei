@@ -86,7 +86,7 @@ export function ChatDrawer({ children }: { children: React.ReactNode }) {
             </Button>
           </DrawerClose>
         </DrawerHeader>
-        <ScrollArea className="flex-1 p-4 h-96 overflow-y-auto  ">
+        <ScrollArea className="flex-1 p-4 min-h-96 overflow-y-auto  ">
           <div className="space-y-4">
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
