@@ -26,6 +26,8 @@ export class PairsModel {
             if (pair.length !== 2) {
                 throw new MyError(Errors.INVALID_PAIR);
             }
+
+            await PAIRS_COLLECTION.updateOne({pair}, {$set: {price}});
         } catch(err) {
             if (err instanceof MyError) {
                 if (err.message === Errors.INVALID_PAIR) {
@@ -44,7 +46,7 @@ export default pairsModel;
 (async () => {
     await pairsModel.updatePairPrice(
         0.1,
-        ["TEST", "TEST2", "TEST3"],
+        ["TEST", "TEST2"],
     );
     process.exit(0);
 })()
