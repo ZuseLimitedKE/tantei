@@ -1,5 +1,8 @@
+import { Errors, MyError } from "../constants/errors";
 import agentModel, { AgentModel } from "../model/agents";
+import { SmartContract } from "../model/smart_contract";
 import { AGENTS } from "../mongo/collections";
+import { Agent } from "../schema/agents";
 
 export class AgentController {
   private agentModel: AgentModel;
@@ -7,9 +10,15 @@ export class AgentController {
   constructor(agentModel: AgentModel) {
     this.agentModel = agentModel;
   }
-  async publish(agent: AGENTS) {
+  async publish(agent: Agent, smartContract: SmartContract) {
     try {
-      await this.agentModel.Publish(agent);
+      // Create topic for agent
+      let topicID = await smartContract.createTopic(agent.agent_name);
+      if (topicID === null) {
+        throw new MyError(Errors.NOT_CREATE_TOPIC);
+      }
+
+      await this.agentModel.Publish({...agent, topic_id: topicID!});
     } catch (error) {
       console.error(" agent controller err:", error);
       throw error;
