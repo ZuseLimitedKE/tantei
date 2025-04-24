@@ -36,10 +36,14 @@ import { toast } from "sonner";
 import { publishAgentSchema } from "@/types/zod";
 import { useMutation } from "@tanstack/react-query";
 import { PublishAgent } from "@/services/agents";
+import { useAccountId, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
 export const Route = createFileRoute("/app/publish")({
   component: RouteComponent,
 });
 function RouteComponent() {
+  const { isConnected } = useWallet();
+
+  const { data: accountId } = useAccountId();
   const form = useForm<z.infer<typeof publishAgentSchema>>({
     resolver: zodResolver(publishAgentSchema),
     defaultValues: {
@@ -61,8 +65,14 @@ function RouteComponent() {
     //TODO : INVALIDATE DATA ON SUCCESS
   });
   function onSubmit(values: z.infer<typeof publishAgentSchema>) {
+    if (!accountId || !isConnected) {
+      toast.warning(
+        "you need to connect your wallet before publishing an agent",
+      );
+      return;
+    }
     try {
-      mutation.mutate(values);
+      mutation.mutate({ ...values, owner_wallet_address: accountId });
     } catch (error) {
       console.error(error);
       toast.error("unable to publish your agent , please contact support");
