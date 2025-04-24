@@ -3,7 +3,7 @@ import Express, { json, Request, Response, NextFunction } from "express";
 import { Errors, MyError } from "./constants/errors";
 import cors from "cors";
 import agentRoutes from "./routes/agent";
-import swapRoutes from "./routes/swaps";
+import tradesRoutes from "./routes/trades";
 
 const app = Express();
 app.use(cors());
@@ -15,7 +15,7 @@ if (!port) {
 }
 //API Routes
 app.use("/api/v1/agents", agentRoutes);
-app.use("/api/v1/swaps", swapRoutes);
+app.use("/api/v1/trades", tradesRoutes);
 // Global error handler
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error("Global error:", err);
