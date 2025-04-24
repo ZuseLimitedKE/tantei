@@ -17,7 +17,6 @@ export const AgentSchema = z.object({
     .number()
     .gt(0, "the subscription fee must be greater than 0"),
   owner_wallet_address: z.string(),
-  account_id: z.string({message: "Hedera account ID must be a string"})
 });
 
 export const AgentUpdateSchema = AgentSchema.partial();

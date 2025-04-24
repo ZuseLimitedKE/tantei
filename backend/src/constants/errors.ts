@@ -33,5 +33,7 @@ export enum Errors {
   NOT_CREATE_TOPIC = "Could not create topic",
   NOT_SUBMIT_MESSAGE_TOPIC = "Could not submit message to topic",
   NOT_GET_MESSAGES_FROM_TOPIC = "Could not get messages from topic",
+  AGENT_NOT_EXIST = "Agent does not exist",
+  NOT_PROCESS_SWAPS = "Could not process swaps",
   UNKOWN = "Unkown error",
 }

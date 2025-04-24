@@ -17,7 +17,7 @@ export interface AGENTS {
   subscription_fee: number; // how much users will pay to follow the agent
   owner_wallet_address: string; //the address of the user publishing the agent
   topic_id: string, // Hedera ID of the topic created for the agent
-  account_id: string // Hedera account ID used by agent
+  address: string // Address
 }
 
 export interface TOKENS {
@@ -42,6 +42,7 @@ export interface SWAPS {
   time: Date,
   user_evm_address: string,
   token_pair: string[],
+  type: "buy" | "sell",
   price: number,
 }
 

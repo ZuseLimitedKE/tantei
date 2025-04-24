@@ -62,7 +62,8 @@ export default async function process_transaction(transaction: Transactions, age
                             token_pair: pair.pair,
                             time: new Date(),
                             user_evm_address: transaction.from,
-                            price: pair.price
+                            price: pair.price,
+                            type: "sell"
                         };
                     } else if (decoded.method.includes("swapExactTokensForTokens")) {
                         console.log("Token -> Token found");
@@ -95,7 +96,8 @@ export default async function process_transaction(transaction: Transactions, age
                             token_pair: pair.pair,
                             time: new Date(),
                             user_evm_address: transaction.from,
-                            price: pair.price
+                            price: pair.price,
+                            type: pair.pair[0] === outputTokenDetails.symbol ? "buy" : "sell"
                         };
                     } else if (decoded.method.includes("swapExactTokensForETH")) {
                         console.log("Token -> HBAR found");
@@ -126,7 +128,8 @@ export default async function process_transaction(transaction: Transactions, age
                             token_pair: pair.pair,
                             time: new Date(),
                             user_evm_address: transaction.from,
-                            price: pair.price
+                            price: pair.price,
+                            type: "buy"
                         };
                     } else {
                         return;
