@@ -41,7 +41,7 @@ const Hero = () => {
           <div className="flex gap-4 flex-col">
             <h1 className="text-6xl md:text-8xl max-w-4xl tracking-tighter text-center font-regular">
               <span className="text-black block mb-2 font-black">
-                Trading with Tantei is
+                Trading on Tantei is
               </span>
               <span className="relative  flex w-full justify-center overflow-hidden text-center  md:pt-1 md:h-28 h-20">
                 {titles.map((title, index) => (
