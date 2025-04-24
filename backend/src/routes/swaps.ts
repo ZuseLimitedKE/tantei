@@ -4,7 +4,7 @@ import agentController from "../controllers/agent";
 import smartContract from "../model/smart_contract";
 const router: Router = Router();
 
-router.get("/:id", async (req, res) => {
+router.get("/agent/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const trades = await swapsController.getAgentTrades({id}, agentController, smartContract);
