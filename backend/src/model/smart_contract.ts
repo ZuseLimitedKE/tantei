@@ -109,6 +109,33 @@ export class SmartContract {
             throw new MyError(Errors.NOT_GET_MESSAGES_FROM_TOPIC)
         }
     }
+
+    async getLatestBlock(): Promise<number> {
+        try {
+             const result = await axios.post(`${process.env.HEDERA_JSON_RPC_RELAY}`, {
+                "jsonrpc": "2.0",
+                "method": "eth_blockNumber",
+                "id": 341223,
+                "params": []
+            });
+
+            if (result.status !== 200) {
+                console.log("Error getting latest block", result.data);
+                throw new MyError(Errors.NOT_GET_LATEST_BLOCK);
+            }
+
+            const hexBlockNumber = result.data.result;
+            if (hexBlockNumber) {
+                return Number.parseInt(hexBlockNumber, 16);
+            } else {
+                console.log("Response did not return latest block", result.data);
+                throw new MyError(Errors.NOT_GET_LATEST_BLOCK);
+            }
+        } catch(err) {
+            console.error("Error getting latest block", err);
+            throw new MyError(Errors.NOT_GET_LATEST_BLOCK)
+        }
+    }
 }
 
 const smartContract = new SmartContract();

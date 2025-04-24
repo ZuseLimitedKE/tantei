@@ -35,5 +35,6 @@ export enum Errors {
   NOT_GET_MESSAGES_FROM_TOPIC = "Could not get messages from topic",
   AGENT_NOT_EXIST = "Agent does not exist",
   NOT_PROCESS_SWAPS = "Could not process swaps",
+  NOT_GET_LATEST_BLOCK = "Could not get latest block",
   UNKOWN = "Unkown error",
 }
