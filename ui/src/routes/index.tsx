@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
+import Hero from "@/components/hero";
 import { Footer } from "@/components/footer";
-import { ArrowDown, Heart, Calendar, Code, Award, Users } from "lucide-react";
+import { Heart, Calendar, Code, Award, Users } from "lucide-react";
 import { IconBrandGithub } from "@tabler/icons-react";
 export const Route = createFileRoute("/")({
   component: App,
@@ -12,44 +12,7 @@ export const Route = createFileRoute("/")({
 function App() {
   return (
     <div className="min-h-screen overflow-x-hidden">
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-white"
-      >
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="max-w-3xl mx-auto"
-        >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 gradient-text">
-            AI-Powered Trading on Hedera
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-            Discover and follow cutting-edge AI trading agents built for the
-            Hedera ecosystem
-          </p>
-          <Link to="/app/marketplace">
-            <Button
-              size="lg"
-              className="text-xl font-semibold h-14 p-1 w-56 rounded-full px-8"
-            >
-              Explore Agents
-            </Button>
-          </Link>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="absolute bottom-8 animate-bounce p-1 bg-gray-100 shadow rounded-full"
-        >
-          <ArrowDown className="h-8 w-8  text-muted-foreground" />
-        </motion.div>
-      </motion.section>
+      <Hero />
       {/* Features Section */}
       <motion.section
         initial={{ opacity: 0 }}
