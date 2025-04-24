@@ -66,3 +66,11 @@ export class TokenModel {
 
 const tokenModel = new TokenModel();
 export default tokenModel;
+
+(async () => {
+    console.time("db");
+    const details = await tokenModel.getTokenDetailsFromDatabase({evm_address: ""});
+    console.log(details);
+    console.timeEnd("db");
+    process.exit(0);
+})()
