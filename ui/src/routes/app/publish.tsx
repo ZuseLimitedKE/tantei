@@ -17,14 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Info,
-  FileCode,
-  AlertCircle,
-  Tag,
-  ChevronRight,
-  Settings,
-} from "lucide-react";
+import { Info, FileCode, AlertCircle, Tag, Settings } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -37,6 +30,7 @@ import { publishAgentSchema } from "@/types/zod";
 import { useMutation } from "@tanstack/react-query";
 import { PublishAgent } from "@/services/agents";
 import { useAccountId, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
+import { Spinner } from "@/components/ui/spinner";
 export const Route = createFileRoute("/app/publish")({
   component: RouteComponent,
 });
@@ -56,7 +50,7 @@ function RouteComponent() {
       address: "",
     },
   });
-  const mutation = useMutation({
+  const { mutate, isPending: isPublishing } = useMutation({
     mutationFn: PublishAgent,
     onSuccess(_, variables) {
       toast.success(`successfully published ${variables.agent_name}`);
@@ -64,6 +58,7 @@ function RouteComponent() {
     },
     //TODO : INVALIDATE DATA ON SUCCESS
   });
+
   function onSubmit(values: z.infer<typeof publishAgentSchema>) {
     if (!accountId || !isConnected) {
       toast.warning(
@@ -72,7 +67,7 @@ function RouteComponent() {
       return;
     }
     try {
-      mutation.mutate({ ...values, owner_wallet_address: accountId });
+      mutate({ ...values, owner_wallet_address: accountId });
     } catch (error) {
       console.error(error);
       toast.error("unable to publish your agent , please contact support");
@@ -283,9 +278,16 @@ function RouteComponent() {
                       >
                         Save Draft
                       </Button>
-                      <Button type="submit" size="lg" className="text-lg">
+                      <Button
+                        type="submit"
+                        disabled={isPublishing}
+                        size="lg"
+                        className="text-lg flex items-center justify-center"
+                      >
+                        {isPublishing && (
+                          <Spinner className="mr-2 text-white" size="small" />
+                        )}
                         Submit for Review
-                        <ChevronRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
                   </form>

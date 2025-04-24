@@ -16,7 +16,6 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AppPublishImport } from './routes/app/publish'
 import { Route as AppPortfolioImport } from './routes/app/portfolio'
 import { Route as AppMarketplaceImport } from './routes/app/marketplace'
-import { Route as AppLearnImport } from './routes/app/learn'
 import { Route as AppAgentIdImport } from './routes/app/agent.$id'
 
 // Create/Update Routes
@@ -48,12 +47,6 @@ const AppPortfolioRoute = AppPortfolioImport.update({
 const AppMarketplaceRoute = AppMarketplaceImport.update({
   id: '/marketplace',
   path: '/marketplace',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-
-const AppLearnRoute = AppLearnImport.update({
-  id: '/learn',
-  path: '/learn',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -173,7 +166,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/app'
-    | '/app/learn'
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
