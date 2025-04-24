@@ -20,20 +20,20 @@ const Hero = () => {
   }, [titleNumber, titles]);
 
   return (
-    <section className="min-h-screen  flex flex-col items-center justify-center text-center px-4 bg-white">
+    <section className="min-h-screen  flex flex-col items-center justify-center text-center px-4  bg-white ">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="container mx-auto"
       >
-        <div className="flex gap-8 py-12 lg:py-28 items-center justify-center flex-col">
+        <div className="flex gap-8 py-12  items-center justify-center flex-col">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Button variant="secondary" size="sm" className="gap-4">
+            <Button variant="secondary" size="sm" className="gap-4 text-sm">
               Hedera AI Agents Hackathon 2025 <MoveRight className="w-4 h-4" />
             </Button>
           </motion.div>
@@ -68,22 +68,24 @@ const Hero = () => {
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground/70 max-w-2xl mx-auto">
               Experience the future of algorithmic trading with AI-powered
-              agents built specifically for the Hedera ecosystem. Our platform
-              combines advanced machine learning with the security and speed of
-              distributed ledger technology.
+              agents built specifically for the Hedera ecosystem.{" "}
             </p>
           </div>
 
           <div className="flex flex-col md:flex-row gap-3">
             <Link to="/app/marketplace">
-              <Button size="lg" className="gap-4">
+              <Button size="lg" className="gap-4 text-lg h-12 font-semibold">
                 Explore Agents <MoveRight className="w-4 h-4" />
               </Button>
             </Link>
             <Link to="/app/publish">
-              <Button size="lg" variant="outline" className="gap-4">
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-4 font-semibold text-lg h-12"
+              >
                 Publish an Agent <Printer className="w-4 h-4" />
               </Button>
             </Link>
