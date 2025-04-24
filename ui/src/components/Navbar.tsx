@@ -23,10 +23,6 @@ export default function AppNavbar() {
       link: "/app/portfolio",
     },
     {
-      name: "Learn",
-      link: "/app/learn",
-    },
-    {
       name: "Publish Agent",
       link: "/app/publish",
     },

@@ -1,3 +1,4 @@
+import { RegisterUser } from "../schema/user";
 import userModel, { UserModel } from "../model/users";
 
 export class UserController {
@@ -7,13 +8,13 @@ export class UserController {
         this.userModel = userModel;
     }
 
-    async register(address: string) {
+    async register(args: RegisterUser) {
         try {
             // Check if user exists
-            const userID = await this.userModel.getUser(address);
+            const userID = await this.userModel.getUser(args);
             if (!userID) {
                 // If not register
-                await this.userModel.register(address);
+                await this.userModel.register(args.address, args.evm_address);
             }
         } catch(err) {
             console.log("Error registering user", err);

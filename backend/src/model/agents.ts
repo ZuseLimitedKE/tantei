@@ -57,6 +57,24 @@ export class AgentModel {
     }
   }
 
+  // Get agent from their hedera account id
+  async GetAgent(args: {hedera_account_id?: string}): Promise<AGENTS|null> {
+    try {
+      if (args.hedera_account_id) {
+        const agent = await AGENTS_COLLECTION.findOne({
+          account_id: args.hedera_account_id
+        });
+
+        return agent;
+      }
+
+      return null;
+    } catch(err) {
+      console.error(err);
+      throw new MyError("error:" + Errors.NOT_GET_AGENT);
+    }
+  }
+
   // Update agent details
   async UpdateAgent(
     agentId: string,
@@ -88,3 +106,5 @@ export class AgentModel {
     }
   }
 }
+const agentModel = new AgentModel();
+export default agentModel;
