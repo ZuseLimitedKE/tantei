@@ -10,6 +10,7 @@ import tokensController from "../controllers/tokens";
 import swapsModel from "../model/swap";
 import pairController from "../controllers/pairs";
 import smartContract from "../model/smart_contract";
+import sleep from "../constants/helpers";
 
 async function main() {
     try {
@@ -44,23 +45,41 @@ async function main() {
         console.log("\n\nStarting from block =>", fromBlock);
 
         while (true) {
-            console.log("\nFrom Block =>", fromBlock);
-            const fromBlockStr = getHexStringFromBlock(fromBlock);
-            const transactions = await get_transactions(fromBlockStr);
-            for (const t of transactions) {
-                if (t.to === process.env.SWAP_CONTRACT) {
-                    process_transaction(t, agentModel, tokensController, swapsModel, pairController, smartContract);
+            try {
+                console.log("\nFrom Block =>", fromBlock);
+                const fromBlockStr = getHexStringFromBlock(fromBlock);
+                const transactions = await get_transactions(fromBlockStr);
+                for (const t of transactions) {
+                    if (t.to === process.env.SWAP_CONTRACT) {
+                        process_transaction(t, agentModel, tokensController, swapsModel, pairController, smartContract);
+                    }
                 }
-            }
 
-            // Update from block variables
-            fromBlock++;
-            lmdb.store(FROM_BLOCK_KEY, fromBlock);
+                // Update from block variables
+                fromBlock++;
+                while (true) {
+                    const latestBlock = await smartContract.getLatestBlock();
+                    if (fromBlock <= latestBlock) {
+                        break;
+                    } else {
+                        console.log("From block", fromBlock, "is greater than latest block", latestBlock, "sleeping abit");
+                        await sleep(5);
+                    }
+                }
+
+                lmdb.store(FROM_BLOCK_KEY, fromBlock);
+            } catch (err) {
+                console.log("Error in main", err);
+                await sleep(60);
+            }
         }
     } catch (err) {
         if (err instanceof MyError) {
             if (err.message === Errors.INVALID_SETUP) {
                 throw err;
+            } else if (err.message === Errors.NOT_GET_LATEST_BLOCK) {
+                console.log("Error getting latest block, timing out then trying again");
+                await sleep(5);
             }
         }
 
