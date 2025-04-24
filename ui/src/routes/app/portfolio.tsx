@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, TrendingUp, Users, Clock, AlertCircle } from "lucide-react";
 import { mockAgents, generatePerformanceData } from "@/services/mockData";
 import PerformanceChart from "@/components/agents/performance-chart";
-import AgentCard from "@/components/agents/agent-card";
+import AgentCard from "@/components/agents/AgentCard";
 export const Route = createFileRoute("/app/portfolio")({
   component: RouteComponent,
 });
