@@ -17,6 +17,7 @@ import { Route as AppPublishImport } from './routes/app/publish'
 import { Route as AppPortfolioImport } from './routes/app/portfolio'
 import { Route as AppMarketplaceImport } from './routes/app/marketplace'
 import { Route as AppLearnImport } from './routes/app/learn'
+import { Route as AppAgentIdImport } from './routes/app/agent.$id'
 
 // Create/Update Routes
 
@@ -53,6 +54,12 @@ const AppMarketplaceRoute = AppMarketplaceImport.update({
 const AppLearnRoute = AppLearnImport.update({
   id: '/learn',
   path: '/learn',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppAgentIdRoute = AppAgentIdImport.update({
+  id: '/agent/$id',
+  path: '/agent/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -102,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPublishImport
       parentRoute: typeof AppRouteImport
     }
+    '/app/agent/$id': {
+      id: '/app/agent/$id'
+      path: '/agent/$id'
+      fullPath: '/app/agent/$id'
+      preLoaderRoute: typeof AppAgentIdImport
+      parentRoute: typeof AppRouteImport
+    }
   }
 }
 
@@ -112,6 +126,7 @@ interface AppRouteRouteChildren {
   AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
   AppPublishRoute: typeof AppPublishRoute
+  AppAgentIdRoute: typeof AppAgentIdRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -119,6 +134,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppMarketplaceRoute: AppMarketplaceRoute,
   AppPortfolioRoute: AppPortfolioRoute,
   AppPublishRoute: AppPublishRoute,
+  AppAgentIdRoute: AppAgentIdRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -132,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/publish': typeof AppPublishRoute
+  '/app/agent/$id': typeof AppAgentIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -141,6 +158,7 @@ export interface FileRoutesByTo {
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/publish': typeof AppPublishRoute
+  '/app/agent/$id': typeof AppAgentIdRoute
 }
 
 export interface FileRoutesById {
@@ -151,6 +169,7 @@ export interface FileRoutesById {
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/publish': typeof AppPublishRoute
+  '/app/agent/$id': typeof AppAgentIdRoute
 }
 
 export interface FileRouteTypes {
@@ -162,6 +181,7 @@ export interface FileRouteTypes {
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
+    | '/app/agent/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -170,6 +190,7 @@ export interface FileRouteTypes {
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
+    | '/app/agent/$id'
   id:
     | '__root__'
     | '/'
@@ -178,6 +199,7 @@ export interface FileRouteTypes {
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
+    | '/app/agent/$id'
   fileRoutesById: FileRoutesById
 }
 
@@ -214,7 +236,8 @@ export const routeTree = rootRoute
         "/app/learn",
         "/app/marketplace",
         "/app/portfolio",
-        "/app/publish"
+        "/app/publish",
+        "/app/agent/$id"
       ]
     },
     "/app/learn": {
@@ -231,6 +254,10 @@ export const routeTree = rootRoute
     },
     "/app/publish": {
       "filePath": "app/publish.tsx",
+      "parent": "/app"
+    },
+    "/app/agent/$id": {
+      "filePath": "app/agent.$id.tsx",
       "parent": "/app"
     }
   }
