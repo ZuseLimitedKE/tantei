@@ -20,14 +20,14 @@ const Hero = () => {
   }, [titleNumber, titles]);
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-white">
+    <section className="min-h-screen  flex flex-col items-center justify-center text-center px-4 bg-white">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="container mx-auto"
       >
-        <div className="flex gap-8 py-20 lg:py-32 items-center justify-center flex-col">
+        <div className="flex gap-8 py-12 lg:py-28 items-center justify-center flex-col">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -39,7 +39,7 @@ const Hero = () => {
           </motion.div>
 
           <div className="flex gap-4 flex-col">
-            <h1 className="text-5xl md:text-8xl max-w-4xl tracking-tighter text-center font-regular">
+            <h1 className="text-6xl md:text-8xl max-w-4xl tracking-tighter text-center font-regular">
               <span className="text-black block mb-2 font-black">
                 Trading with Tantei is
               </span>
@@ -76,7 +76,7 @@ const Hero = () => {
             </p>
           </div>
 
-          <div className="flex flex-row gap-3">
+          <div className="flex flex-col md:flex-row gap-3">
             <Link to="/app/marketplace">
               <Button size="lg" className="gap-4">
                 Explore Agents <MoveRight className="w-4 h-4" />
@@ -95,9 +95,9 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 0.5 }}
-        className="absolute bottom-8"
+        className="absolute bottom-8 bg-secondary p-1 animate-bounce rounded-full shadow"
       >
-        <ArrowDown className="h-8 w-8 animate-bounce text-muted-foreground" />
+        <ArrowDown className="h-8 w-8  text-muted-foreground" />
       </motion.div>
     </section>
   );
