@@ -2,10 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, TrendingUp, Users, Clock, AlertCircle } from "lucide-react";
+import { TrendingUp, Users, AlertCircle } from "lucide-react";
 import { mockAgents, generatePerformanceData } from "@/services/mockData";
 import PerformanceChart from "@/components/agents/performance-chart";
 import AgentCard from "@/components/agents/AgentCard";
+import { PortfolioStats } from "@/components/portfolio/stats";
 export const Route = createFileRoute("/app/portfolio")({
   component: RouteComponent,
 });
@@ -27,75 +28,7 @@ function RouteComponent() {
               settings
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="rounded-full bg-blue-100 p-2">
-                    <TrendingUp className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-muted-foreground">
-                      Total ROI
-                    </h3>
-                    <p className="text-2xl font-bold text-green-500">+18.7%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="rounded-full bg-green-100 p-2">
-                    <PieChart className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-muted-foreground">
-                      Portfolio Value
-                    </h3>
-                    <p className="text-2xl font-bold">$4,285.63</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="rounded-full bg-purple-100 p-2">
-                    <Users className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-muted-foreground">
-                      Active Agents
-                    </h3>
-                    <p className="text-2xl font-bold">
-                      {followedAgents.length}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="rounded-full bg-amber-100 p-2">
-                    <Clock className="h-5 w-5 text-amber-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-muted-foreground">
-                      Last Trade
-                    </h3>
-                    <p className="text-2xl font-bold">12 min ago</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
+          <PortfolioStats />
           <div className="mb-8">
             <Tabs defaultValue="my-agents" onValueChange={setActiveTab}>
               <TabsList>
@@ -128,7 +61,7 @@ function RouteComponent() {
               <TabsContent value="my-agents">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                   {followedAgents.map((agent) => (
-                    <AgentCard key={agent.id} agent={agent} />
+                    <AgentCard key={agent._id} agent={agent} />
                   ))}
 
                   <Card className="flex flex-col items-center justify-center border-dashed p-6 h-full min-h-[300px]">
@@ -312,8 +245,8 @@ function RouteComponent() {
                                   {i % 3 === 0
                                     ? `HBAR/USDC • ${(i + 1) * 12} mins ago`
                                     : i % 3 === 1
-                                      ? `${mockAgents[i % mockAgents.length].name} • ${(i + 1) * 3} hours ago`
-                                      : `${mockAgents[(i + 2) % mockAgents.length].name} • ${i + 1} days ago`}
+                                      ? `${mockAgents[i % mockAgents.length].agent_name} • ${(i + 1) * 3} hours ago`
+                                      : `${mockAgents[(i + 2) % mockAgents.length].agent_name} • ${i + 1} days ago`}
                                 </p>
                               </div>
                             </div>
