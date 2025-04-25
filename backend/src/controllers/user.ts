@@ -38,6 +38,7 @@ export class UserController {
       }
  
       // Follow agent
+      await this.userModel.followAgent(args);
     } catch(err) {
       if (err instanceof MyError) {
         if (err.message === Errors.ACCOUNT_NOT_EXIST || err.message === Errors.AGENT_NOT_EXIST) {
@@ -53,8 +54,3 @@ export class UserController {
 
 const userController = new UserController(userModel);
 export default userController;
-
-(async () => {
-  await userController.followAgent({user_hedera_account: "testAddress", agent_hedera_account: "0xbaruj3-roman-sucks"}, agentModel);
-  process.exit(0);
-})()
