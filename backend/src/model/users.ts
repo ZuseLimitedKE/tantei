@@ -32,7 +32,7 @@ export class UserModel {
     try {
       const user = await USERS_COLLECTION.findOne({address: args.user_hedera_account});
       if (user) {
-        user?.agents.push(args.agent_hedera_account);
+        user?.agents.push({agent: args.agent_hedera_account, time: new Date()});
         await USERS_COLLECTION.replaceOne({_id: user._id}, user);
       }
     } catch(err) {
