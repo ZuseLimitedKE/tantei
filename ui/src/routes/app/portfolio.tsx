@@ -117,9 +117,9 @@ function RouteComponent() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="activity"
-                  className={
-                    activeTab === "activity" ? "text-primary" : "text-black"
-                  }
+                  className={` hidden
+                    ${activeTab === "activity" ? "text-primary" : "text-black"}
+                  `}
                 >
                   Activity
                 </TabsTrigger>
@@ -232,7 +232,7 @@ function RouteComponent() {
                     </CardContent>
                   </Card>
 
-                  <div className="lg:col-span-3">
+                  <div className="lg:col-span-3 ">
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-lg">
@@ -274,7 +274,7 @@ function RouteComponent() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="activity">
+              <TabsContent value="activity" className="hidden">
                 <div className="grid grid-cols-1 gap-6 mt-6">
                   <Card>
                     <CardHeader>
