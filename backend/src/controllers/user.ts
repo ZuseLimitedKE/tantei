@@ -1,7 +1,8 @@
-import { FollowAgent, RegisterUser } from "../schema/user";
+import { FollowAgent } from "../schema/user";
 import userModel, { UserModel } from "../model/users";
 import { Errors, MyError } from "../constants/errors";
 import agentModel, { AgentModel } from "../model/agents";
+import { TopicId } from "@hashgraph/sdk";
 
 export class UserController {
   private userModel: UserModel;
@@ -10,13 +11,15 @@ export class UserController {
     this.userModel = userModel;
   }
 
-  async register(args: RegisterUser) {
+  async register(user_hedera_account: string) {
     try {
       // Check if user exists
-      const userID = await this.userModel.getUser(args);
+      const userID = await this.userModel.getUser({address: user_hedera_account});
       if (!userID) {
         // If not register
-        await this.userModel.register(args.address, args.evm_address);
+        const hederaID = TopicId.fromString(user_hedera_account);
+        const evm_address = hederaID.toSolidityAddress();
+        await this.userModel.register(user_hedera_account, evm_address);
       }
     } catch (err) {
       console.log("Error registering user", err);
@@ -28,7 +31,8 @@ export class UserController {
       // Check if user exists
       const user = await this.userModel.getUser({address: args.user_hedera_account});
       if (!user) {
-        throw new MyError(Errors.ACCOUNT_NOT_EXIST);
+        // Register user if doesn't exist
+        await this.register(args.user_hedera_account);
       }
 
       // Check if agent exists
