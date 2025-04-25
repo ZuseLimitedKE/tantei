@@ -16,7 +16,7 @@ export function PortfolioStats() {
   } = useQuery({
     queryKey: ["portfolio-stats", accountId],
     queryFn: () => GetPortfolioStats(accountId),
-    refetchInterval: 10000,
+    refetchInterval: 30000,
   });
   if (isError) {
     return (

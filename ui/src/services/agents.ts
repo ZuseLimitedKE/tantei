@@ -9,5 +9,5 @@ export function PublishAgent(agent: publishAgentType) {
 export function GetFollowedAgents(
   account_address: string,
 ): Promise<AgentData[]> {
-  return Api.post(`/users/agents/${account_address}`);
+  return Api.get(`/users/agents/${account_address}`);
 }
