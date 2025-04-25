@@ -4,6 +4,7 @@ import { Errors, MyError } from "./constants/errors";
 import cors from "cors";
 import agentRoutes from "./routes/agent";
 import tradesRoutes from "./routes/trades";
+import userRoutes from "./routes/user";
 
 const app = Express();
 app.use(cors());
@@ -16,6 +17,8 @@ if (!port) {
 //API Routes
 app.use("/api/v1/agents", agentRoutes);
 app.use("/api/v1/trades", tradesRoutes);
+app.use("/api/v1/users", userRoutes);
+
 // Global error handler
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error("Global error:", err);
