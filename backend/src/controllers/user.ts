@@ -17,12 +17,23 @@ export class UserController {
       const userID = await this.userModel.getUser({address: user_hedera_account});
       if (!userID) {
         // If not register
-        const hederaID = TopicId.fromString(user_hedera_account);
+        let hederaID: TopicId
+        try {
+          hederaID = TopicId.fromString(user_hedera_account);
+        } catch(err) {
+          throw new MyError(Errors.INVALID_HEDERA_ACCOUNT);
+        }
         const evm_address = hederaID.toSolidityAddress();
         await this.userModel.register(user_hedera_account, evm_address);
       }
     } catch (err) {
+      if (err instanceof MyError) {
+        if (err.message === Errors.INVALID_HEDERA_ACCOUNT) {
+          throw err;
+        }
+      }
       console.log("Error registering user", err);
+      throw new MyError(Errors.NOT_REGISTER_USER);
     }
   }
 

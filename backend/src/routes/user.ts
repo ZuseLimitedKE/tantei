@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { registerUserSchema } from "../schema/user";
-import { Errors } from "../constants/errors";
+import { Errors, MyError } from "../constants/errors";
 import userController from "../controllers/user";
+import { json } from "stream/consumers";
 const router: Router = Router();
 
 router.post("/register", async(req, res) => {
@@ -16,6 +17,11 @@ router.post("/register", async(req, res) => {
             res.status(400).json({error: errors});
         }
     } catch(err) {
+        if (err instanceof MyError) {
+            if (err.message === Errors.INVALID_HEDERA_ACCOUNT) {
+                res.status(400).json({error: [err.message]});
+            }
+        }
         console.error("Error registering user", err);
         res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
     }

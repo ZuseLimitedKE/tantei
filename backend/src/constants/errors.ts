@@ -38,5 +38,6 @@ export enum Errors {
   NOT_PROCESS_SWAPS = "Could not process swaps",
   NOT_GET_LATEST_BLOCK = "Could not get latest block",
   NOT_FOLLOW_AGENT = "Could not follow agent",
+  INVALID_HEDERA_ACCOUNT = "Invalid hedera account",
   UNKOWN = "Unkown error",
 }
