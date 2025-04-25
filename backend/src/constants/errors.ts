@@ -40,5 +40,10 @@ export enum Errors {
   NOT_FOLLOW_AGENT = "Could not follow agent",
   INVALID_HEDERA_ACCOUNT = "Invalid hedera account",
   NOT_GET_FOLLOW_AGENTS = "Could not get followed agents",
+  NOT_GET_ROI = "Could not get ROI",
+  NOT_GET_PORTFOLIO_VALUE = "Could not get porfolio value",
+  NOT_GET_TOKENS = "Could not get tokens",
+  NOT_GET_USER_TOKENS = "Could not get user's tokens",
+  NOT_GET_PORTFOLIO = "Could not get porfolio",
   UNKOWN = "Unkown error",
 }

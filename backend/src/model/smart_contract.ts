@@ -12,6 +12,7 @@ import { SWAPS } from "../mongo/collections";
 import axios from "axios";
 import { getTopicSchema, swapsSchema } from "../schema/topic";
 import { accountBalanceSchema } from "../schema/transactions";
+import { HBAR_DIVIDER } from "../listener/get_amount_set_in_transaction";
 
 interface Token {
   token: string,
@@ -190,6 +191,11 @@ export class SmartContract {
       if (parsed.success) {
         const data = parsed.data;
         const tokens: Token[] = [];
+        tokens.push({
+          token: "HBAR",
+          balance: data.balance.balance / HBAR_DIVIDER
+        });
+        
         data.balance.tokens.map((t) => {
           tokens.push({
             token: t.token_id,
@@ -211,8 +217,3 @@ export class SmartContract {
 
 const smartContract = new SmartContract();
 export default smartContract;
-(async () => {
-  const tokens = await smartContract.getUserTokens("0.0.8809818");
-  console.log(tokens);
-  process.exit(0);
-})()

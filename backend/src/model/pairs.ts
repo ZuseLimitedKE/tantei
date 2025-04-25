@@ -59,6 +59,21 @@ export class PairsModel {
       throw new MyError(Errors.NOT_GET_PAIR);
     }
   }
+
+  async getAllPairs(): Promise<PAIRS[]> {
+    try {
+      const pairs: PAIRS[] = [];
+      const cursor = PAIRS_COLLECTION.find();
+      for await (const doc of cursor) {
+        pairs.push(doc);
+      }
+      
+      return pairs;
+    } catch(err) {
+      console.error("Could not get pairs", err);
+      throw new MyError(Errors.NOT_GET_PAIR);
+    }
+  }
 }
 
 const pairsModel = new PairsModel();

@@ -7,7 +7,7 @@ import { AgentController } from "./agent";
 import { SmartContract } from "../model/smart_contract";
 import swapsModel, { SwapsModel } from "../model/swap";
 
-interface AgentTrades {
+export interface AgentTrades {
   time: Date;
   tokenPair: string;
   type: "buy" | "sell";

@@ -1,6 +1,9 @@
 import { AGENTS_COLLECTION, AGENTS } from "../mongo/collections";
 import { Errors, MyError } from "../constants/errors";
 import { ObjectId } from "mongodb";
+export interface AGENTWITHID extends AGENTS{
+  _id: ObjectId
+}
 export class AgentModel {
   //adds a new agent
   async Publish(agent: AGENTS) {
@@ -77,9 +80,9 @@ export class AgentModel {
   }
 
   // Get multiple agents from list of items
-  async GetAgents(args: {accounts?: string[]}): Promise<AGENTS[]> {
+  async GetAgents(args: {accounts?: string[]}): Promise<AGENTWITHID[]> {
     try {
-      let agents: AGENTS[] = [];
+      let agents: AGENTWITHID[] = [];
       if (args.accounts) {
         const cursor = AGENTS_COLLECTION.find({address: {$in: args.accounts}});
         for await (const doc of cursor) {

@@ -61,6 +61,15 @@ router.get("/agents/:user_wallet", async(req , res) => {
         console.error("Could not get users agents", err);
         res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
     }
+});
+
+router.get("/portfolio/stats", async(req , res) => {
+    try {
+        // Get ROI
+    } catch(err) {
+        console.error("Error getting user portfolio stats", err);
+        res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+    }
 })
 
 export default router;
