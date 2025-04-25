@@ -69,6 +69,21 @@ export class TokenModel {
       throw new MyError(Errors.NOT_STORE_TOKEN);
     }
   }
+
+  async getAllTokens(): Promise<TOKENS[]> {
+    try {
+      const cursor = TOKENS_COLLECTION.find();
+      const tokens: TOKENS[] = [];
+      for await (const doc of cursor) {
+        tokens.push(doc);
+      }
+
+      return tokens;
+    } catch(err) {
+      console.error("Could not get tokens", err);
+      throw new MyError(Errors.NOT_GET_TOKENS);
+    }
+  }
 }
 
 const tokenModel = new TokenModel();

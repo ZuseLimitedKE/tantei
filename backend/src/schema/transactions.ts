@@ -35,5 +35,15 @@ export const decodedTransactionsSchema = z.object({
   amountIn: z.number().nullable(),
 });
 
+export const accountBalanceSchema = z.object({
+  balance: z.object({
+    balance: z.number(),
+    tokens: z.array(z.object({
+      token_id: z.string(),
+      balance: z.number()
+    }))
+  })
+});
+
 export type DecodedTransaction = z.infer<typeof decodedTransactionsSchema>;
 export type Transactions = z.infer<typeof transactionSchema>;

@@ -3,6 +3,10 @@ import { followAgentSchema, registerUserSchema } from "../schema/user";
 import { Errors, MyError } from "../constants/errors";
 import userController from "../controllers/user";
 import agentModel from "../model/agents";
+import agentController from "../controllers/agent";
+import smartContract from "../model/smart_contract";
+import pairsModel from "../model/pairs";
+import tokenModel from "../model/tokens";
 const router: Router = Router();
 
 router.post("/register", async(req, res) => {
@@ -59,6 +63,17 @@ router.get("/agents/:user_wallet", async(req , res) => {
         res.json(agents);
     } catch(err) {
         console.error("Could not get users agents", err);
+        res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+    }
+});
+
+router.get("/portfolio/stats/:user_wallet", async(req , res) => {
+    try {
+        const user_wallet = req.params.user_wallet as string;
+        const stats = await userController.getPortfolioStats(user_wallet, agentController, smartContract, pairsModel, tokenModel, agentModel);
+        res.json(stats);
+    } catch(err) {
+        console.error("Error getting user portfolio stats", err);
         res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
     }
 })

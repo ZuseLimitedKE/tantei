@@ -11,6 +11,13 @@ import { Errors, MyError } from "../constants/errors";
 import { SWAPS } from "../mongo/collections";
 import axios from "axios";
 import { getTopicSchema, swapsSchema } from "../schema/topic";
+import { accountBalanceSchema } from "../schema/transactions";
+import { HBAR_DIVIDER } from "../listener/get_amount_set_in_transaction";
+
+interface Token {
+  token: string,
+  balance: number
+}
 
 export class SmartContract {
   private client: Client;
@@ -164,6 +171,46 @@ export class SmartContract {
     } catch (err) {
       console.error("Error getting latest block", err);
       throw new MyError(Errors.NOT_GET_LATEST_BLOCK);
+    }
+  }
+
+  async getUserTokens(user_wallet: string): Promise<Token[]> {
+    try {
+      if (!process.env.HEDERA_MIRROR_NODE) {
+        console.error("Set HEDERA_MIRROR_NODE in env");
+        throw new MyError(Errors.INVALID_SETUP);
+      }
+
+      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
+      if (result.status !== 200) {
+        console.error("Error in get account data request", result.data);
+        throw new MyError(Errors.NOT_GET_USER_TOKENS);
+      }
+
+      const parsed = accountBalanceSchema.safeParse(result.data);
+      if (parsed.success) {
+        const data = parsed.data;
+        const tokens: Token[] = [];
+        tokens.push({
+          token: "HBAR",
+          balance: data.balance.balance / HBAR_DIVIDER
+        });
+        
+        data.balance.tokens.map((t) => {
+          tokens.push({
+            token: t.token_id,
+            balance: t.balance
+          })
+        });
+
+        return tokens;
+      } else {
+        console.error("Error parsing data", parsed.error);
+        throw new MyError(Errors.NOT_GET_USER_TOKENS);
+      }
+    } catch(err) {
+      console.error("Could not get user's tokens", err);
+      throw new MyError(Errors.NOT_GET_USER_TOKENS);
     }
   }
 }
