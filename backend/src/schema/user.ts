@@ -7,8 +7,8 @@ export const registerUserSchema = z.object({
 });
 
 export const followAgentSchema = z.object({
-  user_hedera_account: z.string().regex(hederaWalletAddressRegex, {message: "address must be of the form 0.0.xxxx"}),
-  agent_hedera_account: z.string().regex(hederaWalletAddressRegex, {message: "address must be of the form 0.0.xxxx"})
+  user_hedera_account: z.string({message: "user account must be a string"}).regex(hederaWalletAddressRegex, {message: "user address must be of the form 0.0.xxxx"}),
+  agent_hedera_account: z.string({message: "agent accoutn must be a string"}).regex(hederaWalletAddressRegex, {message: "agent address must be of the form 0.0.xxxx"})
 })
 
 export type FollowAgent = z.infer<typeof followAgentSchema>;
