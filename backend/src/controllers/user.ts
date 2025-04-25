@@ -56,7 +56,7 @@ export class UserController {
       await this.userModel.followAgent(args);
     } catch(err) {
       if (err instanceof MyError) {
-        if (err.message === Errors.ACCOUNT_NOT_EXIST || err.message === Errors.AGENT_NOT_EXIST) {
+        if (err.message === Errors.AGENT_NOT_EXIST || err.message === Errors.INVALID_HEDERA_ACCOUNT) {
           throw err;
         }
       }
