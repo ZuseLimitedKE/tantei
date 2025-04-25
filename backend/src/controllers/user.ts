@@ -3,6 +3,7 @@ import userModel, { UserModel } from "../model/users";
 import { Errors, MyError } from "../constants/errors";
 import agentModel, { AgentModel } from "../model/agents";
 import { TopicId } from "@hashgraph/sdk";
+import { AGENTS } from "../mongo/collections";
 
 export class UserController {
   private userModel: UserModel;
@@ -63,6 +64,26 @@ export class UserController {
 
       console.error("Error following agent", err);
       throw new MyError(Errors.NOT_FOLLOW_AGENT);
+    }
+  }
+
+  async getFollowedAgents(user_wallet: string, agentModel: AgentModel): Promise<AGENTS[]> {
+    try {
+      // Get user
+      const user = await this.userModel.getUser({address: user_wallet});
+
+      // If user does not exist return empty list
+      if (!user) {
+        return [];
+      }
+
+      // Return agents
+      const agentAddresses = user.agents.map((a) => a.agent);
+      const agents = await agentModel.GetAgents({accounts: agentAddresses});
+      return agents;
+    } catch(err) {
+      console.error("Error getting agents followed by user", err);
+      throw new MyError(Errors.NOT_GET_FOLLOW_AGENTS);
     }
   }
 }

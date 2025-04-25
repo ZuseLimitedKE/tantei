@@ -26,6 +26,7 @@ export class AgentModel {
       throw new MyError("error" + Errors.NOT_GET_USER_AGENTS);
     }
   }
+  
   // Get all available agents with basic metrics
   async GetAllAgents(): Promise<AGENTS[]> {
     try {
@@ -57,7 +58,7 @@ export class AgentModel {
     }
   }
 
-  // Get agent from their hedera account id
+  // Get agent(s) from their hedera account id
   async GetAgent(args: { hedera_account_id?: string }): Promise<AGENTS | null> {
     try {
       if (args.hedera_account_id) {
@@ -72,6 +73,24 @@ export class AgentModel {
     } catch (err) {
       console.error(err);
       throw new MyError("error:" + Errors.NOT_GET_AGENT);
+    }
+  }
+
+  // Get multiple agents from list of items
+  async GetAgents(args: {accounts?: string[]}): Promise<AGENTS[]> {
+    try {
+      let agents: AGENTS[] = [];
+      if (args.accounts) {
+        const cursor = AGENTS_COLLECTION.find({address: {$in: args.accounts}});
+        for await (const doc of cursor) {
+          agents.push(doc);
+        }
+      }
+
+      return agents
+    } catch(err) {
+      console.error("Could not get agents", err);
+      throw new MyError(Errors.NOT_GET_AGENTS);
     }
   }
 

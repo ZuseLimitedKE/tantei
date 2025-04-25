@@ -39,5 +39,6 @@ export enum Errors {
   NOT_GET_LATEST_BLOCK = "Could not get latest block",
   NOT_FOLLOW_AGENT = "Could not follow agent",
   INVALID_HEDERA_ACCOUNT = "Invalid hedera account",
+  NOT_GET_FOLLOW_AGENTS = "Could not get followed agents",
   UNKOWN = "Unkown error",
 }
