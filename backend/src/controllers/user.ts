@@ -1,5 +1,6 @@
-import { RegisterUser } from "../schema/user";
+import { FollowAgent, RegisterUser } from "../schema/user";
 import userModel, { UserModel } from "../model/users";
+import { Errors, MyError } from "../constants/errors";
 
 export class UserController {
   private userModel: UserModel;
@@ -20,7 +21,35 @@ export class UserController {
       console.log("Error registering user", err);
     }
   }
+
+  async followAgent(args: FollowAgent) {
+    try {
+      // Check if user exists
+      const user = await this.userModel.getUser({address: args.user_hedera_account});
+      if (!user) {
+        throw new MyError(Errors.ACCOUNT_NOT_EXIST);
+      }
+
+      // Check if agent exists
+
+      // Follow agent
+    } catch(err) {
+      if (err instanceof MyError) {
+        if (err.message === Errors.ACCOUNT_NOT_EXIST) {
+          throw err;
+        }
+      }
+
+      console.error("Error following agent", err);
+      throw new MyError(Errors.NOT_FOLLOW_AGENT);
+    }
+  }
 }
 
 const userController = new UserController(userModel);
 export default userController;
+
+(async () => {
+  await userController.followAgent({user_hedera_account: "testUserNot", agent_hedera_account: "testAgent"});
+  process.exit(0);
+})()
