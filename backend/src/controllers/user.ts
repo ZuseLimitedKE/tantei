@@ -1,6 +1,7 @@
 import { FollowAgent, RegisterUser } from "../schema/user";
 import userModel, { UserModel } from "../model/users";
 import { Errors, MyError } from "../constants/errors";
+import agentModel, { AgentModel } from "../model/agents";
 
 export class UserController {
   private userModel: UserModel;
@@ -22,7 +23,7 @@ export class UserController {
     }
   }
 
-  async followAgent(args: FollowAgent) {
+  async followAgent(args: FollowAgent, agentModel: AgentModel) {
     try {
       // Check if user exists
       const user = await this.userModel.getUser({address: args.user_hedera_account});
@@ -31,11 +32,15 @@ export class UserController {
       }
 
       // Check if agent exists
-
+      const agent = await agentModel.GetAgent({hedera_account_id: args.agent_hedera_account});
+      if (!agent) {
+        throw new MyError(Errors.AGENT_NOT_EXIST);
+      }
+ 
       // Follow agent
     } catch(err) {
       if (err instanceof MyError) {
-        if (err.message === Errors.ACCOUNT_NOT_EXIST) {
+        if (err.message === Errors.ACCOUNT_NOT_EXIST || err.message === Errors.AGENT_NOT_EXIST) {
           throw err;
         }
       }
@@ -50,6 +55,6 @@ const userController = new UserController(userModel);
 export default userController;
 
 (async () => {
-  await userController.followAgent({user_hedera_account: "testUserNot", agent_hedera_account: "testAgent"});
+  await userController.followAgent({user_hedera_account: "testAddress", agent_hedera_account: "0xbaruj3-roman-sucks"}, agentModel);
   process.exit(0);
 })()
