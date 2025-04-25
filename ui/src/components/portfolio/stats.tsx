@@ -21,7 +21,7 @@ export function PortfolioStats() {
   if (isError) {
     return (
       <div className="grid grid-cols-1 gap-6 mb-8">
-        <Card className="border-red-100">
+        <Card>
           <CardContent className="p-6">
             <div className="flex flex-col items-center text-center py-8">
               <div className="rounded-full bg-red-100 p-4 mb-4">
