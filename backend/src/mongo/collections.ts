@@ -16,8 +16,8 @@ export interface AGENTS {
   // api_endpoint: string; // a secure endpoint where the strategy is hosted
   subscription_fee: number; // how much users will pay to follow the agent
   owner_wallet_address: string; //the address of the user publishing the agent
-  topic_id: string, // Hedera ID of the topic created for the agent
-  address: string // Address
+  topic_id: string; // Hedera ID of the topic created for the agent
+  address: string; // Address
 }
 
 export interface TOKENS {
@@ -32,18 +32,18 @@ export interface PAIRS {
 }
 
 export interface swappedTokenDetails {
-  tokenID: string,
-  symbol: string,
-  amount: number
+  tokenID: string;
+  symbol: string;
+  amount: number;
 }
 export interface SWAPS {
-  in: swappedTokenDetails,
-  out: swappedTokenDetails,
-  time: Date,
-  user_evm_address: string,
-  token_pair: string[],
-  type: "buy" | "sell",
-  price: number,
+  in: swappedTokenDetails;
+  out: swappedTokenDetails;
+  time: Date;
+  user_evm_address: string;
+  token_pair: string[];
+  type: "buy" | "sell";
+  price: number;
 }
 
 // collection names

@@ -3,8 +3,8 @@ import { Errors, MyError } from "../constants/errors";
 import { USERS_COLLECTION } from "../mongo/collections";
 
 interface getUserArgs {
-  address?: string,
-  evm_address?: string
+  address?: string;
+  evm_address?: string;
 }
 
 export class UserModel {
