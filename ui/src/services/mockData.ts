@@ -1,4 +1,11 @@
 import type { AgentData } from "./types";
+export const agentAvatars = [
+  "https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=128&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?q=80&w=128&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=128&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1631603090989-93f9ef6f9d80?q=80&w=128&auto=format&fit=crop",
+];
+
 // Mock agent data
 export const mockAgents: AgentData[] = [
   {
