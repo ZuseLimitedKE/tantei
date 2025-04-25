@@ -10,19 +10,13 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
-
+import { agentAvatars } from "@/services/mockData";
 import type { AgentData } from "@/services/types";
 
 interface AgentCardProps {
   agent: AgentData;
   compact?: boolean;
 }
-const agentAvatars = [
-  "https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=128&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?q=80&w=128&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=128&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1631603090989-93f9ef6f9d80?q=80&w=128&auto=format&fit=crop",
-];
 
 const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
   // Get a random avatar URL based on the agent's ID or name
