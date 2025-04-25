@@ -62,7 +62,7 @@ export class AgentModel {
     try {
       if (args.hedera_account_id) {
         const agent = await AGENTS_COLLECTION.findOne({
-          account_id: args.hedera_account_id,
+          address: args.hedera_account_id,
         });
 
         return agent;
