@@ -50,6 +50,17 @@ router.post("/follow", async(req, res) => {
         console.error("Error following agent", err);
         res.status(500).json({error: Errors.NOT_FOLLOW_AGENT});
     }
+});
+
+router.get("/agents/:user_wallet", async(req , res) => {
+    try {
+        const user_wallet = req.params.user_wallet;
+        const agents = await userController.getFollowedAgents(user_wallet, agentModel);
+        res.json(agents);
+    } catch(err) {
+        console.error("Could not get users agents", err);
+        res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+    }
 })
 
 export default router;

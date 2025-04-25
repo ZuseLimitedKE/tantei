@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { Errors, MyError } from "../constants/errors";
-import { USERS_COLLECTION } from "../mongo/collections";
+import { USERS, USERS_COLLECTION } from "../mongo/collections";
 import { FollowAgent } from "../schema/user";
 
 interface getUserArgs {
@@ -18,10 +18,10 @@ export class UserModel {
     }
   }
 
-  async getUser(args: getUserArgs): Promise<ObjectId | null> {
+  async getUser(args: getUserArgs): Promise<USERS | null> {
     try {
       const user = await USERS_COLLECTION.findOne(args);
-      return user?._id ?? null;
+      return user ?? null;
     } catch (err) {
       console.log("Could not get user from database", err);
       throw new MyError(Errors.NOT_GET_USER);
