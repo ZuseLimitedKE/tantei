@@ -7,6 +7,7 @@ const database = client.db(dbName);
 export interface USERS {
   address: string;
   evm_address: string;
+  agents: string[];
 }
 export interface AGENTS {
   agent_name: string; //the name of the agent

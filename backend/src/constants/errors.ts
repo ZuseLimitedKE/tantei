@@ -36,5 +36,6 @@ export enum Errors {
   AGENT_NOT_EXIST = "Agent does not exist",
   NOT_PROCESS_SWAPS = "Could not process swaps",
   NOT_GET_LATEST_BLOCK = "Could not get latest block",
+  NOT_FOLLOW_AGENT = "Could not follow agent",
   UNKOWN = "Unkown error",
 }
