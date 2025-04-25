@@ -3,5 +3,5 @@ import type { PortfolioStats } from "./types";
 export function GetPortfolioStats(
   account_address: string,
 ): Promise<PortfolioStats> {
-  return Api.get(`/portfolio/stats/${account_address}`);
+  return Api.get(`/users/portfolio/stats/${account_address}`);
 }
