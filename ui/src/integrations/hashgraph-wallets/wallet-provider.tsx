@@ -1,9 +1,6 @@
 import { HWBridgeProvider } from "@buidlerlabs/hashgraph-react-wallets";
 import { HWCConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
-import {
-  HederaTestnet,
-  //   HederaMainnet,
-} from "@buidlerlabs/hashgraph-react-wallets/chains";
+import { HederaTestnet } from "@buidlerlabs/hashgraph-react-wallets/chains";
 import LoadingFallback from "@/components/ui/wallet-loading-fallback";
 
 // 1. Get projectId from https://cloud.reown.com
