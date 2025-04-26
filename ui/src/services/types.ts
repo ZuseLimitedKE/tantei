@@ -1,7 +1,7 @@
 export interface PortfolioStats {
   roi: number;
   value: number;
-  last_trade: Date;
+  last_trade: Date | null;
 }
 export interface AgentData {
   _id: string;

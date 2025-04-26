@@ -12,13 +12,17 @@ export class AgentController {
   }
   async publish(agent: Agent, smartContract: SmartContract) {
     try {
-      // Create topic for agent
-      let topicID = await smartContract.createTopic(agent.agent_name);
-      if (topicID === null) {
-        throw new MyError(Errors.NOT_CREATE_TOPIC);
-      }
+      // Check if agent with address has already been published
+      const agentDb = await this.agentModel.GetAgent({ hedera_account_id: agent.address });
+      if (!agentDb) {
+        // Create topic for agent
+        let topicID = await smartContract.createTopic(agent.agent_name);
+        if (topicID === null) {
+          throw new MyError(Errors.NOT_CREATE_TOPIC);
+        }
 
-      await this.agentModel.Publish({...agent, topic_id: topicID!});
+        await this.agentModel.Publish({ ...agent, topic_id: topicID! });
+      }
     } catch (error) {
       console.error(" agent controller err:", error);
       throw error;

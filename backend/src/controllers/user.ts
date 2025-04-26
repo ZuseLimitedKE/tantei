@@ -13,7 +13,7 @@ import tokenModel, { TokenModel } from "../model/tokens";
 interface PotfolioStats {
   roi: number,
   value: number,
-  last_trade: Date
+  last_trade: Date | null
 }
 export class UserController {
   private userModel: UserModel;
@@ -25,13 +25,13 @@ export class UserController {
   async register(user_hedera_account: string) {
     try {
       // Check if user exists
-      const userID = await this.userModel.getUser({address: user_hedera_account});
+      const userID = await this.userModel.getUser({ address: user_hedera_account });
       if (!userID) {
         // If not register
         let hederaID: TopicId
         try {
           hederaID = TopicId.fromString(user_hedera_account);
-        } catch(err) {
+        } catch (err) {
           throw new MyError(Errors.INVALID_HEDERA_ACCOUNT);
         }
         const evm_address = hederaID.toSolidityAddress();
@@ -51,21 +51,21 @@ export class UserController {
   async followAgent(args: FollowAgent, agentModel: AgentModel) {
     try {
       // Check if user exists
-      const user = await this.userModel.getUser({address: args.user_hedera_account});
+      const user = await this.userModel.getUser({ address: args.user_hedera_account });
       if (!user) {
         // Register user if doesn't exist
         await this.register(args.user_hedera_account);
       }
 
       // Check if agent exists
-      const agent = await agentModel.GetAgent({hedera_account_id: args.agent_hedera_account});
+      const agent = await agentModel.GetAgent({ hedera_account_id: args.agent_hedera_account });
       if (!agent) {
         throw new MyError(Errors.AGENT_NOT_EXIST);
       }
- 
+
       // Follow agent
       await this.userModel.followAgent(args);
-    } catch(err) {
+    } catch (err) {
       if (err instanceof MyError) {
         if (err.message === Errors.AGENT_NOT_EXIST || err.message === Errors.INVALID_HEDERA_ACCOUNT) {
           throw err;
@@ -80,7 +80,7 @@ export class UserController {
   async getFollowedAgents(user_wallet: string, agentModel: AgentModel): Promise<AGENTWITHID[]> {
     try {
       // Get user
-      const user = await this.userModel.getUser({address: user_wallet});
+      const user = await this.userModel.getUser({ address: user_wallet });
 
       // If user does not exist return empty list
       if (!user) {
@@ -89,32 +89,41 @@ export class UserController {
 
       // Return agents
       const agentAddresses = user.agents.map((a) => a.agent);
-      const agents = await agentModel.GetAgents({accounts: agentAddresses});
+      const agents = await agentModel.GetAgents({ accounts: agentAddresses });
       return agents;
-    } catch(err) {
+    } catch (err) {
       console.error("Error getting agents followed by user", err);
       throw new MyError(Errors.NOT_GET_FOLLOW_AGENTS);
     }
   }
 
-  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, agentModel: AgentModel): Promise<{roi: number, last_trade: Date}> {
+  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, agentModel: AgentModel): Promise<{ roi: number, last_trade: Date | null }> {
     try {
       // Get users agents
       const agents = await this.getFollowedAgents(user_wallet, agentModel);
-      if (agents.length === 0 ) {
-        return {roi: 0, last_trade: new Date()};
+      if (agents.length === 0) {
+        return { roi: 0, last_trade: new Date() };
       }
 
       // Get closed trades for agents that user followed
       const trades: AgentTrades[] = [];
       for (let a of agents) {
-        const a_id = a._id.toString();
-        const a_trades = await swapsController.getAgentTrades({id: a_id}, agentController, smart_contract);
+        const a_id = a._id;
+        const a_trades = await swapsController.getAgentTrades({ id: a_id }, agentController, smart_contract);
+
+        if (a_trades.length < 1) {
+          continue;
+        }
         const a_closed_trades = a_trades.filter((t) => t.profit !== null);
         trades.push(...a_closed_trades);
       }
 
 
+      // If no trades return default value
+      if (trades.length < 1) {
+        return { roi: 0, last_trade: null }
+      }
+      
       // Do profits / invested * 100
       let totalInvested = 0;
       let totalProfit = 0;
@@ -123,19 +132,15 @@ export class UserController {
         totalProfit += t.amount * (t.profit ?? 0);
       })
       let latestTrade: Date
-      if (trades.length > 0) {
-        latestTrade = new Date()
-      } else {
-        latestTrade = trades[0].time;
-        for (const t of trades) {
-          if (t.time > latestTrade) {
-            latestTrade = t.time;
-          }
+      latestTrade = trades[0].time;
+      for (const t of trades) {
+        if (t.time > latestTrade) {
+          latestTrade = t.time;
         }
       }
 
-      return {roi: (totalProfit / totalInvested) * 100, last_trade: latestTrade};
-    } catch(err) {
+      return { roi: (totalProfit / totalInvested) * 100, last_trade: latestTrade };
+    } catch (err) {
       console.error("Could not get ROI", err);
       throw new MyError(Errors.NOT_GET_ROI);
     }
@@ -160,14 +165,14 @@ export class UserController {
             } else {
               portfolio_value += 0;
             }
-          } else { 
+          } else {
             portfolio_value += 0;
           }
         }
       }
 
       return portfolio_value;
-    } catch(err) {
+    } catch (err) {
       console.error("Could not get porfolio value", err);
       throw new MyError(Errors.NOT_GET_PORTFOLIO_VALUE);
     }
@@ -175,7 +180,7 @@ export class UserController {
 
   async getPortfolioStats(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, pairModel: PairsModel, tokensModel: TokenModel, agentModel: AgentModel): Promise<PotfolioStats> {
     try {
-      const {roi, last_trade} = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract, agentModel);
+      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract, agentModel);
       const portfolio_value = await this._getPortfolioValue(user_wallet, pairModel, tokensModel, smart_contract);
 
       return {
@@ -183,7 +188,7 @@ export class UserController {
         value: portfolio_value,
         last_trade
       }
-    } catch(err) {
+    } catch (err) {
       console.error("Could not get portfolio stats", err);
       throw new MyError(Errors.NOT_GET_PORTFOLIO);
     }
