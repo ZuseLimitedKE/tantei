@@ -5,7 +5,6 @@ export const agentAvatars = [
   "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=128&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1631603090989-93f9ef6f9d80?q=80&w=128&auto=format&fit=crop",
 ];
-
 // Mock agent data
 export const mockAgents: AgentData[] = [
   {
@@ -131,4 +130,50 @@ export const generatePerformanceData = (
   }
 
   return data;
+};
+
+// Helper functions for agent sorting and filtering
+export const getRiskScore = (riskLevel: string | undefined): number => {
+  switch (riskLevel?.toLowerCase()) {
+    case "low":
+      return 1;
+    case "medium":
+      return 2;
+    case "high":
+      return 3;
+    default:
+      return 2; // Default to medium if undefined
+  }
+};
+
+// Calculate a performance score for sorting (in a real app, this would come from backend data)
+export const getPerformanceScore = (agentId: string): number => {
+  // Generate a deterministic but "random-looking" performance score based on agent ID
+  // In a real app, this would be calculated from actual performance data
+  let score = 0;
+  for (let i = 0; i < agentId.length; i++) {
+    score += agentId.charCodeAt(i);
+  }
+  return (score % 50) + 1; // Returns a score between 1-50
+};
+
+// Get the relative age of an agent (for "newest" sorting)
+export const getAgentAge = (agentId: string): number => {
+  // Again, using a deterministic but "random-looking" age value based on agent ID
+  // In a real app, this would be the actual creation date
+  let age = 0;
+  for (let i = 0; i < agentId.length; i++) {
+    age += agentId.charCodeAt(i);
+  }
+  return age % 100; // Returns an "age" between 0-99 days
+};
+
+// Get the popularity score (number of followers)
+export const getPopularityScore = (agentId: string): number => {
+  // Similar approach for generating a mock popularity score
+  let score = 0;
+  for (let i = 0; i < agentId.length; i++) {
+    score += agentId.charCodeAt(i);
+  }
+  return (score % 500) + 10; // Returns a follower count between 10-509
 };
