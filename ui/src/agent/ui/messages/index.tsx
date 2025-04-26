@@ -54,7 +54,7 @@ export default function Messages() {
                                 })}
                             </div>
                             {message.blocks.map((block, j) => {
-                                if (block.name === "COPY_BUTTON") {
+                                if (block.name === "COPY") {
                                     return (
                                         <Copy
                                             key={j}

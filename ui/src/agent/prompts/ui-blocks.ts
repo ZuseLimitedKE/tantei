@@ -12,7 +12,8 @@ const displaySummary = z.object({
 const displayButton = z.object({
     agentName: z.string(),
     strategy: z.string(),
-    action: z.enum(['COPY', "CANCEL"])
+    action: z.enum(['COPY', "CANCEL"]),
+    agentAddress: z.string()
 })
 
 
@@ -21,7 +22,7 @@ const uiBlockPrompt = new PromptBuilder<ModelOutput>(router, 3, true);
 uiBlockPrompt
     .input({
         instruction: `
-    Your name is tANTEI, you are a UI decision agent, your job is to select UI blocks needed to display the outputs from other agents.
+    Your name is Tantei, you are a UI decision agent, your job is to select UI blocks needed to display the outputs from other agents.
     You can select one or many UI blocks to use, you can also determine what props need to be passed to those UI blocks based on the
     provided information.
     `,

@@ -33,7 +33,7 @@ export async function getCompletion(args: getCompletionArgs, history: Array<Mode
 
         return tool_response.map((response) => {
             return {
-                name: response.name == "displaySummary" ? "DISPLAY" : response.name == "displayButton" ? "PURCHASE_BUTTON" : "unknown",
+                name: response.name == "displaySummary" ? "DISPLAY" : response.name == "displayButton" ? "COPY" : "unknown",
                 description: "response",
                 props: response.args
             }

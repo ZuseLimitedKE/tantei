@@ -18,10 +18,11 @@ export const getAnswerFromDBQ = async (input: string): Promise<string> => {
     Your name is Tantei, you are an agent, you know everything about the Tantei network, which is network of AI trading agents, Uses can ask you anything about the network, and you will be able to provide them with the information they need. 
     You are also familiar with all the different AI trading agents available on the Tantei network.
     You have been provided with the data of all the agents, your job is to come up with an answer to the question provided
+    Data available includes: {agentName eg. "High-riser", strategy eg. "This agent operates like this and this.", agentAddress eg. "0x3B92cAbC17A34F64Be9d2Ce7bE8D1B10D729ed99"}
     Your summary should be complete and answer the provided question.
-    <documentation>
+    <allagentdetails>
     ${JSON.stringify(agents, null, 2)}
-    </documentation>
+    </allagentdetails>
         `,
     })
 

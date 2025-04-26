@@ -45,7 +45,7 @@ export default function MessageInput(){
         form.reset({ prompt: "" });
     
         try {
-            const valid_messages = messages?.map((message) => message.blocks)?.flat()?.filter((m) => m.name !== "PURCHASE_BUTTON")
+            const valid_messages = messages?.map((message) => message.blocks)?.flat()?.filter((m) => m.name !== "COPY")
 
             const prepareMessageHistory = valid_messages.map((message) => {
                 return {

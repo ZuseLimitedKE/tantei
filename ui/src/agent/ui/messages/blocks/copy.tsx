@@ -16,8 +16,10 @@ interface Props {
 }
 
 export function Copy(props: Props) {
+    console.log("Copy component", props);
     const [isLoading, setIsLoading] = useState(false);
     const {agentName, strategy, agentAddress} = props;
+    console.log("Copy component props", props);
 
     const { isConnected } = useWallet();
 
@@ -28,6 +30,7 @@ export function Copy(props: Props) {
         }
 
         setIsLoading(true);
+        return
     }
 
     return (
@@ -36,7 +39,7 @@ export function Copy(props: Props) {
             <button
                 onClick={handleCopy}
                 disabled={isLoading || !isConnected}
-                className="w-[88%] mx-auto px-4 py-2 rounded-md bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--primary-foreground)] font-medium transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-[88%] mx-auto px-4 py-2 rounded-md bg-[var(--primary)] hover:bg-purple-500 text-[var(--primary-foreground)] font-medium transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
                 {isLoading ? (
                     <>

@@ -39,8 +39,8 @@ if (rootElement && !rootElement.innerHTML) {
             <TanstackQuery.Provider>
                 <WalletProvider>
                     <RouterProvider router={router} />
-                </WalletProvider>
                 <FloatingChat />
+                </WalletProvider>
             </TanstackQuery.Provider>
         </StrictMode>,
     );

@@ -2,7 +2,7 @@
 import { createContext, type ReactNode, useContext, useState, useEffect } from "react";
 import type { UIBLOCK } from "@/agent/framework/actions";
 
-const STORAGE_KEY = 'hedgy_messages';
+const STORAGE_KEY = 'tantei_messages';
 
 interface Message {
     blocks: Array<UIBLOCK>,
