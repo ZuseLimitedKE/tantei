@@ -65,6 +65,7 @@ export class SwapsController {
 
   private _process_swaps(swaps: SWAPS[]): AgentTrades[] {
     try {
+      console.log("I am being called")
       const trades: AgentTrades[] = [];
       const open_trades: SWAPS[] = [];
 
@@ -156,6 +157,10 @@ export class SwapsController {
       const swaps = await this._getSwaps(args, agentController, smartContract);
 
       // How to calculate profit
+      if (swaps.length < 1) {
+        return [];
+      }
+
       const trades = this._process_swaps(swaps);
       return trades;
     } catch (err) {
