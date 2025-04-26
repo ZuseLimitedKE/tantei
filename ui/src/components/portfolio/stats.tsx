@@ -119,7 +119,11 @@ export function PortfolioStats() {
             <div className="flex-1">
               <h3 className="font-medium text-muted-foreground">Last Trade</h3>
               <p className="text-2xl font-bold">
-                {differenceInMinutes(new Date(), stats.last_trade)}mins ago
+                {differenceInMinutes(
+                  new Date(),
+                  stats.last_trade ?? new Date(),
+                )}
+                mins ago
               </p>
             </div>
           </div>
