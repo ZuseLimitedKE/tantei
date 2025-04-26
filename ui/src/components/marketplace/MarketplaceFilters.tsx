@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -16,24 +10,35 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface FiltersProps {
+export interface FiltersProps {
   onSearch: (term: string) => void;
-  onFilterChange: (filters: any) => void;
-  onSortChange: (sort: string) => void;
-  currentSort: string;
+  onFilterChange: (filters: string[]) => void;
+  onSortChange?: (sortBy: string) => void;
+  currentSort?: string;
 }
 
-const MarketplaceFilters = ({ onSearch, onFilterChange, onSortChange, currentSort }: FiltersProps) => {
+const MarketplaceFilters = ({
+  onSearch,
+  onFilterChange,
+  onSortChange,
+  currentSort = "performance",
+}: FiltersProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchTerm);
   };
-  
+
   const addFilter = (filter: string) => {
     if (!activeFilters.includes(filter)) {
       const newFilters = [...activeFilters, filter];
@@ -41,16 +46,51 @@ const MarketplaceFilters = ({ onSearch, onFilterChange, onSortChange, currentSor
       onFilterChange(newFilters);
     }
   };
-  
+
   const removeFilter = (filter: string) => {
-    const newFilters = activeFilters.filter(f => f !== filter);
+    const newFilters = activeFilters.filter((f) => f !== filter);
     setActiveFilters(newFilters);
     onFilterChange(newFilters);
   };
 
-  const handleSortChange = (value: string) => {
-    onSortChange(value);
+  const clearFilters = () => {
+    setActiveFilters([]);
+    onFilterChange([]);
   };
+
+  const STRATEGY_TYPES = [
+    "Swing Trading",
+    "Scalping",
+    "Arbitrage",
+    "Trend Following",
+    "DeFi Yield",
+  ];
+
+  const TIME_PERIODS = ["24h", "7d", "30d", "90d", "1y", "All Time"];
+
+  const OTHER_FILTERS = ["Verified Only", "Free To Follow", "New Agents"];
+
+  const renderFilterSection = (title: string, filters: string[]) => (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium">{title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {filters.map((filter) => (
+          <Badge
+            key={filter}
+            variant={activeFilters.includes(filter) ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() =>
+              activeFilters.includes(filter)
+                ? removeFilter(filter)
+                : addFilter(filter)
+            }
+          >
+            {filter}
+          </Badge>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-full">
@@ -68,9 +108,12 @@ const MarketplaceFilters = ({ onSearch, onFilterChange, onSortChange, currentSor
             }}
           />
         </form>
-        
+
         <div className="flex gap-3">
-          <Select value={currentSort} onValueChange={handleSortChange}>
+          <Select
+            value={currentSort}
+            onValueChange={(value) => onSortChange?.(value)}
+          >
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -82,7 +125,7 @@ const MarketplaceFilters = ({ onSearch, onFilterChange, onSortChange, currentSor
               <SelectItem value="risk-high">Risk (High-Low)</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
@@ -95,91 +138,13 @@ const MarketplaceFilters = ({ onSearch, onFilterChange, onSortChange, currentSor
                 <SheetTitle>Filter Agents</SheetTitle>
               </SheetHeader>
               <div className="py-4 space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Strategy Type</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["Swing Trading", "Scalping", "Arbitrage", "Trend Following", "DeFi Yield"].map((strategy) => (
-                      <Badge 
-                        key={strategy}
-                        variant={activeFilters.includes(strategy) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => activeFilters.includes(strategy) 
-                          ? removeFilter(strategy) 
-                          : addFilter(strategy)
-                        }
-                      >
-                        {strategy}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Time Period</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["24h", "7d", "30d", "90d", "1y", "All Time"].map((period) => (
-                      <Badge 
-                        key={period}
-                        variant={activeFilters.includes(period) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => activeFilters.includes(period) 
-                          ? removeFilter(period) 
-                          : addFilter(period)
-                        }
-                      >
-                        {period}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Risk Level</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["Low Risk", "Medium Risk", "High Risk"].map((risk) => (
-                      <Badge 
-                        key={risk}
-                        variant={activeFilters.includes(risk) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => activeFilters.includes(risk) 
-                          ? removeFilter(risk) 
-                          : addFilter(risk)
-                        }
-                      >
-                        {risk}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Other</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["Verified Only", "Free To Follow", "New Agents"].map((filter) => (
-                      <Badge 
-                        key={filter}
-                        variant={activeFilters.includes(filter) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => activeFilters.includes(filter) 
-                          ? removeFilter(filter) 
-                          : addFilter(filter)
-                        }
-                      >
-                        {filter}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                {renderFilterSection("Strategy Type", STRATEGY_TYPES)}
+                {renderFilterSection("Time Period", TIME_PERIODS)}
+                {renderFilterSection("Other", OTHER_FILTERS)}
               </div>
-              
+
               <div className="mt-6 flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setActiveFilters([]);
-                    onFilterChange([]);
-                  }}
-                >
+                <Button variant="outline" onClick={clearFilters}>
                   Clear All
                 </Button>
                 <Button>Apply Filters</Button>
@@ -188,26 +153,27 @@ const MarketplaceFilters = ({ onSearch, onFilterChange, onSortChange, currentSor
           </Sheet>
         </div>
       </div>
-      
+
       {activeFilters.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
-          {activeFilters.map(filter => (
-            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+          {activeFilters.map((filter) => (
+            <Badge
+              key={filter}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {filter}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
-                onClick={() => removeFilter(filter)} 
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => removeFilter(filter)}
               />
             </Badge>
           ))}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-xs h-6" 
-            onClick={() => {
-              setActiveFilters([]);
-              onFilterChange([]);
-            }}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs h-6"
+            onClick={clearFilters}
           >
             Clear All
           </Button>
