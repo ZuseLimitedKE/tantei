@@ -3,8 +3,17 @@ import { Effect, Either } from "effect"
 import { type ModelOutput } from "./model"
 import router from "./utils/router"
 import { tradingAgents, type Agent } from "./agentData"
+import axios from "axios"
+import { BASEHOST } from "../integrations/basehost"
 export const getAllAgents = async (): Promise<Agent[]> => {
-    return tradingAgents
+    try {
+        const response = await axios.get(`${BASEHOST}/api/v1/agents`)
+        const agents = response.data
+        return agents
+    }
+    catch (error) {
+        throw new Error("Unable to retrieve agents from the database")
+    }
 }
 export const getAgentByAddress = async (address: string): Promise<Agent | null> => {
     return tradingAgents.find((agent) => agent.agentAddress === address) || null
