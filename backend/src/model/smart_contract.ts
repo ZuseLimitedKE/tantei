@@ -9,7 +9,7 @@ import {
 import "dotenv/config";
 import { Errors, MyError } from "../constants/errors";
 import { SWAPS } from "../mongo/collections";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { getTopicSchema, swapsSchema } from "../schema/topic";
 import { accountBalanceSchema } from "../schema/transactions";
 import { HBAR_DIVIDER } from "../listener/get_amount_set_in_transaction";
@@ -99,13 +99,13 @@ export class SmartContract {
 
   async getSwapsFromTopic(topicID: string): Promise<SWAPS[]> {
     try {
-      if (!process.env.TOPIC_HEDERA_MIRROR_NODE) {
+      if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
         console.log("Set TOPIC_HEDERA_MIRROR_NODE in env");
         throw new MyError(Errors.INVALID_SETUP);
       }
 
       const res = await axios.get(
-        `${process.env.TOPIC_HEDERA_MIRROR_NODE}api/v1/topics/${topicID}/messages?encoding=base64&order=asc`,
+        `${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/topics/${topicID}/messages?encoding=base64&order=asc`,
       );
       if (res.status === 200) {
         const parsed = getTopicSchema.safeParse(res.data);
@@ -181,7 +181,19 @@ export class SmartContract {
         throw new MyError(Errors.INVALID_SETUP);
       }
 
-      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
+      let result: AxiosResponse;
+      
+      try {
+        result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
+      } catch(err) {
+        try {
+          result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
+        } catch(err) {
+          console.error("Could not get user's tokens", err);
+          throw new MyError(Errors.NOT_GET_USER_TOKENS);  
+        }
+      }
+      
       if (result.status !== 200) {
         console.error("Error in get account data request", result.data);
         throw new MyError(Errors.NOT_GET_USER_TOKENS);
