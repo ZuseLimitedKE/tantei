@@ -5,7 +5,6 @@ const prodUrl = import.meta.env.VITE_PROD_BACKEND_URL;
 const backendUrl = import.meta.env.DEV
   ? devUrl // Dev backend
   : prodUrl; // Prod backend
-
 const Api: AxiosInstance = axios.create({ baseURL: backendUrl + "/api/v1" });
 Api.interceptors.response.use(
   (res: AxiosResponse) => res.data,

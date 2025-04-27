@@ -28,7 +28,7 @@ export function PortfolioStats() {
                 <AlertCircle className="h-8 w-8 text-red-600" />
               </div>
               <h3 className="text-xl font-medium mb-2">
-                Error Loading Portfolio Data
+                Error Loading Portfolio Stats Data
               </h3>
               <p className="text-muted-foreground mb-4">
                 We encountered an error while retrieving your portfolio
