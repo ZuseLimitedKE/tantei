@@ -9,7 +9,7 @@ declare global {
       SWAP_CONTRACT: string;
       HEDERA_OPERATOR_ACCOUNT_ID: string;
       HEDERA_OPERATOR_PRIVATE_KEY: string;
-      TOPIC_HEDERA_MIRROR_NODE: string;
+      HEDERA_TESTNET_MIRROR_NODE: string;
     }
   }
 }
