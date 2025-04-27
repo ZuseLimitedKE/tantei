@@ -9,7 +9,16 @@ export const getAllAgents = async (): Promise<Agent[]> => {
     try {
         const response = await axios.get(`${BASEHOST}/api/v1/agents`)
         const agents = response.data
-        return agents
+        const agentsWithType = agents.map(((agent: any) => {
+            return {
+                
+                agentAddress: agent.address,
+                agentName: agent.agent_name,
+                strategy: agent.strategy_description,
+            }
+        }))
+        console.log("Agents retrieved from the database:", agents)
+        return agentsWithType
     }
     catch (error) {
         throw new Error("Unable to retrieve agents from the database")

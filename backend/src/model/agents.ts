@@ -1,6 +1,9 @@
 import { AGENTS_COLLECTION, AGENTS } from "../mongo/collections";
 import { Errors, MyError } from "../constants/errors";
 import { ObjectId } from "mongodb";
+export interface AGENTWITHID extends AGENTS {
+  _id: string;
+}
 export class AgentModel {
   //adds a new agent
   async Publish(agent: AGENTS) {
@@ -11,13 +14,14 @@ export class AgentModel {
     }
   }
   //gets all the agents associated with an account
-  async GetUserAgents(address: string): Promise<AGENTS[] | null> {
+  async GetUserAgents(address: string): Promise<AGENTWITHID[] | null> {
     try {
-      const agents: AGENTS[] = [];
+      const agents: AGENTWITHID[] = [];
       const cursor = AGENTS_COLLECTION.find({ owner_wallet_address: address });
       for await (const doc of cursor) {
         agents.push({
           ...doc,
+          _id: doc._id.toString(),
         });
       }
       return agents;
@@ -26,15 +30,17 @@ export class AgentModel {
       throw new MyError("error" + Errors.NOT_GET_USER_AGENTS);
     }
   }
+
   // Get all available agents with basic metrics
-  async GetAllAgents(): Promise<AGENTS[]> {
+  async GetAllAgents(): Promise<AGENTWITHID[]> {
     try {
-      const agents: AGENTS[] = [];
+      const agents: AGENTWITHID[] = [];
       const cursor = AGENTS_COLLECTION.find({});
 
       for await (const doc of cursor) {
         agents.push({
           ...doc,
+          _id: doc._id.toString()
         });
       }
       return agents;
@@ -45,15 +51,61 @@ export class AgentModel {
   }
 
   // Get detailed information about a specific agent
-  async GetAgentById(agentId: string): Promise<AGENTS | null> {
+  async GetAgentById(agentId: string): Promise<AGENTWITHID | null> {
     try {
       const agent = await AGENTS_COLLECTION.findOne({
         _id: new ObjectId(agentId),
       });
-      return agent;
+      if (agent) {
+        return {...agent, _id: agent!._id.toString()};
+      } else {
+        return null;
+      }
     } catch (error) {
       console.error(error);
       throw new MyError("error:" + Errors.NOT_GET_AGENT);
+    }
+  }
+
+  // Get agent(s) from their hedera account id
+  async GetAgent(args: { hedera_account_id?: string }): Promise<AGENTWITHID | null> {
+    try {
+      if (args.hedera_account_id) {
+        const agent = await AGENTS_COLLECTION.findOne({
+          address: args.hedera_account_id,
+        });
+
+        if (agent) {
+          return {...agent, _id: agent!._id.toString()};
+        } else {
+          return null;
+        }
+      }
+
+      return null;
+    } catch (err) {
+      console.error(err);
+      throw new MyError("error:" + Errors.NOT_GET_AGENT);
+    }
+  }
+
+  // Get multiple agents from list of items
+  async GetAgents(args: { accounts?: string[] }): Promise<AGENTWITHID[]> {
+    try {
+      let agents: AGENTWITHID[] = [];
+      if (args.accounts) {
+        const cursor = AGENTS_COLLECTION.find({
+          address: { $in: args.accounts },
+        });
+        for await (const doc of cursor) {
+          agents.push({...doc, _id: doc._id.toString()});
+        }
+      }
+
+      return agents;
+    } catch (err) {
+      console.error("Could not get agents", err);
+      throw new MyError(Errors.NOT_GET_AGENTS);
     }
   }
 
@@ -88,3 +140,5 @@ export class AgentModel {
     }
   }
 }
+const agentModel = new AgentModel();
+export default agentModel;

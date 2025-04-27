@@ -16,7 +16,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AppPublishImport } from './routes/app/publish'
 import { Route as AppPortfolioImport } from './routes/app/portfolio'
 import { Route as AppMarketplaceImport } from './routes/app/marketplace'
-import { Route as AppLearnImport } from './routes/app/learn'
+import { Route as AppAgentIdImport } from './routes/app/agent.$id'
 
 // Create/Update Routes
 
@@ -50,9 +50,9 @@ const AppMarketplaceRoute = AppMarketplaceImport.update({
   getParentRoute: () => AppRouteRoute,
 } as any)
 
-const AppLearnRoute = AppLearnImport.update({
-  id: '/learn',
-  path: '/learn',
+const AppAgentIdRoute = AppAgentIdImport.update({
+  id: '/agent/$id',
+  path: '/agent/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -73,13 +73,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRoute
-    }
-    '/app/learn': {
-      id: '/app/learn'
-      path: '/learn'
-      fullPath: '/app/learn'
-      preLoaderRoute: typeof AppLearnImport
-      parentRoute: typeof AppRouteImport
     }
     '/app/marketplace': {
       id: '/app/marketplace'
@@ -102,23 +95,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPublishImport
       parentRoute: typeof AppRouteImport
     }
+    '/app/agent/$id': {
+      id: '/app/agent/$id'
+      path: '/agent/$id'
+      fullPath: '/app/agent/$id'
+      preLoaderRoute: typeof AppAgentIdImport
+      parentRoute: typeof AppRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface AppRouteRouteChildren {
-  AppLearnRoute: typeof AppLearnRoute
   AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
   AppPublishRoute: typeof AppPublishRoute
+  AppAgentIdRoute: typeof AppAgentIdRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppLearnRoute: AppLearnRoute,
   AppMarketplaceRoute: AppMarketplaceRoute,
   AppPortfolioRoute: AppPortfolioRoute,
   AppPublishRoute: AppPublishRoute,
+  AppAgentIdRoute: AppAgentIdRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -128,29 +128,29 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
-  '/app/learn': typeof AppLearnRoute
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/publish': typeof AppPublishRoute
+  '/app/agent/$id': typeof AppAgentIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
-  '/app/learn': typeof AppLearnRoute
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/publish': typeof AppPublishRoute
+  '/app/agent/$id': typeof AppAgentIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
-  '/app/learn': typeof AppLearnRoute
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/publish': typeof AppPublishRoute
+  '/app/agent/$id': typeof AppAgentIdRoute
 }
 
 export interface FileRouteTypes {
@@ -158,26 +158,26 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
-    | '/app/learn'
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
+    | '/app/agent/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/app'
-    | '/app/learn'
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
+    | '/app/agent/$id'
   id:
     | '__root__'
     | '/'
     | '/app'
-    | '/app/learn'
     | '/app/marketplace'
     | '/app/portfolio'
     | '/app/publish'
+    | '/app/agent/$id'
   fileRoutesById: FileRoutesById
 }
 
@@ -211,15 +211,11 @@ export const routeTree = rootRoute
     "/app": {
       "filePath": "app/route.tsx",
       "children": [
-        "/app/learn",
         "/app/marketplace",
         "/app/portfolio",
-        "/app/publish"
+        "/app/publish",
+        "/app/agent/$id"
       ]
-    },
-    "/app/learn": {
-      "filePath": "app/learn.tsx",
-      "parent": "/app"
     },
     "/app/marketplace": {
       "filePath": "app/marketplace.tsx",
@@ -231,6 +227,10 @@ export const routeTree = rootRoute
     },
     "/app/publish": {
       "filePath": "app/publish.tsx",
+      "parent": "/app"
+    },
+    "/app/agent/$id": {
+      "filePath": "app/agent.$id.tsx",
       "parent": "/app"
     }
   }

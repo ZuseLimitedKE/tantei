@@ -1,45 +1,105 @@
-import * as ethers from 'ethers'; //V6
-import abi from "../../abi.json";
-
-//load ABI data containing the Swap event
-const abiInterfaces = new ethers.Interface(abi);
+import "dotenv/config";
+import { Errors, MyError } from "../constants/errors";
+import lmdb from "../lmdb";
+import { FROM_BLOCK_KEY } from "../constants/constants";
+import { getHexStringFromBlock } from "./get_hex_start_block";
+import get_transactions from "./get_transactions";
+import process_transaction from "./process_transaction";
+import agentModel from "../model/agents";
+import tokensController from "../controllers/tokens";
+import swapsModel from "../model/swap";
+import pairController from "../controllers/pairs";
+import smartContract from "../model/smart_contract";
+import sleep from "../constants/helpers";
 
 async function main() {
-    let params = `timestamp=gte:${unixFrom}&timestamp=lte:${unixTo}`;
-    params += `&topic0=${abiInterface.getEvent('Swap')!.topicHash}`;
-
-    const url = `${mirrorNodeBaseUrl}/api/v1/contracts/results/logs?${params}`;
-    const response = await axios.get(url);
-    const logs = response.data.logs;
-
-    //group logs on transaction hash
-    const groupedLogs: any = {};
-    for (const log of logs) {
-        const tnxHash = log.transaction_hash;
-        if (!groupedLogs[tnxHash]) {
-            groupedLogs[tnxHash] = [];
-        }
-        groupedLogs[tnxHash].push(log);
+  try {
+    if (!process.env.FROM_BLOCK) {
+      console.log("Setup FROM_BLOCK in env");
+      throw new MyError(Errors.INVALID_SETUP);
     }
 
-    Object.keys(groupedLogs).forEach(tnxHash => {
-        console.log(`\nTransaction hash: ${tnxHash}`);
-        for (const log of groupedLogs[tnxHash]) {
-            const pairEvmAddress = log.address; //use this to get token0 and token1 data
+    if (!process.env.SWAP_CONTRACT) {
+      console.log("Setup SWAP_CONTRACT in env");
+      throw new MyError(Errors.INVALID_SETUP);
+    }
 
-            const parsedLog = abiInterfaces.parseLog({ topics: log.topics.slice(), data: log.data });
-            const result = parsedLog!.args;
+    // Getting the from block
+    let fromBlock: number;
+    const storeFrom = await lmdb.read(FROM_BLOCK_KEY);
+    const from = Number.parseInt(process.env.FROM_BLOCK);
 
-            let output = '';
-            output += `Pair: ${pairEvmAddress}`;
-            output += `, timestamp: ${log.timestamp}`;
-            output += `, amountIn: ${result.amount0}`;
-            output += `, amountOut: ${result.amount1}`;
-            output += `, sqrtPriceX96: ${result.sqrtPriceX96}`;
-            output += `, liquidity: ${result.liquidity}`;
-            output += `, tick: ${result.tick}`;
+    // Compare the block in env and the one in lama
+    // Use the one that's bigger
+    if (storeFrom) {
+      const processedStoreFrom = Number.parseInt(storeFrom);
+      if (processedStoreFrom > from) {
+        fromBlock = processedStoreFrom;
+      } else {
+        fromBlock = from;
+      }
+    } else {
+      fromBlock = from;
+    }
 
-            console.log(output);
+    console.log("\n\nStarting from block =>", fromBlock);
+
+    while (true) {
+      try {
+        console.log("\nFrom Block =>", fromBlock);
+        const fromBlockStr = getHexStringFromBlock(fromBlock);
+        const transactions = await get_transactions(fromBlockStr);
+        for (const t of transactions) {
+          if (t.to === process.env.SWAP_CONTRACT) {
+            process_transaction(
+              t,
+              agentModel,
+              tokensController,
+              swapsModel,
+              pairController,
+              smartContract,
+            );
+          }
         }
-    });
+
+        // Update from block variables
+        fromBlock++;
+        while (true) {
+          const latestBlock = await smartContract.getLatestBlock();
+          if (fromBlock <= latestBlock) {
+            break;
+          } else {
+            console.log(
+              "From block",
+              fromBlock,
+              "is greater than latest block",
+              latestBlock,
+              "sleeping abit",
+            );
+            await sleep(5);
+          }
+        }
+
+        lmdb.store(FROM_BLOCK_KEY, fromBlock);
+      } catch (err) {
+        console.log("Error in main", err);
+        await sleep(60);
+      }
+    }
+  } catch (err) {
+    if (err instanceof MyError) {
+      if (err.message === Errors.INVALID_SETUP) {
+        throw err;
+      } else if (err.message === Errors.NOT_GET_LATEST_BLOCK) {
+        console.log("Error getting latest block, timing out then trying again");
+        await sleep(5);
+      }
+    }
+
+    console.log("Error in processing transactions in main", err);
+  }
 }
+
+(() => {
+  main();
+})();

@@ -17,14 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Info,
-  FileCode,
-  AlertCircle,
-  Tag,
-  ChevronRight,
-  Settings,
-} from "lucide-react";
+import { Info, FileCode, AlertCircle, Tag, Settings } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -33,27 +26,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { publishAgentSchema } from "@/types/zod";
+import { useMutation } from "@tanstack/react-query";
+import { PublishAgent } from "@/services/agents";
+import { useAccountId, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
+import { Spinner } from "@/components/ui/spinner";
 export const Route = createFileRoute("/app/publish")({
   component: RouteComponent,
 });
-const publishAgentSchema = z.object({
-  agent_name: z
-    .string()
-    .min(2, "the agent name must be greater than 2 characters"),
-  strategy_description: z.string().min(20, "strategy description is too short"),
-  strategy_type: z.string(),
-  risk_level: z.string(),
-  api_endpoint: z.string().url("enter a valid url"),
-  // subscription_fee: z.preprocess(
-  //   (a) => parseInt(z.string().parse(a), 10),
-  //   z.number().gt(0, "the subscription fee must be greater than 0"),
-  // ),
-  subscription_fee: z.coerce
-    .number()
-    .gt(0, "the subscription fee must be greater than 0"),
-  owner_wallet_address: z.string(),
-});
 function RouteComponent() {
+  const { isConnected } = useWallet();
+
+  const { data: accountId } = useAccountId();
   const form = useForm<z.infer<typeof publishAgentSchema>>({
     resolver: zodResolver(publishAgentSchema),
     defaultValues: {
@@ -63,20 +47,30 @@ function RouteComponent() {
       risk_level: "",
       subscription_fee: 0,
       owner_wallet_address: "",
-      api_endpoint: "",
+      address: "",
     },
   });
-  function onSubmit(values: z.infer<typeof publishAgentSchema>) {
-    try {
-      // Do something with the form values.
-      console.log(values);
-      toast.success(
-        "your agent has been submitted and will be reviewed shortly",
-      );
+  const { mutate, isPending: isPublishing } = useMutation({
+    mutationFn: PublishAgent,
+    onSuccess(_, variables) {
+      toast.success(`successfully published ${variables.agent_name}`);
       form.reset();
+    },
+    //TODO : INVALIDATE DATA ON SUCCESS
+  });
+
+  function onSubmit(values: z.infer<typeof publishAgentSchema>) {
+    if (!accountId || !isConnected) {
+      toast.warning(
+        "you need to connect your wallet before publishing an agent",
+      );
+      return;
+    }
+    try {
+      mutate({ ...values, owner_wallet_address: accountId });
     } catch (error) {
       console.error(error);
-      toast.error("unable to submit your agent,contact support");
+      toast.error("unable to publish your agent , please contact support");
     }
   }
   return (
@@ -156,94 +150,51 @@ function RouteComponent() {
                         Categorization
                       </h2>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="strategy_type"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Strategy Type</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a strategy type" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="momentum">
-                                    Momentum Trading
-                                  </SelectItem>
-                                  <SelectItem value="arbitrage">
-                                    Arbitrage
-                                  </SelectItem>
-                                  <SelectItem value="swing">
-                                    Swing Trading
-                                  </SelectItem>
-                                  <SelectItem value="scalping">
-                                    Scalping
-                                  </SelectItem>
-                                  <SelectItem value="defi">
-                                    DeFi Yield
-                                  </SelectItem>
-                                  <SelectItem value="trend">
-                                    Trend Following
-                                  </SelectItem>
-                                  <SelectItem value="hedging">
-                                    Hedging
-                                  </SelectItem>
-                                  <SelectItem value="dca">
-                                    Dollar Cost Averaging
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormDescription>
-                                Categorize your trading approach
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="risk_level"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Risk Level</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select risk level" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="1">
-                                    Very Low (1-2)
-                                  </SelectItem>
-                                  <SelectItem value="3">Low (3-4)</SelectItem>
-                                  <SelectItem value="5">
-                                    Medium (5-6)
-                                  </SelectItem>
-                                  <SelectItem value="7">High (7-8)</SelectItem>
-                                  <SelectItem value="9">
-                                    Very High (9-10)
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormDescription>
-                                Indicate the volatility and risk level
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="strategy_type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Strategy Type</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a strategy type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="momentum">
+                                  Momentum Trading
+                                </SelectItem>
+                                <SelectItem value="arbitrage">
+                                  Arbitrage
+                                </SelectItem>
+                                <SelectItem value="swing">
+                                  Swing Trading
+                                </SelectItem>
+                                <SelectItem value="scalping">
+                                  Scalping
+                                </SelectItem>
+                                <SelectItem value="defi">DeFi Yield</SelectItem>
+                                <SelectItem value="trend">
+                                  Trend Following
+                                </SelectItem>
+                                <SelectItem value="hedging">Hedging</SelectItem>
+                                <SelectItem value="dca">
+                                  Dollar Cost Averaging
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Categorize your trading approach
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <Separator />
@@ -255,19 +206,15 @@ function RouteComponent() {
                       </h2>
                       <FormField
                         control={form.control}
-                        name="api_endpoint"
+                        name="address"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>API Endpoint</FormLabel>
+                            <FormLabel>Agent Wallet Address</FormLabel>
                             <FormControl>
-                              <Input
-                                placeholder="https://your-api-endpoint.com/strategy"
-                                {...field}
-                              />
+                              <Input placeholder="0.0.12345....." {...field} />
                             </FormControl>
                             <FormDescription>
-                              Provide a secure endpoint where your strategy is
-                              hosted
+                              Provide the wallet address of the agent
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -331,9 +278,16 @@ function RouteComponent() {
                       >
                         Save Draft
                       </Button>
-                      <Button type="submit" size="lg" className="text-lg">
+                      <Button
+                        type="submit"
+                        disabled={isPublishing}
+                        size="lg"
+                        className="text-lg flex items-center justify-center"
+                      >
+                        {isPublishing && (
+                          <Spinner className="mr-2 text-white" size="small" />
+                        )}
                         Submit for Review
-                        <ChevronRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
                   </form>
