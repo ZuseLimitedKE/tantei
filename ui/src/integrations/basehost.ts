@@ -1,0 +1,1 @@
+export const BASEHOST = import.meta.env.VITE_ENVIRONMENT === "DEV" ? "http://localhost:7000" : "http://tantei.zuse.co.ke/";
