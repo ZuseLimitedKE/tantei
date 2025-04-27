@@ -25,13 +25,9 @@
     "mongodb": "^6.15.0",
     "openai": "^4.95.1",
     "zod": "^3.24.3",
-    "zod-to-json-schema": "^3.24.5"
-    "express": "^5.1.0",
+    "zod-to-json-schema": "^3.24.5",
     "lmdb": "^3.2.6",
-    "mongodb": "^6.15.0",
-    "save-dev": "0.0.1-security",
-    "web3": "^4.16.0",
-    "zod": "^3.24.3"
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
