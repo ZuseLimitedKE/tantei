@@ -7,6 +7,7 @@ export class MyError extends Error {
 
 export enum Errors {
   INVALID_SETUP = "Invalid server setup",
+  INTERNAL_SERVER_ERROR = "Internal server error",
   NOT_REGISTER_USER = "Could not register user",
   NOT_PUBLISH_AGENT = "Could not publish the agent",
   NOT_GET_USER = "Could not get user",
@@ -35,5 +36,14 @@ export enum Errors {
   NOT_GET_MESSAGES_FROM_TOPIC = "Could not get messages from topic",
   AGENT_NOT_EXIST = "Agent does not exist",
   NOT_PROCESS_SWAPS = "Could not process swaps",
+  NOT_GET_LATEST_BLOCK = "Could not get latest block",
+  NOT_FOLLOW_AGENT = "Could not follow agent",
+  INVALID_HEDERA_ACCOUNT = "Invalid hedera account",
+  NOT_GET_FOLLOW_AGENTS = "Could not get followed agents",
+  NOT_GET_ROI = "Could not get ROI",
+  NOT_GET_PORTFOLIO_VALUE = "Could not get porfolio value",
+  NOT_GET_TOKENS = "Could not get tokens",
+  NOT_GET_USER_TOKENS = "Could not get user's tokens",
+  NOT_GET_PORTFOLIO = "Could not get porfolio",
   UNKOWN = "Unkown error",
 }

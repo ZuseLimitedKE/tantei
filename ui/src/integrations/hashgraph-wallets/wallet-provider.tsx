@@ -1,15 +1,11 @@
 import { HWBridgeProvider } from "@buidlerlabs/hashgraph-react-wallets";
 import { HWCConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
-import {
-  HederaTestnet,
-  //   HederaMainnet,
-} from "@buidlerlabs/hashgraph-react-wallets/chains";
+import { HederaTestnet } from "@buidlerlabs/hashgraph-react-wallets/chains";
 import LoadingFallback from "@/components/ui/wallet-loading-fallback";
 
 // 1. Get projectId from https://cloud.reown.com
 const projectId =
   import.meta.env.VITE_REOWN_PROJECT_ID || "b56e18d47c72ab683b10814fe9495694";
-
 // 2. Create a metadata object - optional
 const metadata = {
   name: "Tantei",
