@@ -11,8 +11,9 @@ import { Errors, MyError } from "../constants/errors";
 import { SWAPS } from "../mongo/collections";
 import axios, { AxiosResponse } from "axios";
 import { getTopicSchema, swapsSchema } from "../schema/topic";
-import { accountBalanceSchema } from "../schema/transactions";
+import { accountBalanceSchema, mirrorNodeTransaction, MirrorNodeTransaction } from "../schema/transactions";
 import { HBAR_DIVIDER } from "../listener/get_amount_set_in_transaction";
+import { EvmUserDetails, evmUserDetailsSchema } from "../schema/user";
 
 interface Token {
   token: string,
@@ -223,6 +224,58 @@ export class SmartContract {
     } catch(err) {
       console.error("Could not get user's tokens", err);
       throw new MyError(Errors.NOT_GET_USER_TOKENS);
+    }
+  }
+
+  async getUserDetails(evm_address: string): Promise<EvmUserDetails | null> {
+    try {
+      if (!process.env.HEDERA_MIRROR_NODE) {
+        console.log("Set HEDERA_MIRROR_NODE in env");
+        throw new MyError(Errors.INVALID_SETUP);
+      }
+
+      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${evm_address}`);
+      if (result.status !== 200) {
+        console.log("Error in getting result", result.data);
+        throw new MyError(Errors.NOT_GET_USER_DETAILS);
+      }
+
+      const parsed = evmUserDetailsSchema.safeParse(result.data);
+      if (parsed.success) {
+        const data = parsed.data;
+        return data;
+      } else {
+        console.log("Error parsing data", parsed.error);
+        throw new MyError(Errors.NOT_GET_USER_DETAILS);
+      }
+    } catch(err) {
+      console.log("Error getting user details", err);
+      throw new MyError(Errors.NOT_GET_USER_DETAILS);
+    }
+  }
+
+  async getTransactionDetails(tx_hash: String): Promise<MirrorNodeTransaction | null> {
+    try {
+      if (!process.env.HEDERA_MIRROR_NODE) {
+        console.log("Set HEDERA_MIRROR_NODE in env");
+        throw new MyError(Errors.INVALID_SETUP);
+      }
+
+      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/contracts/results/${tx_hash}`);
+      if (result.status !== 200) {
+        console.log("Error getting info");
+        throw new MyError(Errors.NOT_GET_TRANSACTION_DETAILS);
+      }
+
+      const parsed = mirrorNodeTransaction.safeParse(result.data);
+      if (parsed.success) {
+        return parsed.data
+      } else {
+        return null;
+      }
+    } catch(err) {
+      console.log("Error getting transaction details", err);
+      throw new MyError(Errors.NOT_GET_TRANSACTION_DETAILS);
     }
   }
 }
