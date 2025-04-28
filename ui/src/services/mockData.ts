@@ -106,6 +106,7 @@ export interface PerformanceDataPoint {
   value: number;
 }
 
+
 export const generatePerformanceData = (
   days: number = 30,
 ): PerformanceDataPoint[] => {

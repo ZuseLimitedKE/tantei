@@ -2,13 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import MarketplaceFilters from "@/components/marketplace/MarketplaceFilters";
 import AgentCard from "@/components/agents/AgentCard";
-import {
-  mockAgents,
-  getPerformanceScore,
-  getAgentAge,
-  getPopularityScore,
-  getRiskScore,
-} from "@/services/mockData";
+// import {
+//   getPerformanceScore,
+//   getAgentAge,
+//   getPopularityScore,
+//   getRiskScore,
+// } from "@/services/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAgents } from "@/services/agents";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+
 
 export const Route = createFileRoute("/app/marketplace")({
   component: MarketplaceComponent,
@@ -19,95 +24,71 @@ function MarketplaceComponent() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("performance");
 
+  const { data: agents, isLoading, error } = useQuery({
+    queryKey: ['agents'],
+    queryFn: fetchAgents,
+    refetchInterval: 10000 // Refresh every 15 seconds
+  });
+
+  //search and filter handlers
   const handleSearch = (term: string) => setSearchTerm(term);
   const handleFilterChange = (filters: string[]) => setActiveFilters(filters);
   const handleSortChange = (value: string) => setSortBy(value);
+  
   const filteredAgents = useMemo(() => {
-    let filtered = [...mockAgents];
+    if (!agents) return [];
+    
+    let filtered = [...agents];
 
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (agent) =>
           agent.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          agent.strategy_description
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          agent.strategy_type.toLowerCase().includes(searchTerm.toLowerCase()),
+          agent.strategy_description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          agent.strategy_type.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Tag filters
     if (activeFilters.length > 0) {
-      filtered = filtered.filter((agent) => {
-        // Check if any of the agent's properties match any of the active filters
-        return activeFilters.some((filter) => {
-          // Check for risk level
-          if (filter === "low" || filter === "medium" || filter === "high") {
-            return agent.risk_level === filter;
-          }
-
-          // Check for strategy type
-          if (filter === agent.strategy_type) {
-            return true;
-          }
-
-          // Check for free agents
-          if (filter === "Free To Follow" && agent.subscription_fee === 0) {
-            return true;
-          }
-
-          // For "New Agents" we would check creation date - here we use mock data
-          if (filter === "New Agents" && getAgentAge(agent._id || "") < 30) {
-            return true;
-          }
-
-          return false;
-        });
+      filtered = filtered.filter(agent => {
+        const agentTags = [
+          agent.strategy_type,
+          agent.risk_level,
+          agent.subscription_fee === 0 ? 'Free To Follow' : ''
+        ];
+        return activeFilters.some(filter => agentTags.includes(filter));
       });
     }
 
-    // Additional sorting
-    switch (sortBy) {
-      case "performance":
-        filtered.sort((a, b) => {
-          const perfA = getPerformanceScore(a._id || "");
-          const perfB = getPerformanceScore(b._id || "");
-          return perfB - perfA;
-        });
-        break;
-      case "popularity":
-        filtered.sort((a, b) => {
-          const popA = getPopularityScore(a._id || "");
-          const popB = getPopularityScore(b._id || "");
-          return popB - popA;
-        });
-        break;
-      case "newest":
-        filtered.sort((a, b) => {
-          const ageA = getAgentAge(a._id || "");
-          const ageB = getAgentAge(b._id || "");
-          return ageA - ageB; // Lower age means newer
-        });
-        break;
-      case "risk-low":
-        filtered.sort((a, b) => {
-          const riskA = getRiskScore(a.risk_level);
-          const riskB = getRiskScore(b.risk_level);
-          return riskA - riskB;
-        });
-        break;
-      case "risk-high":
-        filtered.sort((a, b) => {
-          const riskA = getRiskScore(a.risk_level);
-          const riskB = getRiskScore(b.risk_level);
-          return riskB - riskA;
-        });
-        break;
-    }
+    // // Sorting
+    // switch (sortBy) {
+    //   case "performance":
+    //     filtered.sort((a, b) => b.performance.roi_30d - a.performance.roi_30d);
+    //     break;
+    //   case "popularity":
+    //     filtered.sort((a, b) => b.followers - a.followers);
+    //     break;
+    //   case "newest":
+    //     filtered.sort((a, b) => 
+    //       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    //     );
+    //     break;
+    //   case "risk-low":
+    //     filtered.sort((a, b) => a.risk_level.localeCompare(b.risk_level));
+    //     break;
+    //   case "risk-high":
+    //     filtered.sort((a, b) => b.risk_level.localeCompare(a.risk_level));
+    //     break;
+    // }
 
     return filtered;
-  }, [searchTerm, activeFilters, sortBy]);
+  }, [agents, searchTerm, activeFilters, /*sortBy*/]);
+
+  // Loading and error states
+  // if (isLoading) return <SkeletonGrid />;
+  // if (error) return <ErrorAlert error={error} />;
 
   return (
     <div className="min-h-screen bg-background">
@@ -140,3 +121,21 @@ function MarketplaceComponent() {
     </div>
   );
 }
+
+// const SkeletonGrid = () => (
+//   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+//     {[...Array(6)].map((_, i) => (
+//       <Skeleton key={i} className="h-[350px] w-full rounded-xl" />
+//     ))}
+//   </div>
+// );
+
+// const ErrorAlert = ({ error }: { error: Error }) => (
+//   <Alert variant="destructive">
+//     <ExclamationTriangleIcon className="h-4 w-4" />
+//     <AlertTitle>Error</AlertTitle>
+//     <AlertDescription>
+//       {error.message || "Failed to load agents"}
+//     </AlertDescription>
+//   </Alert>
+// );
