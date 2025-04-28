@@ -12,7 +12,7 @@ export const swapsSchema = z.object({
   in: swappedTokenDetailsSchema,
   out: swappedTokenDetailsSchema,
   time: z.string().transform((arg) => new Date(arg)),
-  user_evm_address: z.string(),
+  user_hedera: z.string(),
   token_pair: z.array(z.string()).length(2),
   type: z.enum(SWAP_TYPES),
   price: z.number(),

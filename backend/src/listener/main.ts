@@ -51,7 +51,7 @@ async function main() {
         const transactions = await get_transactions(fromBlockStr);
         for (const t of transactions) {
           if (t.to === process.env.SWAP_CONTRACT) {
-            process_transaction(
+            await process_transaction(
               t,
               agentModel,
               tokensController,

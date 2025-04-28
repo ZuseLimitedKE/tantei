@@ -22,7 +22,7 @@ export const transactionSchema = z.object({
 
 export const getTransactionsSchema = z.object({
   result: z.object({
-    transactions: transactionSchema.array(),
+    transactions: z.array(transactionSchema),
   }),
   jsonrpc: z.string(),
   id: z.number(),
@@ -45,5 +45,16 @@ export const accountBalanceSchema = z.object({
   })
 });
 
+export const mirrorNodeTransaction = z.object({
+  address: z.string(),
+  amount: z.number(),
+  contract_id: z.string(),
+  from: z.string(),
+  function_parameters: z.string(),
+  to: z.string(),
+  hash: z.string(),
+})
+
+export type MirrorNodeTransaction = z.infer<typeof mirrorNodeTransaction>;
 export type DecodedTransaction = z.infer<typeof decodedTransactionsSchema>;
 export type Transactions = z.infer<typeof transactionSchema>;

@@ -16,7 +16,7 @@ export default async function get_transactions(
     const results = await axios.post(process.env.HEDERA_JSON_RPC_RELAY, {
       jsonrpc: "2.0",
       method: "eth_getBlockByNumber",
-      id: 341223,
+      id: 341224,
       params: [from_block, true],
     });
 
