@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  mockAgents,
-  generateMockTradeHistory,
-  generatePerformanceData,
-} from "@/services/mockData";
-import PerformanceChart from "@/components/agents/PerformanceChart";
-import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
+// import {
+//   generateMockTradeHistory,
+//   generatePerformanceData,
+// } from "@/services/mockData";
+//import PerformanceChart from "@/components/agents/PerformanceChart";
+//import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,24 +16,54 @@ import {
   BarChart3,
   Users,
   Clock,
-  AlertCircle,
+  //AlertCircle,
   Wallet,
 } from "lucide-react";
-import { agentAvatars } from "@/services/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAgentDetails, /*fetchAgentTrades, fetchAgentPerformance*/ } from "@/services/agents";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export const Route = createFileRoute("/app/agent/$id")({
   component: AgentDetailComponent,
 });
 
 function AgentDetailComponent() {
   const { id } = Route.useParams();
-  const agent = mockAgents.find((agent) => agent._id === id);
-  // Get a random avatar URL based on the agent's ID or name
-  const avatarUrl =
-    agentAvatars[Math.floor(Math.random() * agentAvatars.length)];
 
-  // Mock ROI data since it's not in the new interface
-  const mockRoi = Math.floor(Math.random() * 40) + 5;
-  const isPositiveRoi = mockRoi >= 0;
+  const { data: agent, isLoading } = useQuery({
+    queryKey: ['agent', id],
+    queryFn: () => fetchAgentDetails(id),
+  });
+
+  // const { data: trades } = useQuery({
+  //   queryKey: ['trades', id],
+  //   queryFn: () => fetchAgentTrades(id),
+  // });
+  
+  // Fetch performance data
+  // const { data: performance } = useQuery({
+  //   queryKey: ['performance', id],
+  //   queryFn: () => fetchAgentPerformance(id),
+  // });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="container px-4 py-8 mx-auto">
+          <div className="max-w-screen-xl mx-auto space-y-6">
+            <Skeleton className="h-12 w-48" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-32" />
+              ))}
+            </div>
+            <Skeleton className="h-64" />
+            <Skeleton className="h-64" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!agent) {
     return (
@@ -52,8 +81,8 @@ function AgentDetailComponent() {
     );
   }
 
-  const tradeHistory = generateMockTradeHistory(agent._id);
-  const performanceData = generatePerformanceData(90);
+  // const tradeHistory = generateMockTradeHistory(agent._id);
+  // const performanceData = generatePerformanceData(90);
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,20 +97,11 @@ function AgentDetailComponent() {
               Back to Marketplace
             </Link>
 
-            {/* Rest of your existing AgentDetail JSX */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="rounded-full overflow-hidden w-16 h-16">
-                  <img
-                    src={avatarUrl}
-                    alt={agent.agent_name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h1 className="text-3xl font-bold">{agent.agent_name}</h1>
-
                     <Badge
                       variant="outline"
                       className="bg-blue-50 text-blue-600 border-blue-200"
@@ -113,12 +133,12 @@ function AgentDetailComponent() {
                   </div>
                   <div>
                     <h3 className="font-medium">ROI (30d)</h3>
-                    <p
+                    {/* <p
                       className={`text-2xl font-bold ${isPositiveRoi ? "text-green-500" : "text-red-500"}`}
                     >
                       {isPositiveRoi ? "+" : ""}
                       {mockRoi}%
-                    </p>
+                    </p> */}
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -152,15 +172,9 @@ function AgentDetailComponent() {
                   </div>
                   <div>
                     <h3 className="font-medium">Followers</h3>
-                    {/*FIND A WAY TO GET THIS DATA*/}
-                    <p className="text-2xl font-bold">100</p>
+                    {/* <p className="text-2xl font-bold">{agent.followers.toLocaleString()}</p> */}
                   </div>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  By {agent.owner_wallet_address.slice(0, 6)}...
-                  {agent.owner_wallet_address.slice(-4)}
-                </div>
-
                 <p className="text-sm text-muted-foreground">
                   Traders actively copying this agent's strategy
                 </p>
@@ -188,7 +202,7 @@ function AgentDetailComponent() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  {/* <div className="flex items-center gap-3">
                     <AlertCircle className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">
@@ -196,15 +210,13 @@ function AgentDetailComponent() {
                       </p>
                       <p className="font-medium">12.4%</p>
                     </div>
-                  </div>
+                  </div> */}
 
-                  <div className="flex items-center gap-3">
+<div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Subscription Fee
-                      </p>
-                      <p className="font-medium">50 HBAR/month</p>
+                      <p className="text-sm text-muted-foreground">Subscription Fee</p>
+                      <p className="font-medium">{agent.subscription_fee} HBAR/month</p>
                     </div>
                   </div>
 
@@ -224,7 +236,7 @@ function AgentDetailComponent() {
           </div>
 
           {/* Performance Chart */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <PerformanceChart
               data={performanceData}
               title="Performance History"
@@ -232,9 +244,9 @@ function AgentDetailComponent() {
           </div>
 
           {/* Trade History */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <TradeHistoryTable trades={tradeHistory} />
-          </div>
+          </div>  */}
 
           {/* CTA Section */}
           <div className="text-center my-10">

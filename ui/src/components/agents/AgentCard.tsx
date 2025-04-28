@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
-import { agentAvatars } from "@/services/mockData";
+// import { agentAvatars } from "@/services/mockData";
 import type { AgentData } from "@/services/types";
 
 interface AgentCardProps {
@@ -20,17 +20,17 @@ interface AgentCardProps {
 
 const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
   // Get a random avatar URL based on the agent's ID or name
-  const avatarUrl =
-    agentAvatars[Math.floor(Math.random() * agentAvatars.length)];
+  // const avatarUrl =
+  //   agentAvatars[Math.floor(Math.random() * agentAvatars.length)];
+  
+  
+  // const roi = agent.performance.roi_30d;
+  // const isPositiveRoi = roi >= 0;
 
-  // Mock ROI data since it's not in the new interface
-  const mockRoi = Math.floor(Math.random() * 40) + 5;
-  const isPositiveRoi = mockRoi >= 0;
-  const id = agent._id;
   return (
     <Link
       to="/app/agent/$id"
-      params={{ id }}
+      params={{ id: agent._id }}
       className="block transition-all duration-200 hover:-translate-y-1"
     >
       <Card
@@ -38,7 +38,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
       >
         <CardContent className={cn("p-5", compact ? "pb-2" : "")}>
           <div className="flex items-start gap-4 mb-4">
-            <div
+            {/* <div
               className={cn(
                 "rounded-full overflow-hidden flex-shrink-0",
                 compact ? "w-10 h-10" : "w-12 h-12",
@@ -49,7 +49,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                 alt={agent.agent_name}
                 className="w-full h-full object-cover"
               />
-            </div>
+            </div> */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h3
@@ -88,7 +88,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
               compact ? "grid-cols-2" : "grid-cols-3",
             )}
           >
-            <div className="stats-card">
+            {/* <div className="stats-card">
               <p className="text-xs text-muted-foreground mb-1">ROI (30d)</p>
               <div className="flex items-center">
                 {isPositiveRoi ? (
@@ -106,7 +106,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                   {mockRoi}%
                 </span>
               </div>
-            </div>
+            </div> */}
 
             <div className="stats-card">
               <p className="text-xs text-muted-foreground mb-1">Risk Level</p>
