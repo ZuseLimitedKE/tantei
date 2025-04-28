@@ -41,7 +41,7 @@ export interface SWAPS {
   in: swappedTokenDetails;
   out: swappedTokenDetails;
   time: Date;
-  user_evm_address: string;
+  user_hedera: string;
   token_pair: string[];
   type: "buy" | "sell";
   price: number;

@@ -6,8 +6,9 @@ import {
   decodedTransactionsSchema,
 } from "../schema/transactions";
 import "dotenv/config";
+import { SmartContract } from "../model/smart_contract";
 
-export function decode_transactions(input: string): DecodedTransaction {
+export async function decode_transactions(input: string, tx_hash: string, smart_contract: SmartContract): Promise<DecodedTransaction> {
   if (!process.env.SWAP_CONTRACT) {
     console.log("Setup SWAP_CONTRACT in env");
     throw new MyError(Errors.INVALID_SETUP);
@@ -15,11 +16,24 @@ export function decode_transactions(input: string): DecodedTransaction {
 
   const web3 = new Web3();
   const contract = new web3.eth.Contract(abi, process.env.SWAP_CONTRACT);
-  const result = contract.decodeMethodData(input);
+  let result;
+
+  try {
+    result = contract.decodeMethodData(input);
+  } catch(err) {
+    console.log("Initial decode failed");
+    const transaction = await smart_contract.getTransactionDetails(tx_hash);
+    if (transaction) {
+      result = contract.decodeMethodData(transaction.function_parameters);
+    } else {
+      console.error("Could not decode transaction input", err);
+      throw new MyError(Errors.NOT_DECODE_TRANSACION);
+    }
+  }
 
   const data = {
     method: result["__method__"],
-    addresses: result["path"],
+    addresses: result["path"] ?? null,
     amountOut: result["amountOutMin"]
       ? Number(result["amountOutMin"] as BigInt)
       : result["amountOut"]
@@ -32,6 +46,7 @@ export function decode_transactions(input: string): DecodedTransaction {
         : null,
   };
 
+  console.log(result);
   const parsed = decodedTransactionsSchema.safeParse(data);
   if (parsed.success) {
     return parsed.data;
