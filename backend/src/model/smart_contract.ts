@@ -14,8 +14,11 @@ import { getTopicSchema, swapsSchema } from "../schema/topic";
 import { accountBalanceSchema, mirrorNodeTransaction, MirrorNodeTransaction } from "../schema/transactions";
 import { HBAR_DIVIDER } from "../listener/get_amount_set_in_transaction";
 import { EvmUserDetails, evmUserDetailsSchema } from "../schema/user";
+import { TokenDetails, tokenDetailsSchema } from "../schema/tokens";
 
 interface Token {
+  name: string,
+  symbol: string,
   token: string,
   balance: number
 }
@@ -183,18 +186,18 @@ export class SmartContract {
       }
 
       let result: AxiosResponse;
-      
+
       try {
         result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
-      } catch(err) {
+      } catch (err) {
         try {
           result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
-        } catch(err) {
+        } catch (err) {
           console.error("Could not get user's tokens", err);
-          throw new MyError(Errors.NOT_GET_USER_TOKENS);  
+          throw new MyError(Errors.NOT_GET_USER_TOKENS);
         }
       }
-      
+
       if (result.status !== 200) {
         console.error("Error in get account data request", result.data);
         throw new MyError(Errors.NOT_GET_USER_TOKENS);
@@ -205,23 +208,35 @@ export class SmartContract {
         const data = parsed.data;
         const tokens: Token[] = [];
         tokens.push({
+          name: "HBAR",
+          symbol: "HBAR",
           token: "HBAR",
           balance: data.balance.balance / HBAR_DIVIDER
         });
-        
-        data.balance.tokens.map((t) => {
-          tokens.push({
-            token: t.token_id,
-            balance: t.balance
-          })
-        });
+
+        for (const t of data.balance.tokens) {
+          if (t.balance > 0) {
+            try {
+              const tokenDetails = await smartContract._getTokenDetails(t.token_id);
+              tokens.push({
+                name: tokenDetails?.name ?? "",
+                symbol: tokenDetails?.symbol ?? "",
+                // token: t.token_id,
+                token: t.token_id,
+                balance: tokenDetails?.decimals ? t.balance / (10**tokenDetails.decimals) : t.balance
+              })
+            } catch (err) {
+              console.error("Error getting token details", t);
+            }
+          }
+        }
 
         return tokens;
       } else {
         console.error("Error parsing data", parsed.error);
         throw new MyError(Errors.NOT_GET_USER_TOKENS);
       }
-    } catch(err) {
+    } catch (err) {
       console.error("Could not get user's tokens", err);
       throw new MyError(Errors.NOT_GET_USER_TOKENS);
     }
@@ -248,7 +263,7 @@ export class SmartContract {
         console.log("Error parsing data", parsed.error);
         throw new MyError(Errors.NOT_GET_USER_DETAILS);
       }
-    } catch(err) {
+    } catch (err) {
       console.log("Error getting user details", err);
       throw new MyError(Errors.NOT_GET_USER_DETAILS);
     }
@@ -273,9 +288,36 @@ export class SmartContract {
       } else {
         return null;
       }
-    } catch(err) {
+    } catch (err) {
       console.log("Error getting transaction details", err);
       throw new MyError(Errors.NOT_GET_TRANSACTION_DETAILS);
+    }
+  }
+
+  async _getTokenDetails(hedera_id: string): Promise<TokenDetails | null> {
+    try {
+      if (!process.env.HEDERA_MIRROR_NODE) {
+        console.error("Set HEDERA_MIRROR_NODE in env");
+        throw new MyError(Errors.INVALID_SETUP);
+      }
+
+      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/tokens/${hedera_id}`);
+      if (result.status !== 200) {
+        console.error("Error in request", result.data);
+        throw new MyError(Errors.NOT_GET_TOKEN_DETAILS);
+      }
+
+      const parsed = tokenDetailsSchema.safeParse(result.data);
+      if (parsed.success) {
+        const data = parsed.data;
+        return data;
+      } else {
+        console.error("Error parsing", parsed.error);
+        throw new MyError(Errors.NOT_GET_TOKEN_DETAILS)
+      }
+    } catch (err) {
+      console.error("Error getting token details", err);
+      throw new MyError(Errors.NOT_GET_TOKEN_DETAILS);
     }
   }
 }
