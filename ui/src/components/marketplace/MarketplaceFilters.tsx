@@ -142,13 +142,6 @@ const MarketplaceFilters = ({
                 {renderFilterSection("Time Period", TIME_PERIODS)}
                 {renderFilterSection("Other", OTHER_FILTERS)}
               </div>
-
-              <div className="mt-6 flex justify-between">
-                <Button variant="outline" onClick={clearFilters}>
-                  Clear All
-                </Button>
-                <Button>Apply Filters</Button>
-              </div>
             </SheetContent>
           </Sheet>
         </div>
