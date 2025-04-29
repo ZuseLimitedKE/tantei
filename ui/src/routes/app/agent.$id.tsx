@@ -4,7 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 //   generatePerformanceData,
 // } from "@/services/mockData";
 //import PerformanceChart from "@/components/agents/PerformanceChart";
-//import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
+import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,11 +16,11 @@ import {
   BarChart3,
   Users,
   Clock,
-  //AlertCircle,
+  AlertCircle,
   Wallet,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAgentDetails, /*fetchAgentTrades, fetchAgentPerformance*/ } from "@/services/agents";
+import { fetchAgentDetails, fetchAgentTrades/*, fetchAgentPerformance*/ } from "@/services/agents";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/app/agent/$id")({
@@ -35,10 +35,10 @@ function AgentDetailComponent() {
     queryFn: () => fetchAgentDetails(id),
   });
 
-  // const { data: trades } = useQuery({
-  //   queryKey: ['trades', id],
-  //   queryFn: () => fetchAgentTrades(id),
-  // });
+  const { data: trades } = useQuery({
+    queryKey: ['trades', id],
+    queryFn: () => fetchAgentTrades(id),
+  });
   
   // Fetch performance data
   // const { data: performance } = useQuery({
@@ -115,8 +115,8 @@ function AgentDetailComponent() {
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline">Follow Agent</Button>
-                <Button>Start Copying Trades</Button>
+                <Button variant="outline" className="cursor-pointer">Follow Agent</Button>
+                <Button className="cursor-pointer">Start Copying Trades</Button>
               </div>
             </div>
           </div>
@@ -202,7 +202,7 @@ function AgentDetailComponent() {
                     </div>
                   </div>
 
-                  {/* <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3">
                     <AlertCircle className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">
@@ -210,7 +210,7 @@ function AgentDetailComponent() {
                       </p>
                       <p className="font-medium">12.4%</p>
                     </div>
-                  </div> */}
+                  </div>
 
 <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-muted-foreground" />
@@ -244,9 +244,9 @@ function AgentDetailComponent() {
           </div>
 
           {/* Trade History */}
-          {/* <div className="mb-8">
-            <TradeHistoryTable trades={tradeHistory} />
-          </div>  */}
+          <div className="mb-8">
+            <TradeHistoryTable trades={trades || []} />
+          </div> 
 
           {/* CTA Section */}
           <div className="text-center my-10">
@@ -258,7 +258,7 @@ function AgentDetailComponent() {
               {agent.agent_name}. You'll be able to customize risk levels and
               maximum exposure.
             </p>
-            <Button size="lg" className="px-8">
+            <Button size="lg" className="px-8 cursor-pointer">
               Start Copying Trades
             </Button>
           </div>

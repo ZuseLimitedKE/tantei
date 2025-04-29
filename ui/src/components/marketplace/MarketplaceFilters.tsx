@@ -121,8 +121,8 @@ const MarketplaceFilters = ({
               <SelectItem value="performance">Performance</SelectItem>
               <SelectItem value="popularity">Popularity</SelectItem>
               <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="risk-low">Risk (Low-High)</SelectItem>
-              <SelectItem value="risk-high">Risk (High-Low)</SelectItem>
+              <SelectItem value="price">Price (Lowest-Highest)</SelectItem>
+              <SelectItem value="risk-low">Risk (Lowest-Highest)</SelectItem>
             </SelectContent>
           </Select>
 
