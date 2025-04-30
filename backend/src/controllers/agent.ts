@@ -20,7 +20,7 @@ export class AgentController {
       const agentDb = await this.agentModel.GetAgent({ hedera_account_id: agent.address });
       if (!agentDb) {
         // Create topic for agent
-        let topicID = await smartContract.createTopic(agent.agent_name);
+        let topicID = await smartContract.createTopic(`Topic for Tantei Agent ${agent.agent_name}`);
         if (topicID === null) {
           throw new MyError(Errors.NOT_CREATE_TOPIC);
         }
