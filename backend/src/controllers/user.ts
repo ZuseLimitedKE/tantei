@@ -3,7 +3,7 @@ import userModel, { UserModel } from "../model/users";
 import { Errors, MyError } from "../constants/errors";
 import agentModel, { AgentModel, AGENTWITHID } from "../model/agents";
 import { TopicId } from "@hashgraph/sdk";
-import { AGENTS } from "../mongo/collections";
+import { AGENTS, SWAPS, USERS } from "../mongo/collections";
 import swapsController, { AgentTrades, SwapsController } from "./swaps";
 import agentController, { AgentController, AgentData } from "./agent";
 import smartContract, { SmartContract } from "../model/smart_contract";
@@ -206,6 +206,20 @@ export class UserController {
     } catch (err) {
       console.error("Could not get portfolio stats", err);
       throw new MyError(Errors.NOT_GET_PORTFOLIO);
+    }
+  }
+
+  async storeUserSwap(user: USERS, swap: SWAPS, smart_contract: SmartContract) {
+    try {
+      // Store in HCS-10 topic
+      await smartContract.submitMessageToTopic(swap, user.topic_id!, `Tantei user swap ${user.address}`);
+      
+      // Store in db
+      user.trades.push(swap);
+      await this.userModel.updateUser(user.address, {trades: user.trades});
+    } catch(err) {
+      console.error("Could not store user's swap", err);
+      throw new MyError(Errors.NOT_STORE_SWAP);
     }
   }
 }

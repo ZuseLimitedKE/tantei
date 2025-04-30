@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { Errors, MyError } from "../constants/errors";
-import { USERS, USERS_COLLECTION } from "../mongo/collections";
+import { SWAPS, USERS, USERS_COLLECTION } from "../mongo/collections";
 import { FollowAgent } from "../schema/user";
 
 interface getUserArgs {
@@ -9,7 +9,8 @@ interface getUserArgs {
 }
 
 interface updateUserArgs {
-  topic_id?: string
+  topic_id?: string,
+  trades?: SWAPS[]
 }
 
 export class UserModel {

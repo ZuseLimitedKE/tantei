@@ -80,10 +80,10 @@ export class SmartContract {
     }
   }
 
-  async submitMessageToTopic(args: SWAPS, topicID: string, agent_name: string) {
+  async submitMessageToTopic(args: SWAPS, topicID: string, memo: string) {
     try {
       const topicMsgSubmitTx = new TopicMessageSubmitTransaction()
-        .setTransactionMemo(`$Tantei Agent: ${agent_name} Transaction Record`)
+        .setTransactionMemo(memo)
         .setTopicId(topicID)
         .setMessage(JSON.stringify(args))
         .freezeWith(this.client);

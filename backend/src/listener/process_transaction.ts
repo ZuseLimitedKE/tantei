@@ -10,6 +10,10 @@ import agentModel, { AgentModel } from "../model/agents";
 import { TopicId } from "@hashgraph/sdk";
 import { SWAPS } from "../mongo/collections";
 import smartContract, { SmartContract } from "../model/smart_contract";
+import { Swaps } from "../utils/swaps";
+import { UserModel } from "../model/users";
+import { UserController } from "../controllers/user";
+import "dotenv/config";
 
 // Receive a transaction that has a to address belonging to swap contract
 export default async function process_transaction(
@@ -19,9 +23,11 @@ export default async function process_transaction(
   swapsModel: SwapsModel,
   pairController: PairController,
   smartContract: SmartContract,
+  swapMethods: Swaps,
+  userController: UserController
 ) {
   try {
-    // Check if transaction called by an address belonging to user of site
+    // Getting hedera account id that called the transaction
     console.log(transaction);
     let user: string | null = null;
     try {
@@ -61,6 +67,13 @@ export default async function process_transaction(
           let swapDetails: SWAPS;
           // Depending on method (HBAR -> Token, Token -> Token, Token -> HBAR)
           if (inputTokenDetails !== null && outputTokenDetails !== null) {
+            // Get users that follow agents
+            const usersFollowingAgent = await agentModel.GetUsersFollowingAgent({ agent_hedera_id: agent.address });
+            const copyAgent = TopicId.fromString(process.env.OPERATOR_ID);
+            const userSwapToAddress = copyAgent.toSolidityAddress();
+            const today = new Date();
+            const deadline = today.setMinutes(today.getMinutes() + 5);
+
             if (decoded.method.includes("swapExactETHForTokens")) {
               console.log("HBAR -> Token found");
               // HBAR -> Token
@@ -96,6 +109,48 @@ export default async function process_transaction(
                 price: pair.price,
                 type: "sell",
               };
+
+
+              // Try making the trade for user
+              try {
+                for (const followingUser of usersFollowingAgent) {
+                  // Copy trade
+                  const inputHbar = Math.ceil((hbarSent ?? 0) * (HBAR_DIVIDER / 10));
+                  const amountOutMin = Math.ceil(swapDetails.out.amount / 10);
+
+                  // Try the swap
+                  await swapMethods.HBARforToken({
+                    amountOutMin,
+                    tokenPath: decoded.addresses,
+                    toAddress: userSwapToAddress,
+                    deadline,
+                    inputHbar
+                  }); swapDetails.out.amount / 10
+
+                  // Store if succesful
+                  await userController.storeUserSwap(followingUser, {
+                    in: {
+                      tokenID: "HBAR",
+                      symbol: "HBAR",
+                      amount: inputHbar ? inputHbar / HBAR_DIVIDER : 0,
+                    },
+                    out: {
+                      tokenID: outputTokenDetails.hedera_address,
+                      amount: amountOutMin,
+                      symbol: outputTokenDetails.symbol,
+                    },
+                    token_pair: pair.pair,
+                    time: new Date(),
+                    user_hedera: user,
+                    price: pair.price,
+                    type: "sell",
+                  }, smartContract);
+
+                  console.log("Trade for", followingUser, "has been copied");
+                }
+              } catch (err) {
+                console.error("Could not copy trade for user");
+              }
             } else if (decoded.method.includes("swapExactTokensForTokens")) {
               console.log("Token -> Token found");
 
@@ -130,6 +185,45 @@ export default async function process_transaction(
                 price: pair.price,
                 type: pair.pair[0] === outputTokenDetails.symbol ? "buy" : "sell",
               };
+
+              // Try making the trade for user
+              if (decoded.amountIn && decoded.amountOut) {
+                try {
+                  for (const followingUser of usersFollowingAgent) {
+                    const amountIn = Math.ceil(decoded.amountIn / 10);
+                    const amountOut = Math.ceil(decoded.amountOut / 10);
+                    await swapMethods.TokensForTokens({
+                      amountIn,
+                      amountOutMin: amountOut,
+                      tokenPath: decoded.addresses,
+                      toAddress: userSwapToAddress,
+                      deadline
+                    });
+
+                    // Store if successfull
+                    await userController.storeUserSwap(followingUser, {
+                      in: {
+                        tokenID: inputTokenDetails.hedera_address,
+                        amount: amountIn,
+                        symbol: inputTokenDetails.symbol,
+                      },
+                      out: {
+                        tokenID: outputTokenDetails.hedera_address,
+                        amount: amountOut,
+                        symbol: outputTokenDetails.symbol,
+                      },
+                      token_pair: pair.pair,
+                      time: new Date(),
+                      user_hedera: user,
+                      price: pair.price,
+                      type: pair.pair[0] === outputTokenDetails.symbol ? "buy" : "sell",
+                    }, smartContract);
+                    console.log("Trade for", followingUser, "has been copied");
+                  }
+                } catch (err) {
+                  console.error("Could not copy trade for user");
+                }
+              }
             } else if (decoded.method.includes("swapExactTokensForETH")) {
               console.log("Token -> HBAR found");
 
@@ -137,6 +231,7 @@ export default async function process_transaction(
               const inputPrice = decoded.amountIn ?? 0;
               const txDetails = await smartContract.getTransactionDetails(transaction.hash);
               console.log("Tx details", txDetails);
+
               if (txDetails) {
                 try {
                   const userDetails = await smartContract.getUserDetails(txDetails.from);
@@ -187,6 +282,48 @@ export default async function process_transaction(
                       price: pair.price,
                       type: "buy",
                     };
+
+                    // Trying copying trade
+                    if (decoded.amountOut && decoded.amountIn) {
+                      try {
+                        for (const followingUser of usersFollowingAgent) {
+                          const amountIn = Math.ceil(decoded.amountIn / 10);
+                          const amountOut = Math.ceil(decoded.amountOut / 10);
+
+                          await swapMethods.TokensForHBAR({
+                            amountIn,
+                            amountOutMin: amountOut,
+                            tokenPath: decoded.addresses,
+                            toAddress: userSwapToAddress,
+                            deadline,
+                            inputHbar: amountOut
+                          });
+
+                          // Store 
+                          await userController.storeUserSwap(followingUser, {
+                            in: {
+                              tokenID: inputTokenDetails.hedera_address,
+                              amount: amountIn,
+                              symbol: inputTokenDetails.symbol,
+                            },
+                            out: {
+                              amount: amountOut,
+                              tokenID: "HBAR",
+                              symbol: "HBAR",
+                            },
+                            token_pair: pair.pair,
+                            time: new Date(),
+                            user_hedera: user,
+                            price: pair.price,
+                            type: "buy",
+                          }, smartContract);
+
+                          console.log("Trade for", followingUser, "has been copied");
+                        }
+                      } catch (err) {
+                        console.error("Could not copy trade for user");
+                      }
+                    }
                   } else {
                     return;
                   }
@@ -208,7 +345,7 @@ export default async function process_transaction(
             await smartContract.submitMessageToTopic(
               swapDetails,
               agent.topic_id,
-              agent.agent_name,
+              `Tantei Agent: ${agent.agent_name} Transaction Record`
             );
           }
         }

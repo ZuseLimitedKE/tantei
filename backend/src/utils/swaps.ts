@@ -158,3 +158,6 @@ export class Swaps {
         }
     }
 }
+
+const swaps = new Swaps();
+export default swaps;

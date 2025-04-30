@@ -36,7 +36,7 @@ router.post("/follow", async(req, res) => {
         const parsed = followAgentSchema.safeParse(req.body);
         if (parsed.success) {
             const data = parsed.data;
-            await userController.followAgent(data, agentModel);
+            await userController.followAgent(data, agentModel, smartContract);
             res.status(201).json({message: "User followed agent successfully"});
         } else {
             const errors = parsed.error.issues.map((i) => i.message);
@@ -77,6 +77,15 @@ router.get("/portfolio/stats/:user_wallet", async(req , res) => {
         res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
     }
 });
+
+router.get("/portfolio/performance_history/:user_wallet", async(req, res) => {
+    try {
+        const user_wallet = req.params.user_wallet as string;
+        
+    } catch(err) {
+
+    }
+})
 
 router.get("/tokens/:user_wallet", async (req, res) => {
     try {
