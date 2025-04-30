@@ -8,6 +8,8 @@ export interface USERS {
   address: string;
   evm_address: string;
   agents: {agent: string, time: Date}[];
+  topic_id: string | null // HCS topic recording users trades
+  trades: SWAPS[] // Users trades
 }
 export interface AGENTS {
   agent_name: string; //the name of the agent

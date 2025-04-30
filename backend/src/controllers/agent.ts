@@ -1,5 +1,5 @@
 import { Errors, MyError } from "../constants/errors";
-import agentModel, { AgentModel, AGENTWITHID } from "../model/agents";
+import agentModel, { AgentModel, AGENTWITHID, getMultipleAgentsArgs } from "../model/agents";
 import { SmartContract } from "../model/smart_contract";
 import { AGENTS } from "../mongo/collections";
 import { Agent } from "../schema/agents";
@@ -20,7 +20,7 @@ export class AgentController {
       const agentDb = await this.agentModel.GetAgent({ hedera_account_id: agent.address });
       if (!agentDb) {
         // Create topic for agent
-        let topicID = await smartContract.createTopic(agent.agent_name);
+        let topicID = await smartContract.createTopic(`Topic for Tantei Agent ${agent.agent_name}`);
         if (topicID === null) {
           throw new MyError(Errors.NOT_CREATE_TOPIC);
         }
@@ -66,6 +66,22 @@ export class AgentController {
   async getUserAgents(address: string): Promise<AgentData[]> {
     try {
       const rawAgents = await this.agentModel.GetUserAgents(address);
+      const agents: AgentData[] = [];
+      for (const r of rawAgents) {
+        const users = await this.agentModel.GetUsersFollowingAgent({agent_hedera_id: r.address});
+        agents.push({...r, num_followers: users.length});
+      }
+
+      return agents;
+    } catch (error) {
+      console.error("Agent controller error:", error);
+      throw error;
+    }
+  }
+
+  async getAgents(args: getMultipleAgentsArgs): Promise<AgentData[]> {
+    try {
+      const rawAgents = await this.agentModel.GetAgents(args);
       const agents: AgentData[] = [];
       for (const r of rawAgents) {
         const users = await this.agentModel.GetUsersFollowingAgent({agent_hedera_id: r.address});

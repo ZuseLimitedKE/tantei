@@ -7,6 +7,10 @@ import agentController from "../controllers/agent";
 import smartContract from "../model/smart_contract";
 import pairsModel from "../model/pairs";
 import tokenModel from "../model/tokens";
+import { error } from "console";
+import swapsController from "../controllers/swaps";
+import userModel from "../model/users";
+import swapsModel from "../model/swap";
 const router: Router = Router();
 
 router.post("/register", async(req, res) => {
@@ -36,7 +40,7 @@ router.post("/follow", async(req, res) => {
         const parsed = followAgentSchema.safeParse(req.body);
         if (parsed.success) {
             const data = parsed.data;
-            await userController.followAgent(data, agentModel);
+            await userController.followAgent(data, agentModel, smartContract);
             res.status(201).json({message: "User followed agent successfully"});
         } else {
             const errors = parsed.error.issues.map((i) => i.message);
@@ -59,7 +63,7 @@ router.post("/follow", async(req, res) => {
 router.get("/agents/:user_wallet", async(req , res) => {
     try {
         const user_wallet = req.params.user_wallet;
-        const agents = await userController.getFollowedAgents(user_wallet, agentModel);
+        const agents = await userController.getFollowedAgents(user_wallet, agentController);
         res.json(agents);
     } catch(err) {
         console.error("Could not get users agents", err);
@@ -78,6 +82,15 @@ router.get("/portfolio/stats/:user_wallet", async(req , res) => {
     }
 });
 
+router.get("/portfolio/performance_history/:user_wallet", async(req, res) => {
+    try {
+        const user_wallet = req.params.user_wallet as string;
+        
+    } catch(err) {
+
+    }
+})
+
 router.get("/tokens/:user_wallet", async (req, res) => {
     try {
         const user_wallet = req.params.user_wallet as string;
@@ -91,6 +104,23 @@ router.get("/tokens/:user_wallet", async (req, res) => {
         }
     } catch(err) {
         console.error("Error getting user's tokens in route", err);
+        res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+    }
+});
+
+router.get("/trades/:user_wallet", async(req, res) => {
+    try {
+        const user_wallet = req.params.user_wallet as string;
+        const parsed = hederaAddress.safeParse(user_wallet);
+        if (parsed.success) {
+            const trades = await swapsController.getUserTrades({hedera_address: parsed.data}, userModel, smartContract, swapsModel);
+            res.json(trades);
+        } else {
+            const errors = parsed.error.issues.map((i) => i.message);
+            res.status(400).json({error: errors});
+        }
+    } catch(err) {
+        console.error("Error getting users trades in request", err);
         res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
     }
 })

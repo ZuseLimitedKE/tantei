@@ -1,8 +1,12 @@
 import { Errors, MyError } from "../constants/errors";
-import { SWAPS, SWAPS_COLLECTION } from "../mongo/collections";
+import { SWAPS, SWAPS_COLLECTION, USERS_COLLECTION } from "../mongo/collections";
 
 export interface GetSwaps {
   user_evm_address: string;
+}
+
+export interface GetUserSwaps {
+  user_hedera_address: string;
 }
 
 export class SwapsModel {
@@ -25,6 +29,22 @@ export class SwapsModel {
       return swaps;
     } catch (err) {
       console.error("Could not get swaps from db", err);
+      throw new MyError(Errors.NOT_GET_SWAPS);
+    }
+  }
+
+  async getUserSwapsFromDB(args: GetUserSwaps): Promise<SWAPS[]> {
+    try {
+      const user = await USERS_COLLECTION.findOne({address: args.user_hedera_address});
+      if (!user) {
+        return [];
+      } else {
+        const swaps = user.trades;
+        swaps.sort((a, b) => a.time < b.time ? -1 : 1);
+        return swaps;
+      }
+    } catch(err) {
+      console.error("Could not get user swaps from db", err);
       throw new MyError(Errors.NOT_GET_SWAPS);
     }
   }

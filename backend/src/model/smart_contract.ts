@@ -30,8 +30,8 @@ export class SmartContract {
 
   constructor() {
     if (
-      !process.env.HEDERA_OPERATOR_ACCOUNT_ID ||
-      !process.env.HEDERA_OPERATOR_PRIVATE_KEY
+      !process.env.HEDERA_TESTNET_OPERATOR_ACCOUNT_ID ||
+      !process.env.HEDERA_TESTNET_OPERATOR_PRIVATE_KEY
     ) {
       console.log(
         "Set HEDERA_OPERATOR_ACCOUNT_ID and HEDERA_OPERATOR_PRIVATE_KEY in env",
@@ -40,10 +40,10 @@ export class SmartContract {
     }
 
     this.operatorID = AccountId.fromString(
-      process.env.HEDERA_OPERATOR_ACCOUNT_ID,
+      process.env.HEDERA_TESTNET_OPERATOR_ACCOUNT_ID,
     );
     this.operatorKey = PrivateKey.fromStringECDSA(
-      process.env.HEDERA_OPERATOR_PRIVATE_KEY,
+      process.env.HEDERA_TESTNET_OPERATOR_PRIVATE_KEY,
     );
     this.client = Client.forTestnet().setOperator(
       this.operatorID,
@@ -52,12 +52,12 @@ export class SmartContract {
     this.client.setDefaultMaxTransactionFee(new Hbar(10));
   }
 
-  async createTopic(agent_name: string): Promise<string | null> {
+  async createTopic(memo: string): Promise<string | null> {
     try {
       const topicCreateTx = new TopicCreateTransaction()
-        .setTopicMemo(`Topic for Tantei Agent ${agent_name}`)
+        .setTopicMemo(memo)
         .setSubmitKey(
-          PrivateKey.fromStringECDSA(process.env.HEDERA_OPERATOR_PRIVATE_KEY),
+          PrivateKey.fromStringECDSA(process.env.HEDERA_TESTNET_OPERATOR_PRIVATE_KEY),
         )
         .freezeWith(this.client);
 
@@ -80,10 +80,10 @@ export class SmartContract {
     }
   }
 
-  async submitMessageToTopic(args: SWAPS, topicID: string, agent_name: string) {
+  async submitMessageToTopic(args: SWAPS, topicID: string, memo: string) {
     try {
       const topicMsgSubmitTx = new TopicMessageSubmitTransaction()
-        .setTransactionMemo(`$Tantei Agent: ${agent_name} Transaction Record`)
+        .setTransactionMemo(memo)
         .setTopicId(topicID)
         .setMessage(JSON.stringify(args))
         .freezeWith(this.client);

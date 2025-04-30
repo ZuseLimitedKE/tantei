@@ -3,9 +3,9 @@ import userModel, { UserModel } from "../model/users";
 import { Errors, MyError } from "../constants/errors";
 import agentModel, { AgentModel, AGENTWITHID } from "../model/agents";
 import { TopicId } from "@hashgraph/sdk";
-import { AGENTS } from "../mongo/collections";
+import { AGENTS, SWAPS, USERS } from "../mongo/collections";
 import swapsController, { AgentTrades, SwapsController } from "./swaps";
-import agentController, { AgentController } from "./agent";
+import agentController, { AgentController, AgentData } from "./agent";
 import smartContract, { SmartContract } from "../model/smart_contract";
 import pairsModel, { PairsModel } from "../model/pairs";
 import tokenModel, { TokenModel } from "../model/tokens";
@@ -48,23 +48,38 @@ export class UserController {
     }
   }
 
-  async followAgent(args: FollowAgent, agentModel: AgentModel) {
+  async followAgent(args: FollowAgent, agentModel: AgentModel, smart_contract: SmartContract) {
     try {
       // Check if user exists
-      const user = await this.userModel.getUser({ address: args.user_hedera_account });
+      let user = await this.userModel.getUser({ address: args.user_hedera_account });
       if (!user) {
         // Register user if doesn't exist
         await this.register(args.user_hedera_account);
+        user = await this.userModel.getUser({ address: args.user_hedera_account });
       }
 
-      // Check if agent exists
-      const agent = await agentModel.GetAgent({ hedera_account_id: args.agent_hedera_account });
-      if (!agent) {
-        throw new MyError(Errors.AGENT_NOT_EXIST);
-      }
+      if (user) {
+        // Check if agent exists
+        const agent = await agentModel.GetAgent({ hedera_account_id: args.agent_hedera_account });
+        if (!agent) {
+          throw new MyError(Errors.AGENT_NOT_EXIST);
+        }
 
-      // Follow agent
-      await this.userModel.followAgent(args);
+        // Check if user has topic
+        if (!user?.topic_id) {
+          // If not register a topic for user for recording their trades
+          const topicID = await smart_contract.createTopic(`Topic For Tantei User ${user.address}`);
+          if (!topicID) {
+            throw new MyError(Errors.NOT_CREATE_TOPIC);
+          }
+
+          // Update with new topic ID
+          await this.userModel.updateUser(user.address, {topic_id: topicID});
+        }
+
+        // Store Follow agent in db
+        await this.userModel.followAgent(args);
+      }
     } catch (err) {
       if (err instanceof MyError) {
         if (err.message === Errors.AGENT_NOT_EXIST || err.message === Errors.INVALID_HEDERA_ACCOUNT) {
@@ -77,7 +92,7 @@ export class UserController {
     }
   }
 
-  async getFollowedAgents(user_wallet: string, agentModel: AgentModel): Promise<AGENTWITHID[]> {
+  async getFollowedAgents(user_wallet: string, agentController: AgentController): Promise<AgentData[]> {
     try {
       // Get user
       const user = await this.userModel.getUser({ address: user_wallet });
@@ -89,7 +104,7 @@ export class UserController {
 
       // Return agents
       const agentAddresses = user.agents.map((a) => a.agent);
-      const agents = await agentModel.GetAgents({ accounts: agentAddresses });
+      const agents = await agentController.getAgents({ accounts: agentAddresses });
       return agents;
     } catch (err) {
       console.error("Error getting agents followed by user", err);
@@ -97,10 +112,10 @@ export class UserController {
     }
   }
 
-  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, agentModel: AgentModel): Promise<{ roi: number, last_trade: Date | null }> {
+  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract): Promise<{ roi: number, last_trade: Date | null }> {
     try {
       // Get users agents
-      const agents = await this.getFollowedAgents(user_wallet, agentModel);
+      const agents = await this.getFollowedAgents(user_wallet, agentController);
       if (agents.length === 0) {
         return { roi: 0, last_trade: new Date() };
       }
@@ -123,7 +138,7 @@ export class UserController {
       if (trades.length < 1) {
         return { roi: 0, last_trade: null }
       }
-      
+
       // Do profits / invested * 100
       let totalInvested = 0;
       let totalProfit = 0;
@@ -180,7 +195,7 @@ export class UserController {
 
   async getPortfolioStats(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, pairModel: PairsModel, tokensModel: TokenModel, agentModel: AgentModel): Promise<PotfolioStats> {
     try {
-      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract, agentModel);
+      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract);
       const portfolio_value = await this._getPortfolioValue(user_wallet, pairModel, tokensModel, smart_contract);
 
       return {
@@ -191,6 +206,20 @@ export class UserController {
     } catch (err) {
       console.error("Could not get portfolio stats", err);
       throw new MyError(Errors.NOT_GET_PORTFOLIO);
+    }
+  }
+
+  async storeUserSwap(user: USERS, swap: SWAPS, smart_contract: SmartContract) {
+    try {
+      // Store in HCS-10 topic
+      await smartContract.submitMessageToTopic(swap, user.topic_id!, `Tantei user swap ${user.address}`);
+      
+      // Store in db
+      user.trades.push(swap);
+      await this.userModel.updateUser(user.address, {trades: user.trades});
+    } catch(err) {
+      console.error("Could not store user's swap", err);
+      throw new MyError(Errors.NOT_STORE_SWAP);
     }
   }
 }

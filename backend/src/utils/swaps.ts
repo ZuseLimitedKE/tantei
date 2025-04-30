@@ -22,7 +22,6 @@ export interface TokenForHbar {
     tokenPath: string[];
     toAddress: string;
     deadline: number;
-    inputHbar: number;
 }
 export interface TokenForToken {
     amountIn: number;
@@ -88,7 +87,7 @@ export class Swaps {
             params.addAddressArray(args.tokenPath);
             params.addAddress(args.toAddress);
             params.addUint256(args.deadline);
-            const response = this.executeSwapEth("swapExactTokensForETH", params, args.inputHbar);
+            const response = this.executeSwap("swapExactTokensForETH", params);
             return response;
         }
         catch (error) {
@@ -158,3 +157,6 @@ export class Swaps {
         }
     }
 }
+
+const swaps = new Swaps();
+export default swaps;

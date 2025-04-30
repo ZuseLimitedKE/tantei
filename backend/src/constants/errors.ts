@@ -47,5 +47,7 @@ export enum Errors {
   NOT_GET_PORTFOLIO = "Could not get porfolio",
   NOT_GET_USER_DETAILS = "Could not get user details",
   NOT_GET_TRANSACTION_DETAILS = "Could not get transaction details",
+  NOT_UPDATE_USER = "Could not update user",
+  NOT_GET_TRADES = "Could not get trades",
   UNKOWN = "Unkown error",
 }

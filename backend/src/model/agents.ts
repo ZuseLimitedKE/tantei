@@ -4,6 +4,10 @@ import { ObjectId } from "mongodb";
 export interface AGENTWITHID extends AGENTS {
   _id: string;
 }
+
+export interface getMultipleAgentsArgs { 
+  accounts?: string[] 
+}
 export class AgentModel {
   //adds a new agent
   async Publish(agent: AGENTS) {
@@ -92,7 +96,7 @@ export class AgentModel {
   }
 
   // Get multiple agents from list of items
-  async GetAgents(args: { accounts?: string[] }): Promise<AGENTWITHID[]> {
+  async GetAgents(args: getMultipleAgentsArgs): Promise<AGENTWITHID[]> {
     try {
       let agents: AGENTWITHID[] = [];
       if (args.accounts) {

@@ -11,6 +11,8 @@ import swapsModel from "../model/swap";
 import pairController from "../controllers/pairs";
 import smartContract from "../model/smart_contract";
 import sleep from "../constants/helpers";
+import userController from "../controllers/user";
+import swaps from "../utils/swaps";
 
 async function main() {
   try {
@@ -58,6 +60,8 @@ async function main() {
               swapsModel,
               pairController,
               smartContract,
+              swaps,
+              userController
             );
           }
         }
