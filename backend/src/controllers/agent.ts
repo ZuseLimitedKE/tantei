@@ -21,7 +21,7 @@ export class AgentController {
           throw new MyError(Errors.NOT_CREATE_TOPIC);
         }
 
-        await this.agentModel.Publish({ ...agent, topic_id: topicID! });
+        await this.agentModel.Publish({ ...agent, topic_id: topicID!, time_created: new Date() });
       }
     } catch (error) {
       console.error(" agent controller err:", error);

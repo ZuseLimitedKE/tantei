@@ -22,6 +22,7 @@ export class AgentModel {
         agents.push({
           ...doc,
           _id: doc._id.toString(),
+          time_created: doc.time_created ?? new Date()
         });
       }
       return agents;
@@ -40,7 +41,8 @@ export class AgentModel {
       for await (const doc of cursor) {
         agents.push({
           ...doc,
-          _id: doc._id.toString()
+          _id: doc._id.toString(),
+          time_created: doc.time_created ?? new Date()
         });
       }
       return agents;
@@ -57,7 +59,7 @@ export class AgentModel {
         _id: new ObjectId(agentId),
       });
       if (agent) {
-        return {...agent, _id: agent!._id.toString()};
+        return {...agent, _id: agent!._id.toString(), time_created: agent.time_created ?? new Date()};
       } else {
         return null;
       }
@@ -76,7 +78,7 @@ export class AgentModel {
         });
 
         if (agent) {
-          return {...agent, _id: agent!._id.toString()};
+          return {...agent, _id: agent!._id.toString(), time_created: agent.time_created ?? new Date()};
         } else {
           return null;
         }
@@ -98,7 +100,7 @@ export class AgentModel {
           address: { $in: args.accounts },
         });
         for await (const doc of cursor) {
-          agents.push({...doc, _id: doc._id.toString()});
+          agents.push({...doc, _id: doc._id.toString(), time_created: doc.time_created ?? new Date()});
         }
       }
 
