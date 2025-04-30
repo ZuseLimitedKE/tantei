@@ -14,6 +14,8 @@ export interface AgentData {
   owner_wallet_address: string; //the address of the user publishing the agent
   topic_id: string; // Hedera ID of the topic created for the agent
   address: string; // Address
+  num_followers: number;
+  time_created: Date;
 }
 export interface Token {
   name: string;

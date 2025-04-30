@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
-// import { agentAvatars } from "@/services/mockData";
 import type { AgentData } from "@/services/types";
+import { formatTimeSince } from "@/lib/utils";
 
 interface AgentCardProps {
   agent: AgentData;
@@ -19,9 +19,6 @@ interface AgentCardProps {
 }
 
 const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
-  // Get a random avatar URL based on the agent's ID or name
-  // const avatarUrl =
-  //   agentAvatars[Math.floor(Math.random() * agentAvatars.length)];
 
   // const roi = agent.performance.roi_30d;
   // const isPositiveRoi = roi >= 0;
@@ -37,18 +34,6 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
       >
         <CardContent className={cn("p-5", compact ? "pb-2" : "")}>
           <div className="flex items-start gap-4 mb-4">
-            {/* <div
-              className={cn(
-                "rounded-full overflow-hidden flex-shrink-0",
-                compact ? "w-10 h-10" : "w-12 h-12",
-              )}
-            >
-              <img
-                src={avatarUrl}
-                alt={agent.agent_name}
-                className="w-full h-full object-cover"
-              />
-            </div> */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h3
@@ -126,14 +111,17 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                   {agent.subscription_fee} HBAR
                 </span>
               </div>
-            )}
+            )}  
           </div>
+
+          <p className="mt-7 text-muted-foreground text-sm">Published {formatTimeSince(agent.time_created)}
+          </p>
         </CardContent>
 
         <CardFooter
           className={cn(
             "px-5 py-3 bg-muted/30 flex justify-between",
-            compact ? "mt-2" : "mt-5",
+            compact ? "mt-2" : "mt-",
           )}
         >
           <div className="text-sm text-muted-foreground">

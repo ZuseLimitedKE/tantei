@@ -8,6 +8,7 @@ import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import {
   ChevronLeft,
@@ -172,7 +173,7 @@ function AgentDetailComponent() {
                   </div>
                   <div>
                     <h3 className="font-medium">Followers</h3>
-                    {/* <p className="text-2xl font-bold">{agent.followers.toLocaleString()}</p> */}
+                    <p className="text-2xl font-bold">{agent.num_followers.toLocaleString()}</p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -202,17 +203,24 @@ function AgentDetailComponent() {
                     </div>
                   </div>
 
+                <TooltipProvider>
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                    <Tooltip delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[300px]">
+                        <p>The peak-to-trough decline of the asset price over a certain timeframe.</p>
+                      </TooltipContent>
+                    </Tooltip>
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Max Drawdown
-                      </p>
+                      <p className="text-sm text-muted-foreground">Max Drawdown</p>
                       <p className="font-medium">12.4%</p>
                     </div>
                   </div>
-
-<div className="flex items-center gap-3">
+                </TooltipProvider>
+                
+                <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">Subscription Fee</p>
