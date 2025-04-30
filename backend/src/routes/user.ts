@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { followAgentSchema, registerUserSchema } from "../schema/user";
+import { followAgentSchema, hederaAddress, registerUserSchema } from "../schema/user";
 import { Errors, MyError } from "../constants/errors";
 import userController from "../controllers/user";
 import agentModel from "../model/agents";
@@ -74,6 +74,23 @@ router.get("/portfolio/stats/:user_wallet", async(req , res) => {
         res.json(stats);
     } catch(err) {
         console.error("Error getting user portfolio stats", err);
+        res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+    }
+});
+
+router.get("/tokens/:user_wallet", async (req, res) => {
+    try {
+        const user_wallet = req.params.user_wallet as string;
+        const parsed = hederaAddress.safeParse(user_wallet);
+        if (parsed.success) {
+            const tokens = await smartContract.getUserTokens(user_wallet);
+            res.status(200).json(tokens);
+        } else {
+            const error = parsed.error.issues.map((i) => i.message);
+            res.status(400).json({error: [error]});
+        }
+    } catch(err) {
+        console.error("Error getting user's tokens in route", err);
         res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
     }
 })

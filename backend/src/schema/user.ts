@@ -2,6 +2,7 @@ import z from "zod";
 import { hexString } from "../constants/constants";
 
 const hederaWalletAddressRegex = /^0\.0\.[A-Za-z0-9]+$/
+export const hederaAddress = z.string({message: "address should be a string"}).regex(hederaWalletAddressRegex);
 
 export const registerUserSchema = z.object({
   address: z.string({ message: "User address must be a string" }).regex(hederaWalletAddressRegex, { message: "address must be of the form 0.0.xxxx" }),
