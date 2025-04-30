@@ -15,7 +15,7 @@ export default function FloatingChat() {
           onClick={() => setIsOpen(true)}
           className=" gap-x-2 bg-[var(--primary)] flex flex-row items-center justify-between cursor-pointer  text-[var(--primary-foreground)] rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-110 animate-bounce-slow border border-[var(--border-color)]"
         >
-          <p>Ask tantei</p>
+          <p className="mt-1">Ask tantei</p>
           <BotIcon className="w-6 h-6" />
         </button>
       ) : (
