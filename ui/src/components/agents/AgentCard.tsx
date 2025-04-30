@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 import {
   ChevronRight,
   Star,
@@ -35,6 +36,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
         <CardContent className={cn("p-5", compact ? "pb-2" : "")}>
           <div className="flex items-start gap-4 mb-4">
             <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <h3
                   className={cn(
@@ -54,6 +56,13 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                   </Badge>
                 )}
               </div>
+              <div className="flex items-center gap-1">
+  <Badge variant="secondary" className="gap-1">
+    <Users className="h-3 w-3" />
+    {agent.num_followers.toLocaleString()}
+  </Badge>
+</div>
+            </div>
               <p className="text-muted-foreground text-sm truncate">
                 {agent.strategy_type}
               </p>
