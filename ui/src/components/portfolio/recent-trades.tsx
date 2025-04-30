@@ -97,7 +97,8 @@ export function RecentTrades() {
                     </div>
                     <div>
                       <p className="font-medium">
-                        HBAR {trade.type === "buy" ? "purchased" : "sold"}
+                        {trade.tokenPair}{" "}
+                        {trade.type === "buy" ? "purchased" : "sold"}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         via {trade.tokenPair} •{" "}
@@ -106,9 +107,11 @@ export function RecentTrades() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">amount:{trade.amount} HBAR</p>
+                    <p className="font-medium">
+                      amount received:{trade.amount}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      price: {trade.price}
+                      priceper token: {trade.price}
                     </p>
                   </div>
                 </div>
