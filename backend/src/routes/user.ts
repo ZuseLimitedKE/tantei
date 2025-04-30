@@ -59,7 +59,7 @@ router.post("/follow", async(req, res) => {
 router.get("/agents/:user_wallet", async(req , res) => {
     try {
         const user_wallet = req.params.user_wallet;
-        const agents = await userController.getFollowedAgents(user_wallet, agentModel);
+        const agents = await userController.getFollowedAgents(user_wallet, agentController);
         res.json(agents);
     } catch(err) {
         console.error("Could not get users agents", err);

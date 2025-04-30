@@ -5,7 +5,7 @@ import agentModel, { AgentModel, AGENTWITHID } from "../model/agents";
 import { TopicId } from "@hashgraph/sdk";
 import { AGENTS } from "../mongo/collections";
 import swapsController, { AgentTrades, SwapsController } from "./swaps";
-import agentController, { AgentController } from "./agent";
+import agentController, { AgentController, AgentData } from "./agent";
 import smartContract, { SmartContract } from "../model/smart_contract";
 import pairsModel, { PairsModel } from "../model/pairs";
 import tokenModel, { TokenModel } from "../model/tokens";
@@ -77,7 +77,7 @@ export class UserController {
     }
   }
 
-  async getFollowedAgents(user_wallet: string, agentModel: AgentModel): Promise<AGENTWITHID[]> {
+  async getFollowedAgents(user_wallet: string, agentController: AgentController): Promise<AgentData[]> {
     try {
       // Get user
       const user = await this.userModel.getUser({ address: user_wallet });
@@ -89,7 +89,7 @@ export class UserController {
 
       // Return agents
       const agentAddresses = user.agents.map((a) => a.agent);
-      const agents = await agentModel.GetAgents({ accounts: agentAddresses });
+      const agents = await agentController.getAgents({ accounts: agentAddresses });
       return agents;
     } catch (err) {
       console.error("Error getting agents followed by user", err);
@@ -97,10 +97,10 @@ export class UserController {
     }
   }
 
-  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, agentModel: AgentModel): Promise<{ roi: number, last_trade: Date | null }> {
+  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract): Promise<{ roi: number, last_trade: Date | null }> {
     try {
       // Get users agents
-      const agents = await this.getFollowedAgents(user_wallet, agentModel);
+      const agents = await this.getFollowedAgents(user_wallet, agentController);
       if (agents.length === 0) {
         return { roi: 0, last_trade: new Date() };
       }
@@ -123,7 +123,7 @@ export class UserController {
       if (trades.length < 1) {
         return { roi: 0, last_trade: null }
       }
-      
+
       // Do profits / invested * 100
       let totalInvested = 0;
       let totalProfit = 0;
@@ -180,7 +180,7 @@ export class UserController {
 
   async getPortfolioStats(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, pairModel: PairsModel, tokensModel: TokenModel, agentModel: AgentModel): Promise<PotfolioStats> {
     try {
-      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract, agentModel);
+      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract);
       const portfolio_value = await this._getPortfolioValue(user_wallet, pairModel, tokensModel, smart_contract);
 
       return {
