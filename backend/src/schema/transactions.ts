@@ -2,20 +2,10 @@ import z from "zod";
 import { hexString } from "../constants/constants";
 
 export const transactionSchema = z.object({
-  blockHash: hexString,
-  blockNumber: hexString,
-  chainId: hexString,
   from: hexString,
-  gas: hexString,
-  gasPrice: hexString,
   hash: hexString,
   input: hexString,
   to: hexString,
-  nonce: hexString,
-  r: hexString,
-  s: hexString,
-  transactionIndex: hexString,
-  type: hexString,
   v: hexString,
   value: hexString,
 });
