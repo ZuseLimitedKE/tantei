@@ -200,7 +200,24 @@ export class SwapsController {
       }
 
       console.log("Error getting account swaps", err);
-      throw new MyError(Errors.NOT_GET_SWAPS);
+      throw new MyError(Errors.NOT_GET_TRADES);
+    }
+  }
+
+  async getUserTrades(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract, swapsModel: SwapsModel): Promise<AgentTrades[]> {
+    try {
+      const swaps = await this._getUserSwaps(args, userModel, smart_contract, swapsModel);
+      
+      // How to calculate profit
+      if (swaps.length < 1) {
+        return [];
+      }
+
+      const trades = this._process_swaps(swaps);
+      return trades;
+    } catch(err) {
+      console.error("Could not get trades", err);
+      throw new MyError(Errors.NOT_GET_TRADES);
     }
   }
 }
