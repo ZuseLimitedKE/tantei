@@ -8,6 +8,7 @@ import {
 } from '@hashgraph/sdk';
 import { assert } from 'console';
 import "dotenv/config";
+import smartContract from '../model/smart_contract';
 export interface HBARforToken {
     amountOutMin: number;
     tokenPath: string[];
@@ -51,6 +52,7 @@ export class Swaps {
     async HBARforToken(args: HBARforToken) {
         try {
             assert(args.inputHbar > 0, "Input Hbar must be greater than 0");
+            
             const params = new ContractFunctionParameters()
             params.addUint256(args.amountOutMin);
             params.addAddressArray(args.tokenPath);
@@ -70,6 +72,16 @@ export class Swaps {
      */
     async TokensForHBAR(args: TokenForHbar) {
         try {
+            //Check that user has base token
+            const userTokens = await smartContract.getUserTokens(args.toAddress);
+            const baseToken = userTokens.find((token: { token: string; balance: number }) => token.token === args.tokenPath[0]);
+            if (!baseToken) {
+                throw new Error("User does not have base token");
+            }
+            if (baseToken.balance < args.amountIn) {
+                throw new Error("User does not have enough base token");
+            }
+
             const params = new ContractFunctionParameters()
             params.addUint256(args.amountIn);
             params.addUint256(args.amountOutMin);
