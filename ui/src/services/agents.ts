@@ -16,8 +16,12 @@ export const fetchAgentDetails = async (id: string): Promise<AgentData> => {
 };
 
 export const fetchAgentTrades = async (id: string): Promise<TradeData[]> => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/trades?agentId=${id}`);
-  return res.json();
+  const res = await fetch(`${import.meta.env.VITE_PROD_BACKEND_URL}/api/v1/agents/trades/${id}`);
+  if (!res.ok) throw new Error('Failed to fetch trades');
+  const data = await res.json();
+  console.log('Fetched trades:', data);
+  // return an array
+  return Array.isArray(data) ? data : [];
 };
 
 export function PublishAgent(agent: publishAgentType) {

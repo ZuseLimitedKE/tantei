@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import {
   ChevronRight,
   Star,
-  TrendingUp,
-  TrendingDown,
+  // TrendingUp,
+  // TrendingDown,
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,8 +22,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
   // Get a random avatar URL based on the agent's ID or name
   // const avatarUrl =
   //   agentAvatars[Math.floor(Math.random() * agentAvatars.length)];
-  
-  
+
   // const roi = agent.performance.roi_30d;
   // const isPositiveRoi = roi >= 0;
 

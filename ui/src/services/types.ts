@@ -15,15 +15,17 @@ export interface AgentData {
   topic_id: string; // Hedera ID of the topic created for the agent
   address: string; // Address
 }
-
+export interface Token {
+  name: string;
+  symbol: string;
+  token: string;
+  balance: number;
+}
 export interface TradeData {
-  id: string;
-  agent_id: string;
-  timestamp: string;
+  time: string;
   tokenPair: string;
-  direction: "buy" | "sell";
+  type: "buy" | "sell";
   amount: number;
   price: number;
-  profitLoss: number;
-  status: "completed" | "open" | "failed";
+  profit: number | null; // null means active trade
 }
