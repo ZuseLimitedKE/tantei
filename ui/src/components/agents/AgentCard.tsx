@@ -121,7 +121,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
             {!compact && (
               <div className="stats-card">
                 <p className="text-xs text-muted-foreground mb-1">
-                  Monthly Fee
+                  Subscription Fee
                 </p>
                 <span className="text-base font-medium">
                   {agent.subscription_fee} HBAR
@@ -145,7 +145,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-primary font-medium"
+            className="text-primary font-medium cursor-pointer"
           >
             View Agent <ChevronRight className="h-4 w-4 ml-1" />
           </Button>

@@ -27,7 +27,7 @@ function MarketplaceComponent() {
   const { data: agents, isLoading, error } = useQuery({
     queryKey: ['agents'],
     queryFn: fetchAgents,
-    refetchInterval: 10000 // Refresh every 15 seconds
+    refetchInterval: 10000 // Refresh every 10 seconds
   });
 
   //search and filter handlers
@@ -40,15 +40,19 @@ function MarketplaceComponent() {
     
     let filtered = [...agents];
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (agent) =>
-          agent.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          agent.strategy_description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          agent.strategy_type.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  // Search filter
+  if (searchTerm) {
+    const nameMatches = filtered.filter(agent => 
+      agent.agent_name.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    
+    const strategyMatches = filtered.filter(agent => 
+      !agent.agent_name.toLowerCase().startsWith(searchTerm.toLowerCase()) && // exclude name matches
+      agent.strategy_type.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    
+    filtered = [...nameMatches, ...strategyMatches];
+  }
 
     // Tag filters
     if (activeFilters.length > 0) {
@@ -87,8 +91,8 @@ function MarketplaceComponent() {
   }, [agents, searchTerm, activeFilters, /*sortBy*/]);
 
   // Loading and error states
-  // if (isLoading) return <SkeletonGrid />;
-  // if (error) return <ErrorAlert error={error} />;
+  if (isLoading) return <SkeletonGrid />;
+  if (error) return <ErrorAlert error={error} />;
 
   return (
     <div className="min-h-screen bg-background">
@@ -122,20 +126,20 @@ function MarketplaceComponent() {
   );
 }
 
-// const SkeletonGrid = () => (
-//   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//     {[...Array(6)].map((_, i) => (
-//       <Skeleton key={i} className="h-[350px] w-full rounded-xl" />
-//     ))}
-//   </div>
-// );
+const SkeletonGrid = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {[...Array(6)].map((_, i) => (
+      <Skeleton key={i} className="h-[350px] w-full rounded-xl" />
+    ))}
+  </div>
+);
 
-// const ErrorAlert = ({ error }: { error: Error }) => (
-//   <Alert variant="destructive">
-//     <ExclamationTriangleIcon className="h-4 w-4" />
-//     <AlertTitle>Error</AlertTitle>
-//     <AlertDescription>
-//       {error.message || "Failed to load agents"}
-//     </AlertDescription>
-//   </Alert>
-// );
+const ErrorAlert = ({ error }: { error: Error }) => (
+  <Alert variant="destructive">
+    <ExclamationTriangleIcon className="h-4 w-4" />
+    <AlertTitle>Error</AlertTitle>
+    <AlertDescription>
+      {error.message || "Failed to load agents"}
+    </AlertDescription>
+  </Alert>
+);

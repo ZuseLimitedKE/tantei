@@ -121,8 +121,8 @@ const MarketplaceFilters = ({
               <SelectItem value="performance">Performance</SelectItem>
               <SelectItem value="popularity">Popularity</SelectItem>
               <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="risk-low">Risk (Low-High)</SelectItem>
-              <SelectItem value="risk-high">Risk (High-Low)</SelectItem>
+              <SelectItem value="price">Price (Lowest-Highest)</SelectItem>
+              <SelectItem value="risk-low">Risk (Lowest-Highest)</SelectItem>
             </SelectContent>
           </Select>
 
@@ -141,13 +141,6 @@ const MarketplaceFilters = ({
                 {renderFilterSection("Strategy Type", STRATEGY_TYPES)}
                 {renderFilterSection("Time Period", TIME_PERIODS)}
                 {renderFilterSection("Other", OTHER_FILTERS)}
-              </div>
-
-              <div className="mt-6 flex justify-between">
-                <Button variant="outline" onClick={clearFilters}>
-                  Clear All
-                </Button>
-                <Button>Apply Filters</Button>
               </div>
             </SheetContent>
           </Sheet>
