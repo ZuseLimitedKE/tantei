@@ -1,8 +1,6 @@
-import { ObjectId } from "mongodb";
 import { Errors, MyError } from "../constants/errors";
 import userModel, { UserModel } from "../model/users";
 import { SWAPS } from "../mongo/collections";
-import { AgentModel } from "../model/agents";
 import { AgentController } from "./agent";
 import { SmartContract } from "../model/smart_contract";
 import swapsModel, { SwapsModel } from "../model/swap";
@@ -18,6 +16,10 @@ export interface AgentTrades {
 
 interface GetAgentSwaps {
   id: string;
+}
+
+interface GetUserSwaps {
+  hedera_address: string
 }
 
 export class SwapsController {
@@ -59,6 +61,33 @@ export class SwapsController {
       }
 
       console.error("Error getting swaps", err);
+      throw new MyError(Errors.NOT_GET_SWAPS);
+    }
+  }
+
+  private async _getUserSwaps(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract, swapsModel: SwapsModel): Promise<SWAPS[]> {
+    try {
+      const user = await userModel.getUser({address: args.hedera_address});
+      if (!user) {
+        return [];
+      } else {
+        let swaps: SWAPS[];
+        // Get swaps from topic
+        if (!user?.topic_id) {
+          return [];
+        } else {
+          try {
+            swaps = await smart_contract.getSwapsFromTopic(user.topic_id);
+          } catch(err) {
+            console.log("Error getting swaps from topic", err);
+            swaps = await swapsModel.getUserSwapsFromDB({user_hedera_address: args.hedera_address});
+          }
+        }
+
+        return swaps;
+      }
+    } catch(err) {
+      console.error("Could not get user swaps", err);
       throw new MyError(Errors.NOT_GET_SWAPS);
     }
   }
