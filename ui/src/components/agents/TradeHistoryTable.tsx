@@ -23,6 +23,11 @@ const TradeHistoryTable = ({ trades }: TradeHistoryTableProps) => {
     return profit === null ? 'Active' : 'Closed';
   };
 
+  // Sort trades by time in descending order (latest trades first)
+  const sortedTrades = [...trades].sort((a, b) => 
+    new Date(b.time).getTime() - new Date(a.time).getTime()
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -43,7 +48,7 @@ const TradeHistoryTable = ({ trades }: TradeHistoryTableProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trades.map((trade) => (
+              {sortedTrades.map((trade) => (
                 <TableRow key={`${trade.time}-${trade.tokenPair}`}>
                   <TableCell className="font-medium">
                     {formatTimestamp(trade.time)}
@@ -55,9 +60,9 @@ const TradeHistoryTable = ({ trades }: TradeHistoryTableProps) => {
                       className="flex w-16 items-center justify-center"
                     >
                       {trade.type === "buy" ? (
-                        <><ArrowDown className="mr-1 h-3 w-3" /> Buy</>
+                        <><ArrowUp className="mr-1 h-3 w-3 text-white" /> <p className="text-white">Buy</p></>
                       ) : (
-                        <><ArrowUp className="mr-1 h-3 w-3" /> Sell</>
+                        <><ArrowDown className="mr-1 h-3 w-3 text-white" /> <p className="text-white">Sell</p></>
                       )}
                     </Badge>
                   </TableCell>
@@ -67,7 +72,7 @@ const TradeHistoryTable = ({ trades }: TradeHistoryTableProps) => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">{trade.amount.toLocaleString()}</TableCell>
-                  <TableCell className="text-right">${trade.price.toFixed(4)}</TableCell>
+                  <TableCell className="text-right">{trade.price.toFixed(4)} HBAR</TableCell>
                   <TableCell className={`text-right ${
                     trade.profit && trade.profit > 0 
                       ? 'text-green-500' 
@@ -78,8 +83,8 @@ const TradeHistoryTable = ({ trades }: TradeHistoryTableProps) => {
                     {trade.profit === null 
                       ? '-' 
                       : trade.profit > 0 
-                        ? `+$${trade.profit.toFixed(2)}` 
-                        : `-$${Math.abs(trade.profit).toFixed(2)}`}
+                        ? `+${trade.profit.toFixed(2)} HBAR` 
+                        : `-${Math.abs(trade.profit).toFixed(2)} HBAR`}
                   </TableCell>
                 </TableRow>
               ))}
