@@ -10,6 +10,10 @@ declare global {
       HEDERA_OPERATOR_ACCOUNT_ID: string;
       HEDERA_OPERATOR_PRIVATE_KEY: string;
       HEDERA_TESTNET_MIRROR_NODE: string;
+      OPERATOR_PRIVATE_KEY: string;
+      OPERATOR_ID: string;
+      GAS_LIMIT: string;
+      SWAP_CONTRACT_ID: string;
     }
   }
 }
