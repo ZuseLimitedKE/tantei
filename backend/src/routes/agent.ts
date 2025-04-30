@@ -7,6 +7,10 @@ import {
 } from "../schema/agents";
 import agentController from "../controllers/agent";
 import smartContract from "../model/smart_contract";
+import { Errors } from "../constants/errors";
+import { hederaAddress } from "../schema/user";
+import swapsController from "../controllers/swaps";
+import agentModel from "../model/agents";
 
 const router: Router = Router();
 
@@ -95,5 +99,21 @@ router.delete("/:id", validateParams(AgentIdParamSchema), async (req, res) => {
     res.status(500).json({ error: "Failed to delete agent" });
   }
 });
+
+router.get("/trades/:agent_id", async(req, res) => {
+  try {
+    const agent_id = req.params.agent_id;
+    const agent = await agentController.getAgentById(agent_id);
+    if (agent) {
+      const trades = await swapsController.getAgentTrades({id: agent_id}, agentController, smartContract);
+      res.json(trades);
+    } else {  
+      res.status(400).json({error: [Errors.AGENT_NOT_EXIST]});
+    }
+  } catch(err) {
+    console.error("Error getting agent trades", err);
+    res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+  }
+})
 
 export default router;

@@ -7,7 +7,6 @@ import agentController from "../controllers/agent";
 import smartContract from "../model/smart_contract";
 import pairsModel from "../model/pairs";
 import tokenModel from "../model/tokens";
-import { error } from "console";
 const router: Router = Router();
 
 router.post("/register", async(req, res) => {
