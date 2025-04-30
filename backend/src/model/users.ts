@@ -8,10 +8,14 @@ interface getUserArgs {
   evm_address?: string;
 }
 
+interface updateUserArgs {
+  topic_id?: string
+}
+
 export class UserModel {
   async register(address: string, evm_address: string) {
     try {
-      await USERS_COLLECTION.insertOne({ address, evm_address, agents: [] });
+      await USERS_COLLECTION.insertOne({ address, evm_address, agents: [], trades: [], topic_id: null });
     } catch (err) {
       console.log("Error registering user in db", err);
       throw new MyError(Errors.NOT_REGISTER_USER);
@@ -38,6 +42,15 @@ export class UserModel {
     } catch(err) {
       console.error("Could not follow agent", err);
       throw new MyError(Errors.NOT_FOLLOW_AGENT)
+    }
+  }
+
+  async updateUser(user_hedera_address: string, args: updateUserArgs) {
+    try {
+      await USERS_COLLECTION.updateOne({address: user_hedera_address}, {$set: args});
+    } catch(err) {
+      console.error("Could not update user", err);
+      throw new MyError(Errors.NOT_UPDATE_USER);
     }
   }
 }

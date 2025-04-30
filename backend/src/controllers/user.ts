@@ -48,23 +48,38 @@ export class UserController {
     }
   }
 
-  async followAgent(args: FollowAgent, agentModel: AgentModel) {
+  async followAgent(args: FollowAgent, agentModel: AgentModel, smart_contract: SmartContract) {
     try {
       // Check if user exists
-      const user = await this.userModel.getUser({ address: args.user_hedera_account });
+      let user = await this.userModel.getUser({ address: args.user_hedera_account });
       if (!user) {
         // Register user if doesn't exist
         await this.register(args.user_hedera_account);
+        user = await this.userModel.getUser({ address: args.user_hedera_account });
       }
 
-      // Check if agent exists
-      const agent = await agentModel.GetAgent({ hedera_account_id: args.agent_hedera_account });
-      if (!agent) {
-        throw new MyError(Errors.AGENT_NOT_EXIST);
-      }
+      if (user) {
+        // Check if agent exists
+        const agent = await agentModel.GetAgent({ hedera_account_id: args.agent_hedera_account });
+        if (!agent) {
+          throw new MyError(Errors.AGENT_NOT_EXIST);
+        }
 
-      // Follow agent
-      await this.userModel.followAgent(args);
+        // Check if user has topic
+        if (!user?.topic_id) {
+          // If not register a topic for user for recording their trades
+          const topicID = await smart_contract.createTopic(`Topic For Tantei User ${user.address}`);
+          if (!topicID) {
+            throw new MyError(Errors.NOT_CREATE_TOPIC);
+          }
+
+          // Update with new topic ID
+          await this.userModel.updateUser(user.address, {topic_id: topicID});
+        }
+
+        // Store Follow agent in db
+        await this.userModel.followAgent(args);
+      }
     } catch (err) {
       if (err instanceof MyError) {
         if (err.message === Errors.AGENT_NOT_EXIST || err.message === Errors.INVALID_HEDERA_ACCOUNT) {
