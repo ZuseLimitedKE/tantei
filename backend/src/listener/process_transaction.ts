@@ -296,7 +296,6 @@ export default async function process_transaction(
                             tokenPath: decoded.addresses,
                             toAddress: userSwapToAddress,
                             deadline,
-                            inputHbar: amountOut
                           });
 
                           // Store 
