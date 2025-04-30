@@ -17,13 +17,10 @@ export interface AgentData {
 }
 
 export interface TradeData {
-  id: string;
-  agent_id: string;
-  timestamp: string;
+  time: string;
   tokenPair: string;
-  direction: "buy" | "sell";
+  type: "buy" | "sell";
   amount: number;
   price: number;
-  profitLoss: number;
-  status: "completed" | "open" | "failed";
+  profit: number | null; // null means active trade
 }
