@@ -1,8 +1,12 @@
 import { Errors, MyError } from "../constants/errors";
-import agentModel, { AgentModel } from "../model/agents";
+import agentModel, { AgentModel, AGENTWITHID } from "../model/agents";
 import { SmartContract } from "../model/smart_contract";
 import { AGENTS } from "../mongo/collections";
 import { Agent } from "../schema/agents";
+
+export interface AgentData extends AGENTWITHID {
+  num_followers: number
+}
 
 export class AgentController {
   private agentModel: AgentModel;
@@ -28,27 +32,47 @@ export class AgentController {
       throw error;
     }
   }
-  async getAllAgents() {
+  async getAllAgents(): Promise<AgentData[]> {
     try {
-      return await this.agentModel.GetAllAgents();
+      const rawAgents = await this.agentModel.GetAllAgents();
+      const agents: AgentData[] = [];
+      for (const r of rawAgents) {
+        const users = await this.agentModel.GetUsersFollowingAgent({agent_hedera_id: r.address});
+        agents.push({...r, num_followers: users.length});
+      }
+
+      return agents;
     } catch (error) {
       console.error("Agent controller error:", error);
       throw error;
     }
   }
 
-  async getAgentById(agentId: string) {
+  async getAgentById(agentId: string): Promise<AgentData | null> {
     try {
-      return await this.agentModel.GetAgentById(agentId);
+      const model = await this.agentModel.GetAgentById(agentId);
+      if (model) {
+        const users = await this.agentModel.GetUsersFollowingAgent({agent_hedera_id: model.address});
+        return {...model, num_followers: users.length};
+      } else {
+        return null
+      }
     } catch (error) {
       console.error("Agent controller error:", error);
       throw error;
     }
   }
 
-  async getUserAgents(address: string) {
+  async getUserAgents(address: string): Promise<AgentData[]> {
     try {
-      return await this.agentModel.GetUserAgents(address);
+      const rawAgents = await this.agentModel.GetUserAgents(address);
+      const agents: AgentData[] = [];
+      for (const r of rawAgents) {
+        const users = await this.agentModel.GetUsersFollowingAgent({agent_hedera_id: r.address});
+        agents.push({...r, num_followers: users.length});
+      }
+
+      return agents;
     } catch (error) {
       console.error("Agent controller error:", error);
       throw error;

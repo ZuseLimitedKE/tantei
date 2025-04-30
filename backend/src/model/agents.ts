@@ -1,4 +1,4 @@
-import { AGENTS_COLLECTION, AGENTS } from "../mongo/collections";
+import { AGENTS_COLLECTION, AGENTS, USERS, USERS_COLLECTION } from "../mongo/collections";
 import { Errors, MyError } from "../constants/errors";
 import { ObjectId } from "mongodb";
 export interface AGENTWITHID extends AGENTS {
@@ -14,7 +14,7 @@ export class AgentModel {
     }
   }
   //gets all the agents associated with an account
-  async GetUserAgents(address: string): Promise<AGENTWITHID[] | null> {
+  async GetUserAgents(address: string): Promise<AGENTWITHID[]> {
     try {
       const agents: AGENTWITHID[] = [];
       const cursor = AGENTS_COLLECTION.find({ owner_wallet_address: address });
@@ -139,6 +139,21 @@ export class AgentModel {
     } catch (error) {
       console.error(error);
       throw new MyError("error:" + Errors.NOT_DELETE_AGENT);
+    }
+  }
+
+  async GetUsersFollowingAgent(args: {agent_hedera_id: string}): Promise<USERS[]> {
+    try {
+      const cursor = USERS_COLLECTION.find({"agents.agent": args.agent_hedera_id});
+      const users: USERS[] = [];
+      for await (const doc of cursor) {
+        users.push(doc);
+      }
+
+      return users;
+    } catch(err) {
+      console.error(err);
+      throw new MyError(Errors.NOT_GET_USER);
     }
   }
 }
