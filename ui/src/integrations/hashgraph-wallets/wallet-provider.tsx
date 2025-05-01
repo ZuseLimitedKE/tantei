@@ -11,7 +11,7 @@ const metadata = {
   name: "Tantei",
   description:
     "A place for developers to publish their agents and allow people to follow their trades for a commision",
-  url: window.location.href, // origin must match your domain & subdomain
+  url: window.location.origin, // origin must match your domain & subdomain
   icons: ["../../assets/logo/png/logo-no-background.png"],
 };
 
