@@ -57,7 +57,8 @@ export class Swaps {
             params.addAddressArray(args.tokenPath);
             params.addAddress(args.toAddress);
             params.addUint256(args.deadline);
-            const response = this.executeSwapEth("swapExactETHForTokens", params, args.inputHbar);
+            const response = await this.executeSwapEth("swapExactETHForTokens", params, args.inputHbar);
+            console.log(response);
         }
         catch (error) {
             console.log("Error occured while swapping Hbar for token: ", error);
@@ -87,7 +88,7 @@ export class Swaps {
             params.addAddressArray(args.tokenPath);
             params.addAddress(args.toAddress);
             params.addUint256(args.deadline);
-            const response = this.executeSwap("swapExactTokensForETH", params);
+            const response = await this.executeSwap("swapExactTokensForETH", params);
             return response;
         }
         catch (error) {
@@ -110,7 +111,7 @@ export class Swaps {
             params.addAddressArray(args.tokenPath);
             params.addAddress(args.toAddress);
             params.addUint256(args.deadline);
-            const response = this.executeSwap("swapExactTokensForTokens", params);
+            const response = await this.executeSwap("swapExactTokensForTokens", params);
             return response;
 
         }
