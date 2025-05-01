@@ -58,8 +58,3 @@ export class UserModel {
 
 const userModel = new UserModel();
 export default userModel;
-(async () => {
-  const now = new Date();
-  const registered = now.setDate(now.getDate() - 1);
-  await USERS_COLLECTION.updateMany({}, {$set: {time_registered: new Date(registered)}});
-})()
