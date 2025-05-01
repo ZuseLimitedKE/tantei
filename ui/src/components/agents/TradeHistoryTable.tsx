@@ -1,4 +1,4 @@
-import type { TradeData, TradeResponse } from "@/services/types";
+import type { TradeResponse } from "@/services/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

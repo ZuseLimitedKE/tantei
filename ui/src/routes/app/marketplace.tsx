@@ -2,18 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import MarketplaceFilters from "@/components/marketplace/MarketplaceFilters";
 import AgentCard from "@/components/agents/AgentCard";
-// import {
-//   getPerformanceScore,
-//   getAgentAge,
-//   getPopularityScore,
-//   getRiskScore,
-// } from "@/services/mockData";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAgents } from "@/services/agents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-
 
 export const Route = createFileRoute("/app/marketplace")({
   component: MarketplaceComponent,

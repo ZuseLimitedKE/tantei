@@ -3,10 +3,13 @@ import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, type TooltipProps } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { PerformanceDataPoint } from "@/services/mockData";
+import type { PerformanceDataPoint } from "@/services/types";
 
 interface PerformanceChartProps {
-  data: PerformanceDataPoint[];
+  data: Array<{
+    time: string;
+    value: number;
+  }>;
   title?: string;
 }
 
@@ -20,7 +23,7 @@ const CustomTooltip = ({
       <div className="bg-white p-3 border rounded-lg shadow-md">
         <p className="text-xs text-gray-500">{label}</p>
         <p className="text-sm font-medium">
-          Value: ${payload[0].value?.toFixed(2)}
+          Value: {payload[0].value?.toFixed(2)} HBAR
         </p>
       </div>
     );
@@ -31,7 +34,7 @@ const CustomTooltip = ({
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
 const calculateDomain = (data: PerformanceDataPoint[]) => {
@@ -94,13 +97,13 @@ const PerformanceChart = ({ data, title = "Performance" }: PerformanceChartProps
         </div>
         <div className="mt-1">
           <div className="flex items-baseline">
-            <span className="text-2xl font-bold">${lastValue.toFixed(2)}</span>
+            <span className="text-2xl font-bold">{lastValue.toFixed(2)} HBAR</span>
             <span className={`ml-2 text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
               {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            ${firstValue.toFixed(2)} → ${lastValue.toFixed(2)}
+            {firstValue.toFixed(2)} HBAR → {lastValue.toFixed(2)} HBAR
           </p>
         </div>
       </CardHeader>
@@ -118,7 +121,7 @@ const PerformanceChart = ({ data, title = "Performance" }: PerformanceChartProps
                 </linearGradient>
               </defs>
               <XAxis 
-                dataKey="date" 
+                dataKey="time" 
                 tickFormatter={formatDate}
                 interval="preserveStartEnd"
                 tickLine={false}
@@ -128,7 +131,7 @@ const PerformanceChart = ({ data, title = "Performance" }: PerformanceChartProps
               />
               <YAxis 
                 domain={domain}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `${value} hbar`}
                 tickLine={false}
                 axisLine={false}
                 tick={{ fontSize: 12 }}

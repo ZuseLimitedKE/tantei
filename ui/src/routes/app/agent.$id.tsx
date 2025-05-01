@@ -1,9 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-// import {
-//   generateMockTradeHistory,
-//   generatePerformanceData,
-// } from "@/services/mockData";
-//import PerformanceChart from "@/components/agents/PerformanceChart";
+import PerformanceChart from "@/components/agents/PerformanceChart";
 import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +17,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAgentDetails, fetchAgentTrades/*, fetchAgentPerformance*/ } from "@/services/agents";
+import { fetchAgentDetails, fetchAgentTrades, fetchAgentPerformance } from "@/services/agents";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/app/agent/$id")({
@@ -43,10 +39,10 @@ function AgentDetailComponent() {
   
   
   // Fetch performance data
-  // const { data: performance } = useQuery({
-  //   queryKey: ['performance', id],
-  //   queryFn: () => fetchAgentPerformance(id),
-  // });
+  const { data: performance } = useQuery({
+    queryKey: ['performance', id],
+    queryFn: () => fetchAgentPerformance(id),
+  });
 
   if (isLoading) {
     return (
@@ -82,9 +78,6 @@ function AgentDetailComponent() {
       </div>
     );
   }
-
-  // const tradeHistory = generateMockTradeHistory(agent._id);
-  // const performanceData = generatePerformanceData(90);
 
   return (
     <div className="min-h-screen bg-background">
@@ -247,12 +240,14 @@ function AgentDetailComponent() {
           </div>
 
           {/* Performance Chart */}
-          {/* <div className="mb-8">
-            <PerformanceChart
-              data={performanceData}
-              title="Performance History"
-            />
-          </div>
+          {performance && (
+            <div className="mb-8">
+              <PerformanceChart
+                data={performance}
+                title="Performance History"
+              />
+            </div>
+          )}
 
           {/* Trade History */}
           <div className="mb-8">

@@ -30,6 +30,12 @@ export interface AgentData {
   roi: number;
   drawdown: number;
 }
+
+export interface PerformanceDataPoint {
+  time: string; 
+  value: number; 
+}
+
 export interface Token {
   name: string;
   symbol: string;
