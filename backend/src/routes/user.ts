@@ -85,7 +85,14 @@ router.get("/portfolio/stats/:user_wallet", async(req , res) => {
 router.get("/portfolio/performance_history/:user_wallet", async(req, res) => {
     try {
         const user_wallet = req.params.user_wallet as string;
-        
+        const parsed = hederaAddress.safeParse(user_wallet);
+        if (parsed.success) {
+            const performance = await userController.getPerformanceHistory(parsed.data, swapsController, smartContract);
+            res.json(performance);
+        } else {
+            const errors = parsed.error.issues.map((i) => i.message);
+            res.status(400).json({error: errors});
+        }
     } catch(err) {
 
     }
@@ -113,7 +120,7 @@ router.get("/trades/:user_wallet", async(req, res) => {
         const user_wallet = req.params.user_wallet as string;
         const parsed = hederaAddress.safeParse(user_wallet);
         if (parsed.success) {
-            const trades = await swapsController.getUserTrades({hedera_address: parsed.data}, userModel, smartContract, swapsModel);
+            const trades = await swapsController.getUserTrades({hedera_address: parsed.data}, userModel, smartContract);
             res.json(trades);
         } else {
             const errors = parsed.error.issues.map((i) => i.message);

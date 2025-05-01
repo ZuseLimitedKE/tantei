@@ -71,7 +71,7 @@ export class SwapsController {
     }
   }
 
-  private async _getUserSwaps(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract, swapsModel: SwapsModel): Promise<SWAPS[]> {
+  private async _getUserSwaps(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract): Promise<SWAPS[]> {
     try {
       const user = await userModel.getUser({address: args.hedera_address});
       if (!user) {
@@ -86,7 +86,7 @@ export class SwapsController {
             swaps = await smart_contract.getSwapsFromTopic(user.topic_id);
           } catch(err) {
             console.log("Error getting swaps from topic", err);
-            swaps = await swapsModel.getUserSwapsFromDB({user_hedera_address: args.hedera_address});
+            swaps = await this.model.getUserSwapsFromDB({user_hedera_address: args.hedera_address});
           }
         }
 
@@ -210,9 +210,9 @@ export class SwapsController {
     }
   }
 
-  async getUserTrades(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract, swapsModel: SwapsModel): Promise<AgentTrades[]> {
+  async getUserTrades(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract): Promise<AgentTrades[]> {
     try {
-      const swaps = await this._getUserSwaps(args, userModel, smart_contract, swapsModel);
+      const swaps = await this._getUserSwaps(args, userModel, smart_contract);
       
       // How to calculate profit
       if (swaps.length < 1) {
@@ -228,18 +228,18 @@ export class SwapsController {
   }
 
   // Process the trades of either a user or agent. The choice is made if either the agent or user is passed as an arguement
-  async processTrades(trades: AgentTrades[], agent?: AGENTWITHID, user?: USERS): Promise<PortfolioGraph[]> {
+  async processTrades(trades: AgentTrades[], item: {agent?: AGENTWITHID, user?: USERS}): Promise<PortfolioGraph[]> {
     try {
       const portfolio: PortfolioGraph[] = [];
 
-      if (agent) {
+      if (item.agent) {
         portfolio.push({
-          time: agent.time_created,
+          time: item.agent.time_created,
           value: 0
         })
-      } else if (user) {
+      } else if (item.user) {
         portfolio.push({
-          time: user.time_registered,
+          time: item.user.time_registered,
           value: 0
         })
       }

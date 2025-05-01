@@ -8,9 +8,7 @@ import {
 import agentController from "../controllers/agent";
 import smartContract from "../model/smart_contract";
 import { Errors } from "../constants/errors";
-import { hederaAddress } from "../schema/user";
 import swapsController from "../controllers/swaps";
-import agentModel from "../model/agents";
 
 const router: Router = Router();
 

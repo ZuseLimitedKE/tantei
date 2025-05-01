@@ -4,7 +4,7 @@ import { Errors, MyError } from "../constants/errors";
 import agentModel, { AgentModel, AGENTWITHID } from "../model/agents";
 import { TopicId } from "@hashgraph/sdk";
 import { AGENTS, SWAPS, USERS } from "../mongo/collections";
-import swapsController, { AgentTrades, SwapsController } from "./swaps";
+import swapsController, { AgentTrades, PortfolioGraph, SwapsController } from "./swaps";
 import agentController, { AgentController, AgentData } from "./agent";
 import smartContract, { SmartContract } from "../model/smart_contract";
 import pairsModel, { PairsModel } from "../model/pairs";
@@ -220,6 +220,22 @@ export class UserController {
     } catch(err) {
       console.error("Could not store user's swap", err);
       throw new MyError(Errors.NOT_STORE_SWAP);
+    }
+  }
+
+  async getPerformanceHistory(user_wallet: string, swapController: SwapsController, smart_contract: SmartContract): Promise<PortfolioGraph[]> {
+    try {
+      const user = await this.userModel.getUser({address: user_wallet});
+      if (!user) {
+        return [];
+      }
+
+      const trades = await swapController.getUserTrades({hedera_address: user_wallet}, this.userModel, smartContract);
+      const performance = await swapController.processTrades(trades, {user});
+      return performance;
+    } catch(err) {
+      console.error("Could not get performance history for user", err);
+      throw new MyError(Errors.NOT_GET_PERFORMANCE);
     }
   }
 }
