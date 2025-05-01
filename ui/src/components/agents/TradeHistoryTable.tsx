@@ -1,14 +1,15 @@
-import type { TradeData } from "@/services/types";
+import type { TradeData, TradeResponse } from "@/services/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 interface TradeHistoryTableProps {
-  trades: TradeData[];
+  data: TradeResponse; // Changed from trades to data
 }
 
-const TradeHistoryTable = ({ trades }: TradeHistoryTableProps) => {
+const TradeHistoryTable = ({ data }: TradeHistoryTableProps) => {
+  const { trades, total_trades } = data; // Destructure the data
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     return new Intl.DateTimeFormat('en-US', {
