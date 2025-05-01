@@ -146,7 +146,7 @@ export default async function process_transaction(
                     type: "sell",
                   }, smartContract);
 
-                  console.log("Trade for", followingUser, "has been copied");
+                  console.log("Trade for", followingUser.address, "has been copied");
                 }
               } catch (err) {
                 console.error("Could not copy trade for user");
@@ -218,7 +218,7 @@ export default async function process_transaction(
                       price: pair.price,
                       type: pair.pair[0] === outputTokenDetails.symbol ? "buy" : "sell",
                     }, smartContract);
-                    console.log("Trade for", followingUser, "has been copied");
+                    console.log("Trade for", followingUser.address, "has been copied");
                   }
                 } catch (err) {
                   console.error("Could not copy trade for user");
@@ -317,7 +317,7 @@ export default async function process_transaction(
                             type: "buy",
                           }, smartContract);
 
-                          console.log("Trade for", followingUser, "has been copied");
+                          console.log("Trade for", followingUser.address, "has been copied");
                         }
                       } catch (err) {
                         console.error("Could not copy trade for user");

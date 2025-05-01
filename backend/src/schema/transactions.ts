@@ -5,7 +5,7 @@ export const transactionSchema = z.object({
   from: hexString,
   hash: hexString,
   input: hexString,
-  to: hexString,
+  to: hexString.optional(),
   v: hexString,
   value: hexString,
 });
