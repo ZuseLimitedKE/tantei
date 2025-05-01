@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MoveRight, ArrowDown, Printer } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 
 const Hero = () => {
   const [titleNumber, setTitleNumber] = useState(0);
-
+  const navigate = useNavigate();
   const titles = useMemo(() => ["Smart", "Fast", "Secure", "Adaptive"], []);
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -20,7 +20,7 @@ const Hero = () => {
   }, [titleNumber, titles]);
 
   return (
-    <section className="min-h-screen  flex flex-col items-center justify-center text-center px-4  bg-white ">
+    <section className="min-h-screen mt-6  flex flex-col items-center  text-center px-4  bg-white ">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -33,7 +33,17 @@ const Hero = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Button variant="secondary" size="sm" className="gap-4 text-sm">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="gap-4 text-sm cursor-pointer hover:underline"
+              onClick={() =>
+                navigate({
+                  href: " https://dorahacks.io/hackathon/hedera-ai-agents/buidl",
+                  reloadDocument: true,
+                })
+              }
+            >
               Hedera AI Agents Hackathon 2025 <MoveRight className="w-4 h-4" />
             </Button>
           </motion.div>
