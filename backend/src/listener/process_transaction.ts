@@ -118,14 +118,18 @@ export default async function process_transaction(
                   const inputHbar = Math.max(Math.ceil((hbarSent ?? 0) * (HBAR_DIVIDER / 10)), 1);
                   const amountOutMin = Math.max(Math.ceil(swapDetails.out.amount / 20), 1);
 
-                  // Try the swap
-                  await swapMethods.HBARforToken({
-                    amountOutMin,
-                    tokenPath: decoded.addresses,
-                    toAddress: userSwapToAddress,
-                    deadline,
-                    inputHbar
-                  }); swapDetails.out.amount / 10
+                  try {
+                    // Try the swap
+                    await swapMethods.HBARforToken({
+                      amountOutMin,
+                      tokenPath: decoded.addresses,
+                      toAddress: userSwapToAddress,
+                      deadline,
+                      inputHbar
+                    });
+                  } catch (err) {
+                    console.error("Error copying trades", err);
+                  }
 
                   // Store if succesful
                   await userController.storeUserSwap(followingUser, {
@@ -192,13 +196,18 @@ export default async function process_transaction(
                   for (const followingUser of usersFollowingAgent) {
                     const amountIn = Math.max(Math.ceil(decoded.amountIn / 10), 1);
                     const amountOut = Math.max(Math.ceil(decoded.amountOut / 20), 1);
-                    await swapMethods.TokensForTokens({
-                      amountIn,
-                      amountOutMin: amountOut,
-                      tokenPath: decoded.addresses,
-                      toAddress: userSwapToAddress,
-                      deadline
-                    });
+                    
+                    try {
+                      await swapMethods.TokensForTokens({
+                        amountIn,
+                        amountOutMin: amountOut,
+                        tokenPath: decoded.addresses,
+                        toAddress: userSwapToAddress,
+                        deadline
+                      });
+                    } catch(err) {
+                      console.error("Error copying trade", err);
+                    }
 
                     // Store if successfull
                     await userController.storeUserSwap(followingUser, {
@@ -290,13 +299,17 @@ export default async function process_transaction(
                           const amountIn = Math.max(Math.ceil(decoded.amountIn / 10));
                           const amountOut = Math.max(Math.ceil(decoded.amountOut / 20));
 
-                          await swapMethods.TokensForHBAR({
-                            amountIn,
-                            amountOutMin: amountOut,
-                            tokenPath: decoded.addresses,
-                            toAddress: userSwapToAddress,
-                            deadline,
-                          });
+                          try {
+                            await swapMethods.TokensForHBAR({
+                              amountIn,
+                              amountOutMin: amountOut,
+                              tokenPath: decoded.addresses,
+                              toAddress: userSwapToAddress,
+                              deadline,
+                            });
+                          } catch (err) {
+                            console.error("Error copying trade", err);
+                          }
 
                           // Store 
                           await userController.storeUserSwap(followingUser, {
