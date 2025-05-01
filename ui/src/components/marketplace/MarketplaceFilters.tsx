@@ -64,11 +64,20 @@ const MarketplaceFilters = ({
     "Arbitrage",
     "Trend Following",
     "DeFi Yield",
+    "Momentum Trading",
+    "Hedging",
+    "Dollar Cost Averaging",
+    "Statistical Arbitrage",
+    "High Frequency Trading",
+    "Yield Farming",
+    "Volatility Trading",
+    "Mean Reversion",
+    "Time-Based Trading",
   ];
 
-  const TIME_PERIODS = ["24h", "7d", "30d", "90d", "1y", "All Time"];
+  const RISK_LEVELS = ["Low", "Medium", "High"];
 
-  const OTHER_FILTERS = ["Verified Only", "Free To Follow", "New Agents"];
+  const OTHER_FILTERS = ["Free To Follow", "New Agents"];
 
   const renderFilterSection = (title: string, filters: string[]) => (
     <div className="space-y-2">
@@ -118,11 +127,12 @@ const MarketplaceFilters = ({
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="performance">Performance</SelectItem>
-              <SelectItem value="popularity">Popularity</SelectItem>
+              <SelectItem value="performance">Performance (ROI)</SelectItem>
+              <SelectItem value="popularity">Popularity (Followers)</SelectItem>
               <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="price">Price (Lowest-Highest)</SelectItem>
-              <SelectItem value="risk-low">Risk (Lowest-Highest)</SelectItem>
+              <SelectItem value="price">Subscription fee (Low-High)</SelectItem>
+              <SelectItem value="risk-low">Risk (Low-High)</SelectItem>
+              <SelectItem value="risk-high">Risk (High to Low)</SelectItem>
             </SelectContent>
           </Select>
 
@@ -139,7 +149,7 @@ const MarketplaceFilters = ({
               </SheetHeader>
               <div className="py-4 space-y-6">
                 {renderFilterSection("Strategy Type", STRATEGY_TYPES)}
-                {renderFilterSection("Time Period", TIME_PERIODS)}
+                {renderFilterSection("Risk Level", RISK_LEVELS)}
                 {renderFilterSection("Other", OTHER_FILTERS)}
               </div>
             </SheetContent>

@@ -53,35 +53,50 @@ function MarketplaceComponent() {
         const agentTags = [
           agent.strategy_type,
           agent.risk_level,
-          agent.subscription_fee === 0 ? 'Free To Follow' : ''
-        ];
+          agent.subscription_fee === 0 ? 'Free To Follow' : '',
+          new Date(agent.time_created).getTime() > Date.now() - 2 * 24 * 60 * 60 * 1000 ? 'New Agents' : ''
+      ].filter(Boolean);
+
         return activeFilters.some(filter => agentTags.includes(filter));
       });
     }
 
     // // Sorting
-    // switch (sortBy) {
-    //   case "performance":
-    //     filtered.sort((a, b) => b.performance.roi_30d - a.performance.roi_30d);
-    //     break;
-    //   case "popularity":
-    //     filtered.sort((a, b) => b.followers - a.followers);
-    //     break;
-    //   case "newest":
-    //     filtered.sort((a, b) => 
-    //       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    //     );
-    //     break;
-    //   case "risk-low":
-    //     filtered.sort((a, b) => a.risk_level.localeCompare(b.risk_level));
-    //     break;
-    //   case "risk-high":
-    //     filtered.sort((a, b) => b.risk_level.localeCompare(a.risk_level));
-    //     break;
-    // }
+    switch (sortBy) {
+      case "performance":
+        filtered.sort((a, b) => (b.roi ?? 0) - (a.roi ?? 0));
+        break;
+      case "popularity":
+        filtered.sort((a, b) => b.num_followers - a.num_followers);
+        break;
+      case "newest":
+        filtered.sort((a, b) => 
+          new Date(b.time_created).getTime() - new Date(a.time_created).getTime()
+        );
+        break;
+        case "price":
+          filtered.sort((a, b) => a.subscription_fee - b.subscription_fee);
+          break;
+          case "risk-low":
+            filtered.sort((a, b) => {
+              if (!a.risk_level && !b.risk_level) return 0;
+              if (!a.risk_level) return 1;  
+              if (!b.risk_level) return -1; 
+              return a.risk_level.localeCompare(b.risk_level);
+            });
+            break;
+          case "risk-high":
+            filtered.sort((a, b) => {
+              if (!a.risk_level && !b.risk_level) return 0;
+              if (!a.risk_level) return 1;  
+              if (!b.risk_level) return -1; 
+              return b.risk_level.localeCompare(a.risk_level);
+            });
+            break;
+    }
 
     return filtered;
-  }, [agents, searchTerm, activeFilters, /*sortBy*/]);
+  }, [agents, searchTerm, activeFilters, sortBy]);
 
   // Loading and error states
   if (isLoading) return <SkeletonGrid />;
