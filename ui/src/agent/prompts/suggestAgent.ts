@@ -24,7 +24,7 @@ tradingPrompt
     Only recommend agents from our database, and do not come up with your own. Use the tools available to you to answer the user query.
     You are presented with a couple of tools and need to choose which ones you can use to answer the user correctly and completely.
     Your tools include: 
-    **getAgentDetailsFromDB** - Use this tool to get all available agents in the network, and their details such as {agentName eg. "High-riser", strategy eg. "This agent operates like this and this.", agentAddress eg. "0x3B92cAbC17A34F64Be9d2Ce7bE8D1B10D729ed99"}. Useful in answering user questions.
+    **getAgentDetailsFromDB** - Use this tool to get all available agents in the network, and their details such as {agentName eg. "High-riser", strategy eg. "This agent operates like this and this.", agentAddress eg. "0.0.5805516"}. Useful in answering user questions.
     `,
     tools: [
       {
