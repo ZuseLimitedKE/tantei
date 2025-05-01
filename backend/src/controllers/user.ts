@@ -112,27 +112,10 @@ export class UserController {
     }
   }
 
-  private async _getROIAndLastTrade(user_wallet: string, agentController: AgentController, smart_contract: SmartContract): Promise<{ roi: number, last_trade: Date | null }> {
+  private async _getROIAndLastTrade(user_wallet: string, smart_contract: SmartContract, swapsController: SwapsController): Promise<{ roi: number, last_trade: Date | null }> {
     try {
-      // Get users agents
-      const agents = await this.getFollowedAgents(user_wallet, agentController);
-      if (agents.length === 0) {
-        return { roi: 0, last_trade: new Date() };
-      }
-
-      // Get closed trades for agents that user followed
-      const trades: AgentTrades[] = [];
-      for (let a of agents) {
-        const a_id = a._id;
-        const a_trades = await swapsController.getAgentTrades({ id: a_id }, agentController, smart_contract);
-
-        if (a_trades.length < 1) {
-          continue;
-        }
-        const a_closed_trades = a_trades.filter((t) => t.profit !== null);
-        trades.push(...a_closed_trades);
-      }
-
+      // Get users trades
+      const trades = await swapsController.getUserTrades({hedera_address: user_wallet}, this.userModel, smartContract);
 
       // If no trades return default value
       if (trades.length < 1) {
@@ -193,9 +176,9 @@ export class UserController {
     }
   }
 
-  async getPortfolioStats(user_wallet: string, agentController: AgentController, smart_contract: SmartContract, pairModel: PairsModel, tokensModel: TokenModel, agentModel: AgentModel): Promise<PotfolioStats> {
+  async getPortfolioStats(user_wallet: string, smart_contract: SmartContract, pairModel: PairsModel, tokensModel: TokenModel, swapsController: SwapsController): Promise<PotfolioStats> {
     try {
-      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, agentController, smart_contract);
+      const { roi, last_trade } = await this._getROIAndLastTrade(user_wallet, smart_contract, swapsController);
       const portfolio_value = await this._getPortfolioValue(user_wallet, pairModel, tokensModel, smart_contract);
 
       return {

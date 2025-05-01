@@ -74,7 +74,7 @@ router.get("/agents/:user_wallet", async(req , res) => {
 router.get("/portfolio/stats/:user_wallet", async(req , res) => {
     try {
         const user_wallet = req.params.user_wallet as string;
-        const stats = await userController.getPortfolioStats(user_wallet, agentController, smartContract, pairsModel, tokenModel, agentModel);
+        const stats = await userController.getPortfolioStats(user_wallet, smartContract, pairsModel, tokenModel, swapsController);
         res.json(stats);
     } catch(err) {
         console.error("Error getting user portfolio stats", err);

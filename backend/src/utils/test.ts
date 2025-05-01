@@ -50,7 +50,6 @@ export async function TokenToHbar() {
         tokenPath: ["0x000000000000000000000000000000000058441F","0x00000000000000000000000000000000005860C0"],
         toAddress: "0.0.19266",
         deadline: Math.floor(Date.now() / 1000) + 60 * 20,
-        inputHbar: 1000000
     }
     const t2hResponse = await swap.TokensForHBAR(tokensToHbarargs);
     console.log("Token to Hbar Response: ", t2hResponse);
