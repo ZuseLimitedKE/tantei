@@ -2,11 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { GetPortfolioStats } from "@/services/portfolio";
 import { useAccountId } from "@buidlerlabs/hashgraph-react-wallets";
 import { Card, CardContent } from "../ui/card";
-import { TrendingUp, PieChart, Users, Clock } from "lucide-react";
+import { TrendingUp, PieChart, Clock } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
-import { AlertCircle, Database } from "lucide-react";
+import { Database } from "lucide-react";
 import { differenceInMinutes } from "date-fns";
+import { QueryError } from "../tanstack/query-error";
+import { EmptyState } from "../tanstack/empty-state";
+
 export function PortfolioStats() {
   const { data: accountId } = useAccountId();
   const {
@@ -18,44 +21,47 @@ export function PortfolioStats() {
     queryFn: () => GetPortfolioStats(accountId),
     refetchInterval: 30000,
   });
+
   if (isError) {
     return (
       <div className="grid grid-cols-1 gap-6 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col items-center text-center py-8">
-              <div className="rounded-full bg-red-100 p-4 mb-4">
-                <AlertCircle className="h-8 w-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-medium mb-2">
-                Error Loading Portfolio Stats Data
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                We encountered an error while retrieving your portfolio
-                statistics.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Please check your connection and try again later. If the problem
-                persists, contact support.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <QueryError
+          queryKey={["portfolio-stats", accountId]}
+          title="Error Loading Portfolio Stats Data"
+          message="We encountered an error while retrieving your portfolio statistics."
+          subMessage="Please check your connection and try again later. If the problem persists, contact support."
+        />
       </div>
     );
   }
-  if (isLoading)
+
+  if (isLoading) {
     return (
-      <div className=" grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 h-56 ">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 h-56">
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton
             key={i}
-            className=" bg-gray-100   p-6  rounded-xl border py-6"
+            className="bg-gray-100 p-6 rounded-xl border py-6"
           />
         ))}
       </div>
     );
-  return stats ? (
+  }
+
+  if (!stats) {
+    return (
+      <div className="grid grid-cols-1 gap-6 mb-8">
+        <EmptyState
+          title="No Portfolio Data"
+          message="It looks like you don't have any portfolio statistics available yet."
+          subMessage="This could be because you haven't made any trades, or your portfolio is still being set up."
+          icon={<Database className="h-8 w-8 text-primary" />}
+        />
+      </div>
+    );
+  }
+
+  return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <Card>
         <CardContent className="p-6">
@@ -94,22 +100,6 @@ export function PortfolioStats() {
         </CardContent>
       </Card>
 
-      <Card className="hidden">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="rounded-full bg-purple-100 p-2">
-              <Users className="h-5 w-5 text-purple-600" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-muted-foreground">
-                Active Agents
-              </h3>
-              <p className="text-2xl font-bold"></p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-3 mb-2">
@@ -125,27 +115,6 @@ export function PortfolioStats() {
                   : "N/A"}
               </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  ) : (
-    <div className="grid grid-cols-1 gap-6 mb-8">
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center text-center py-8">
-            <div className="rounded-full bg-primary/10 p-4 mb-4">
-              <Database className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">No Portfolio Data</h3>
-            <p className="text-muted-foreground mb-4">
-              It looks like you don't have any portfolio statistics available
-              yet.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              This could be because you haven't made any trades, or your
-              portfolio is still being set up.
-            </p>
           </div>
         </CardContent>
       </Card>
