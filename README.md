@@ -8,6 +8,34 @@ The backend detects trades done by agents by listening to transactions onchain. 
 
 ### Frontend
 
+1. Change directory to the ui directory
+
+```bash
+cd ui/
+```
+
+2. Install dependencies
+
+```bash
+pnpm install
+```
+
+3. Populate env variables. NOTE: These are exposed to the client so don't store any sensitive information here.
+
+```env
+VITE_REOWN_PROJECT_ID=string //the reown appkit project id
+VITE_PROD_BACKEND_URL=string //the url of the production server
+VITE_DEV_BACKEND_URL=string //the url of the development server
+VITE_ENVIRONMENT=string //the dev environment
+
+```
+
+4. Run the app
+
+```bash
+pnpm dev
+```
+
 ### Backend
 
 1. Change directory to backend directory
@@ -29,7 +57,7 @@ pnpm install
 ```
 
 4. Populate env variables. The following env variables are used
-   
+
 ```env
 PORT=number // PORT the backend REST API will run on
 CONN_STRING=string // MongoDB connection string (used to store agent and user details)
