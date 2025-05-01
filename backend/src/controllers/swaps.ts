@@ -1,9 +1,10 @@
 import { Errors, MyError } from "../constants/errors";
 import userModel, { UserModel } from "../model/users";
-import { SWAPS } from "../mongo/collections";
+import { SWAPS, USERS } from "../mongo/collections";
 import { AgentController } from "./agent";
 import { SmartContract } from "../model/smart_contract";
 import swapsModel, { SwapsModel } from "../model/swap";
+import { AGENTWITHID } from "../model/agents";
 
 export interface AgentTrades {
   time: Date;
@@ -12,6 +13,11 @@ export interface AgentTrades {
   amount: number;
   price: number;
   profit: number | null;
+}
+
+export interface PortfolioGraph {
+  time: Date,
+  value: number,
 }
 
 interface GetAgentSwaps {
@@ -65,7 +71,7 @@ export class SwapsController {
     }
   }
 
-  private async _getUserSwaps(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract, swapsModel: SwapsModel): Promise<SWAPS[]> {
+  private async _getUserSwaps(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract): Promise<SWAPS[]> {
     try {
       const user = await userModel.getUser({address: args.hedera_address});
       if (!user) {
@@ -80,7 +86,7 @@ export class SwapsController {
             swaps = await smart_contract.getSwapsFromTopic(user.topic_id);
           } catch(err) {
             console.log("Error getting swaps from topic", err);
-            swaps = await swapsModel.getUserSwapsFromDB({user_hedera_address: args.hedera_address});
+            swaps = await this.model.getUserSwapsFromDB({user_hedera_address: args.hedera_address});
           }
         }
 
@@ -204,9 +210,9 @@ export class SwapsController {
     }
   }
 
-  async getUserTrades(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract, swapsModel: SwapsModel): Promise<AgentTrades[]> {
+  async getUserTrades(args: GetUserSwaps, userModel: UserModel, smart_contract: SmartContract): Promise<AgentTrades[]> {
     try {
-      const swaps = await this._getUserSwaps(args, userModel, smart_contract, swapsModel);
+      const swaps = await this._getUserSwaps(args, userModel, smart_contract);
       
       // How to calculate profit
       if (swaps.length < 1) {
@@ -218,6 +224,41 @@ export class SwapsController {
     } catch(err) {
       console.error("Could not get trades", err);
       throw new MyError(Errors.NOT_GET_TRADES);
+    }
+  }
+
+  // Process the trades of either a user or agent. The choice is made if either the agent or user is passed as an arguement
+  async processTrades(trades: AgentTrades[], item: {agent?: AGENTWITHID, user?: USERS}): Promise<PortfolioGraph[]> {
+    try {
+      const portfolio: PortfolioGraph[] = [];
+
+      if (item.agent) {
+        portfolio.push({
+          time: item.agent.time_created,
+          value: 0
+        })
+      } else if (item.user) {
+        portfolio.push({
+          time: item.user.time_registered,
+          value: 0
+        })
+      }
+
+      // For every trade increment portfolio value
+      let prevValue = 0;
+      for (const t of trades) {
+        portfolio.push({
+          time: t.time,
+          value: prevValue + (t.profit ?? 0)
+        });
+
+        prevValue += (t.profit ?? 0);
+      }
+
+      return portfolio;
+    } catch(err) {
+      console.error("Error processing trades", err);
+      throw new MyError(Errors.NOT_PROCESS_TRADES);
     }
   }
 }

@@ -49,5 +49,7 @@ export enum Errors {
   NOT_GET_TRANSACTION_DETAILS = "Could not get transaction details",
   NOT_UPDATE_USER = "Could not update user",
   NOT_GET_TRADES = "Could not get trades",
+  NOT_PROCESS_TRADES = "Could not process trades",
+  NOT_GET_PERFORMANCE = "Could not get performance history",
   UNKOWN = "Unkown error",
 }
