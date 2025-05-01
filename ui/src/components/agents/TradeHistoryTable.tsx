@@ -9,7 +9,7 @@ interface TradeHistoryTableProps {
 }
 
 const TradeHistoryTable = ({ data }: TradeHistoryTableProps) => {
-  const { trades, total_trades } = data; // Destructure the data
+  const { trades } = data; // Destructure the data
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     return new Intl.DateTimeFormat('en-US', {
