@@ -244,12 +244,12 @@ export class SmartContract {
 
   async getUserDetails(evm_address: string): Promise<EvmUserDetails | null> {
     try {
-      if (!process.env.HEDERA_MIRROR_NODE) {
-        console.log("Set HEDERA_MIRROR_NODE in env");
+      if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
+        console.log("Set HEDERA_TESTNET_MIRROR_NODE in env");
         throw new MyError(Errors.INVALID_SETUP);
       }
 
-      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${evm_address}`);
+      const result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/accounts/${evm_address}`);
       if (result.status !== 200) {
         console.log("Error in getting result", result.data);
         throw new MyError(Errors.NOT_GET_USER_DETAILS);
@@ -271,12 +271,12 @@ export class SmartContract {
 
   async getTransactionDetails(tx_hash: String): Promise<MirrorNodeTransaction | null> {
     try {
-      if (!process.env.HEDERA_MIRROR_NODE) {
-        console.log("Set HEDERA_MIRROR_NODE in env");
+      if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
+        console.log("Set HEDERA_TESTNET_MIRROR_NODE in env");
         throw new MyError(Errors.INVALID_SETUP);
       }
 
-      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/contracts/results/${tx_hash}`);
+      const result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/contracts/results/${tx_hash}`);
       if (result.status !== 200) {
         console.log("Error getting info");
         throw new MyError(Errors.NOT_GET_TRANSACTION_DETAILS);

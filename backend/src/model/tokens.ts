@@ -27,8 +27,8 @@ export class TokenModel {
     args: GetTokenDetails,
   ): Promise<TOKENS | null> {
     try {
-      if (!process.env.HEDERA_MIRROR_NODE) {
-        console.log("Set HEDERA_MIRROR_NODE in env");
+      if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
+        console.log("Set HEDERA_TESTNET_MIRROR_NODE in env");
         throw new MyError(Errors.INVALID_SETUP);
       }
 
@@ -36,7 +36,7 @@ export class TokenModel {
       const tokenIDStr = tokenID.toString();
 
       const res = await axios.get(
-        `${process.env.HEDERA_MIRROR_NODE}api/v1/tokens/${tokenIDStr}`,
+        `${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/tokens/${tokenIDStr}`,
       );
 
       if (res.status === 200) {

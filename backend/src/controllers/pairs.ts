@@ -21,9 +21,9 @@ export class PairController {
 
       if (pair) {
         // Update pair price
-        const token1 = pair.pair[0] as string;
-        const token2 = pair.pair[1] as string;
-        const price = args.price[token2] / args.price[token1];
+        const base = pair.pair[0] as string;
+        const quote = pair.pair[1] as string;
+        const price = args.price[quote] / args.price[base];
         await this.model.updatePairPrice(price, args.pair);
 
         // Return
@@ -32,9 +32,9 @@ export class PairController {
           price,
         };
       } else {
-        const token1 = args.pair[0] as string;
-        const token2 = args.pair[1] as string;
-        const price = args.price[token2] / args.price[token1];
+        const base = args.pair[0] as string;
+        const quote = args.pair[1] as string;
+        const price = args.price[quote] / args.price[base];
 
         // If not create pair record
         const pair = {

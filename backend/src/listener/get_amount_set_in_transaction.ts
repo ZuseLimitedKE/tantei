@@ -8,13 +8,13 @@ export default async function getAmountOfHBARSentInTransaction(
   evm_address: string,
 ): Promise<number | null> {
   try {
-    if (!process.env.HEDERA_MIRROR_NODE) {
-      console.log("Set HEDERA_MIRROR_NODE in env");
+    if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
+      console.log("Set HEDERA_TESTNET_MIRROR_NODE in env");
       throw new MyError(Errors.INVALID_SETUP);
     }
 
     const res = await axios.get(
-      `${process.env.HEDERA_MIRROR_NODE}api/v1/contracts/results/${evm_address}`,
+      `${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/contracts/results/${evm_address}`,
     );
     if (res.status !== 200) {
       console.log("Unsuccesful response", res.data);
