@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import {
-    // type HederaSignerType,
-    // type HWBridgeSigner,
+    type HederaSignerType,
+    type HWBridgeSigner,
     useAccountId,
     useWallet,
 } from "@buidlerlabs/hashgraph-react-wallets";
+import { TransferTransaction, Hbar } from "@hashgraph/sdk";
 import { toast, Toaster } from "sonner";
 import axios from "axios"
 import { BASEHOST } from "@/integrations/basehost";
@@ -23,11 +24,22 @@ export function Copy(props: Props) {
     const { data: accountId } = useAccountId();
     console.log("Copy component props", props);
 
-    const { isConnected } = useWallet();
-
+    const { isConnected, signer } = useWallet();
+    function isHederaSigner(signer: HWBridgeSigner): signer is HederaSignerType {
+        // Check based on properties that are unique to HederaSignerType
+        return (signer as HederaSignerType).topic !== undefined;
+    }
     const handleCopy = async () => {
         if (!isConnected) {
             toast.error("Please connect your wallet first");
+            return;
+        }
+        if (!signer) {
+            toast.error("Wallet not connected");
+            return;
+        }
+        if (!isHederaSigner(signer)) {
+            toast.error("Invalid signer");
             return;
         }
         try {
@@ -36,17 +48,39 @@ export function Copy(props: Props) {
                 agent_hedera_account: agentAddress
             })
             if ((response.status === 201 || response.status === 200)) {
-                toast.success("Agent copied successfully");
+                const amountResponse = await axios.get(`${BASEHOST}/api/v1/agents/address/${agentAddress}`);
+
+                if ((amountResponse.status === 201 || amountResponse.status === 200)) {
+                    const amount = amountResponse.data?.subscription_fee;
+                    console.log("|AccountId=> ", accountId);
+                    const transferTokenTx = new TransferTransaction()
+                        .addHbarTransfer(accountId, new Hbar(-1))
+                        .addHbarTransfer("0.0.5805516", new Hbar(1))
+                    console.log("transfer hbra tx=>", transferTokenTx);
+                    const signedTx = await transferTokenTx.freezeWithSigner(signer);
+                    const result = await signedTx.executeWithSigner(signer);
+                    console.log("Transfer of coinst transaction executed =>", result.transactionId.toString());
+                    toast.success("Agent copied successfully");
+                    setIsLoading(false);
+                    return;
+                }
+                else {
+                    toast.error("Error occured while copying");
+                    setIsLoading(false);
+                    return;
+                }
             } else {
                 toast.error("Error occured while copying");
+                setIsLoading(false);
+                return;
             }
-            setIsLoading(false);
         }
         catch (error) {
             console.log("Error occured while copying: ", error);
             toast.error("Error occured while copying");
+            setIsLoading(false);
         }
-        setIsLoading(true);
+        setIsLoading(false);
         return;
     };
 
