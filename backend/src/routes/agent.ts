@@ -112,6 +112,17 @@ router.get("/trades/:agent_id", async(req, res) => {
     console.error("Error getting agent trades", err);
     res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
   }
+});
+
+router.get("/performance/:agent_id", async(req, res) => {
+  try {
+    const agent_id = req.params.agent_id;
+    const perfomance = await agentController.getPerformance(agent_id, swapsController, smartContract);
+    res.json(perfomance);
+  } catch(err) {
+    console.error("Error getting performance of agent", err);
+    res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+  }
 })
 
 export default router;

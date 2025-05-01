@@ -3,6 +3,7 @@ import agentModel, { AgentModel, AGENTWITHID, getMultipleAgentsArgs } from "../m
 import { SmartContract } from "../model/smart_contract";
 import { AGENTS } from "../mongo/collections";
 import { Agent } from "../schema/agents";
+import { PortfolioGraph, SwapsController } from "./swaps";
 
 export interface AgentData extends AGENTWITHID {
   num_followers: number
@@ -110,6 +111,23 @@ export class AgentController {
     } catch (error) {
       console.error("Agent controller error:", error);
       throw error;
+    }
+  }
+
+  async getPerformance(agent_id: string, swapController: SwapsController, smart_contract: SmartContract): Promise<PortfolioGraph[]> {
+    try {
+      const agent = await this.agentModel.GetAgentById(agent_id);
+      if (!agent) {
+        return [];
+      }
+
+      const trades = await swapController.getAgentTrades({id: agent._id}, this, smart_contract);
+      const performance = await swapController.processTrades(trades, {agent});
+
+      return performance;
+    } catch(err) {
+      console.error("Error getting perfomance of agent", err);
+      throw new MyError(Errors.NOT_GET_PERFORMANCE);
     }
   }
 }
