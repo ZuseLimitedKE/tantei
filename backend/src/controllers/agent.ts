@@ -96,6 +96,21 @@ export class AgentController {
     }
   }
 
+  async getAgent(args: { hedera_account_id?: string }): Promise<AgentData | null> {
+    try {
+      const model = await this.agentModel.GetAgent(args);
+      if (model) {
+        const users = await this.agentModel.GetUsersFollowingAgent({agent_hedera_id: model.address});
+        return {...model, num_followers: users.length};
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error("Agent controller error:", error);
+      throw error;
+    }
+  }
+
   async updateAgent(agentId: string, updates: Partial<AGENTS>) {
     try {
       return await this.agentModel.UpdateAgent(agentId, updates);

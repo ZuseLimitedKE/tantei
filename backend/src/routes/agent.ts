@@ -9,6 +9,7 @@ import agentController from "../controllers/agent";
 import smartContract from "../model/smart_contract";
 import { Errors } from "../constants/errors";
 import swapsController from "../controllers/swaps";
+import { hederaAddress } from "../schema/user";
 
 const router: Router = Router();
 
@@ -50,6 +51,24 @@ router.get("/user/:address", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch user agents" });
   }
 });
+
+router.get("/address/:address", async (req, res) => {
+  try {
+    const address = req.params.address as string;
+    const parsed = hederaAddress.safeParse(address);
+    if (parsed.success) {
+      const address = parsed.data;
+      const agent = await agentController.getAgent({hedera_account_id: address});
+      res.json(agent);
+    } else {
+      const errors = parsed.error.issues.map((i) => i.message);
+      res.status(400).json({error: errors});
+    }
+  } catch(err) {
+    console.error("Error fetching agent", err);
+    res.status(500).json({error: Errors.INTERNAL_SERVER_ERROR});
+  }
+})
 
 // Create a new agent
 router.post("/", validateBody(AgentSchema), async (req, res) => {
