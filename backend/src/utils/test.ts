@@ -8,6 +8,7 @@ import {
     Client
 } from '@hashgraph/sdk';
 const swap = new Swaps();
+
 async function getWHBAR() {
     try {
         const client = Client.forTestnet().setOperator("0.0.5805516", process.env.OPERATOR_PRIVATE_KEY)

@@ -130,6 +130,52 @@ export class AgentController {
       throw new MyError(Errors.NOT_GET_PERFORMANCE);
     }
   }
+
+  async getROI(agent_id: string, swapController: SwapsController, smart_contract: SmartContract): Promise<{roi: number, drawdown: number}> {
+    try {
+      // Get trades
+      const agent = await this.agentModel.GetAgentById(agent_id);
+
+      if (!agent) {
+        return {roi: 0, drawdown: 0}
+      }
+
+      const trades = await swapController.getAgentTrades({id: agent_id}, this, smart_contract);
+
+      // Get ROI from trades
+      if (trades.length < 1) {
+        return {roi: 0, drawdown: 0}
+      }
+
+      let totalInvested = 0;
+      let totalProfit = 0;
+      trades.forEach((t) => {
+        totalInvested += t.amount * t.price;
+        totalProfit += t.amount * (t.profit ?? 0);
+      });
+
+      const roi = (totalProfit / totalInvested) * 100;
+      const perfomance = await swapController.processTrades(trades, {agent: agent});
+      
+      // Get peak and trough
+      let peak = 0;
+      let trough = 0;
+      for (const p of perfomance) {
+        if (p.value > peak) {
+          peak = p.value;
+          continue;
+        } else if (p.value < trough) {
+          trough = p.value;
+          continue;
+        }
+      }
+      const drawdown = ((peak - trough) / peak) * 100
+      return {roi, drawdown};
+    } catch(err) {
+      console.error("Error getting ROI", err);
+      throw new MyError(Errors.NOT_GET_ROI);
+    }
+  }
 }
 
 const agentController = new AgentController(agentModel);

@@ -31,7 +31,9 @@ router.get("/:id", validateParams(AgentIdParamSchema), async (req, res) => {
       res.status(404).json({ error: "Agent not found" });
       return;
     }
-    res.json(agent);
+
+    const {roi, drawdown} = await agentController.getROI(agent._id, swapsController, smartContract);
+    res.json({...agent, roi, drawdown});
   } catch (error) {
     console.error("Error fetching agent:", error);
     res.status(500).json({ error: "Failed to fetch agent" });
