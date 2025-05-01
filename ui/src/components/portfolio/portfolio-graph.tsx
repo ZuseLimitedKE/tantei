@@ -11,7 +11,6 @@ import { EmptyState } from "@/components/tanstack/empty-state";
 export function PortfolioGraph() {
   const { data: accountId } = useAccountId();
 
-  // Fetch data
   const {
     data: rawPerformanceData,
     isError,
@@ -29,7 +28,6 @@ export function PortfolioGraph() {
     value: item.value,
   }));
 
-  // Loading state
   if (isLoading) {
     return (
       <Card>
@@ -44,7 +42,6 @@ export function PortfolioGraph() {
     );
   }
 
-  // Error state
   if (isError) {
     return (
       <QueryError
@@ -55,7 +52,6 @@ export function PortfolioGraph() {
     );
   }
 
-  // Empty state
   if (!performanceData || performanceData.length === 0) {
     return (
       <EmptyState
@@ -67,7 +63,6 @@ export function PortfolioGraph() {
     );
   }
 
-  // Data available state
   return (
     <PerformanceChart data={performanceData} title="Portfolio Performance" />
   );
