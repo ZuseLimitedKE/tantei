@@ -1,9 +1,10 @@
 import { Errors, MyError } from "../constants/errors";
 import userModel, { UserModel } from "../model/users";
-import { SWAPS } from "../mongo/collections";
+import { SWAPS, USERS } from "../mongo/collections";
 import { AgentController } from "./agent";
 import { SmartContract } from "../model/smart_contract";
 import swapsModel, { SwapsModel } from "../model/swap";
+import { AGENTWITHID } from "../model/agents";
 
 export interface AgentTrades {
   time: Date;
@@ -226,9 +227,35 @@ export class SwapsController {
     }
   }
 
-  async processTrades(trades: AgentTrades[]): Promise<PortfolioGraph[]> {
+  // Process the trades of either a user or agent. The choice is made if either the agent or user is passed as an arguement
+  async processTrades(trades: AgentTrades[], agent?: AGENTWITHID, user?: USERS): Promise<PortfolioGraph[]> {
     try {
-      return []
+      const portfolio: PortfolioGraph[] = [];
+
+      if (agent) {
+        portfolio.push({
+          time: agent.time_created,
+          value: 0
+        })
+      } else if (user) {
+        portfolio.push({
+          time: user.time_registered,
+          value: 0
+        })
+      }
+
+      // For every trade increment portfolio value
+      let prevValue = 0;
+      for (const t of trades) {
+        portfolio.push({
+          time: t.time,
+          value: prevValue + (t.profit ?? 0)
+        });
+
+        prevValue += (t.profit ?? 0);
+      }
+
+      return portfolio;
     } catch(err) {
       console.error("Error processing trades", err);
       throw new MyError(Errors.NOT_PROCESS_TRADES);
