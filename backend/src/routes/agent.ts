@@ -104,7 +104,7 @@ router.get("/trades/:agent_id", async(req, res) => {
     const agent = await agentController.getAgentById(agent_id);
     if (agent) {
       const trades = await swapsController.getAgentTrades({id: agent_id}, agentController, smartContract);
-      res.json(trades);
+      res.json({trades, total_trades: trades.length});
     } else {  
       res.status(400).json({error: [Errors.AGENT_NOT_EXIST]});
     }
