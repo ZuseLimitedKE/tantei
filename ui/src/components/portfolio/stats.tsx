@@ -94,7 +94,7 @@ export function PortfolioStats() {
               <h3 className="font-medium text-muted-foreground">
                 Portfolio Value
               </h3>
-              <p className="text-2xl font-bold">{stats.value}</p>
+              <p className="text-2xl font-bold">{stats.value.toFixed(2)}</p>
             </div>
           </div>
         </CardContent>
