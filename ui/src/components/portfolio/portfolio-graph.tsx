@@ -21,12 +21,13 @@ export function PortfolioGraph() {
     enabled: !!accountId,
   });
 
-  // transforms data to match PerformanceChart expected format
+  // Transform data to match PerformanceChart expected format
   const performanceData = rawPerformanceData?.map((item) => ({
-    date: item.time.toISOString().split("T")[0], // converts Date to string format for the chart
+    date: item.time.split("T")[0], // Extract YYYY-MM-DD from ISO string
     value: item.value,
   }));
 
+  // Loading state
   if (isLoading) {
     return (
       <Card>

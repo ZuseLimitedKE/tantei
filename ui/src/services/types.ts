@@ -10,7 +10,7 @@ export interface PortfolioGraph {
 }
 
 export interface PortfolioGraphRawData {
-  time: Date;
+  time: string;
   value: number;
 }
 
