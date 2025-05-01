@@ -169,7 +169,10 @@ export class AgentController {
           continue;
         }
       }
-      const drawdown = ((peak - trough) / peak) * 100
+      let drawdown = ((peak - trough) / peak) * 100;
+      if (isNaN(drawdown)) {
+        drawdown = 0
+      }
       return {roi, drawdown};
     } catch(err) {
       console.error("Error getting ROI", err);
