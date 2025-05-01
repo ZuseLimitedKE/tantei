@@ -20,7 +20,10 @@ const Hero = () => {
   }, [titleNumber, titles]);
 
   return (
-    <section className="min-h-screen mt-6  flex flex-col items-center  text-center px-4  bg-white ">
+    <section
+      id="hero"
+      className="min-h-screen mt-6  flex flex-col items-center  text-center px-4  bg-white "
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -102,15 +105,16 @@ const Hero = () => {
           </div>
         </div>
       </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        className="absolute bottom-8 bg-secondary p-1 animate-bounce rounded-full shadow"
-      >
-        <ArrowDown className="h-8 w-8  text-muted-foreground" />
-      </motion.div>
+      <Link to="/" hash="features">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.5 }}
+          className="absolute bottom-8 bg-secondary p-1 animate-bounce rounded-full shadow"
+        >
+          <ArrowDown className="h-8 w-8  text-muted-foreground" />
+        </motion.div>
+      </Link>
     </section>
   );
 };

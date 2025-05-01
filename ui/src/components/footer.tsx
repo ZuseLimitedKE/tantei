@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 export function Footer() {
   return (
-    <footer className="py-6 w-full px-4  bg-primary text-white backdrop-blur-md border-t border-white/10 ">
+    <footer
+      id="footer"
+      className="py-6 w-full px-4  bg-primary text-white backdrop-blur-md border-t border-white/10 "
+    >
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <h3 className="text-xl font-bold mb-4">Tantei</h3>

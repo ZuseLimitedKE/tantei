@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 export function Hackathon() {
   return (
     <motion.section
+      id="hackathon"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
