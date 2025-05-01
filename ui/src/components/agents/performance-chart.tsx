@@ -11,10 +11,10 @@ import {
 import type { TooltipProps } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { PerformanceDataPoint } from "@/services/mockData";
+import type { PortfolioGraph } from "@/services/types";
 
 interface PerformanceChartProps {
-  data: PerformanceDataPoint[];
+  data: PortfolioGraph[];
   title?: string;
 }
 
@@ -39,10 +39,10 @@ const CustomTooltip = ({
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString("en-KE", { month: "short", day: "numeric" });
 };
 
-const calculateDomain = (data: PerformanceDataPoint[]) => {
+const calculateDomain = (data: PortfolioGraph[]) => {
   if (!data.length) return [0, 0] as [number, number];
 
   const values = data.map((item) => item.value);
@@ -58,7 +58,7 @@ const PerformanceChart = ({
   data,
   title = "Performance",
 }: PerformanceChartProps) => {
-  const [timeframe, setTimeframe] = useState("30d");
+  const [timeframe, setTimeframe] = useState("7d");
 
   const filterDataByTimeframe = (days: number) => {
     if (days >= data.length) return data;

@@ -3,6 +3,17 @@ export interface PortfolioStats {
   value: number;
   last_trade: Date | null;
 }
+
+export interface PortfolioGraph {
+  date: string; // Format: "YYYY-MM-DD"
+  value: number;
+}
+
+export interface PortfolioGraphRawData {
+  time: Date;
+  value: number;
+}
+
 export interface AgentData {
   _id: string;
   agent_name: string; //the name of the agent

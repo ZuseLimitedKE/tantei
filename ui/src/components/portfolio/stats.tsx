@@ -131,7 +131,7 @@ export function PortfolioStats() {
     </div>
   ) : (
     <div className="grid grid-cols-1 gap-6 mb-8">
-      <Card className="border-blue-100">
+      <Card>
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center py-8">
             <div className="rounded-full bg-primary/10 p-4 mb-4">
