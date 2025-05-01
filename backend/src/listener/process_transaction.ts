@@ -11,7 +11,6 @@ import { TopicId } from "@hashgraph/sdk";
 import { SWAPS } from "../mongo/collections";
 import smartContract, { SmartContract } from "../model/smart_contract";
 import { Swaps } from "../utils/swaps";
-import { UserModel } from "../model/users";
 import { UserController } from "../controllers/user";
 import "dotenv/config";
 
@@ -29,22 +28,23 @@ export default async function process_transaction(
   try {
     // Getting hedera account id that called the transaction
     console.log(transaction);
-    let user: string | null = null;
+    let hedera_account_id: string | null = null;
     try {
       const userDetails = await smartContract.getUserDetails(transaction.from);
-      user = userDetails?.account ?? null;
+      hedera_account_id = userDetails?.account ?? null;
     } catch (err) {
       try {
-        user = TopicId.fromSolidityAddress(transaction.from).toString();
+        hedera_account_id = TopicId.fromSolidityAddress(transaction.from).toString();
       } catch (err) {
-        user = null;
+        hedera_account_id = null;
       }
     }
-    console.log("User =>", user);
-    if (user) {
+    console.log("User =>", hedera_account_id);
+
+    if (hedera_account_id) {
       console.log("I am here");
       let agent = await agentModel.GetAgent({
-        hedera_account_id: user,
+        hedera_account_id: hedera_account_id,
       });
       console.log("Agent =>", agent);
 
@@ -105,7 +105,7 @@ export default async function process_transaction(
                 },
                 token_pair: pair.pair,
                 time: new Date(),
-                user_hedera: user,
+                user_hedera: hedera_account_id,
                 price: pair.price,
                 type: "sell",
               };
@@ -141,12 +141,12 @@ export default async function process_transaction(
                     },
                     token_pair: pair.pair,
                     time: new Date(),
-                    user_hedera: user,
+                    user_hedera: hedera_account_id,
                     price: pair.price,
                     type: "sell",
                   }, smartContract);
 
-                  console.log("Trade for", followingUser, "has been copied");
+                  console.log("Trade for", followingUser.address, "has been copied");
                 }
               } catch (err) {
                 console.error("Could not copy trade for user");
@@ -181,7 +181,7 @@ export default async function process_transaction(
                 },
                 token_pair: pair.pair,
                 time: new Date(),
-                user_hedera: user,
+                user_hedera: hedera_account_id,
                 price: pair.price,
                 type: pair.pair[0] === outputTokenDetails.symbol ? "buy" : "sell",
               };
@@ -214,11 +214,11 @@ export default async function process_transaction(
                       },
                       token_pair: pair.pair,
                       time: new Date(),
-                      user_hedera: user,
+                      user_hedera: hedera_account_id,
                       price: pair.price,
                       type: pair.pair[0] === outputTokenDetails.symbol ? "buy" : "sell",
                     }, smartContract);
-                    console.log("Trade for", followingUser, "has been copied");
+                    console.log("Trade for", followingUser.address, "has been copied");
                   }
                 } catch (err) {
                   console.error("Could not copy trade for user");
@@ -235,21 +235,21 @@ export default async function process_transaction(
               if (txDetails) {
                 try {
                   const userDetails = await smartContract.getUserDetails(txDetails.from);
-                  user = userDetails?.account ?? null;
-                  console.log("Token -> HBAR user", user);
+                  hedera_account_id = userDetails?.account ?? null;
+                  console.log("Token -> HBAR user", hedera_account_id);
                 } catch (err) {
                   try {
-                    user = TopicId.fromSolidityAddress(txDetails.from).toString();
-                    console.log(user);
+                    hedera_account_id = TopicId.fromSolidityAddress(txDetails.from).toString();
+                    console.log(hedera_account_id);
                   } catch (err) {
                     console.log("Could not get user", err);
-                    user = null;
+                    hedera_account_id = null;
                   }
                 }
 
-                if (user) {
+                if (hedera_account_id) {
                   agent = await agentModel.GetAgent({
-                    hedera_account_id: user,
+                    hedera_account_id: hedera_account_id,
                   });
 
                   if (agent) {
@@ -278,7 +278,7 @@ export default async function process_transaction(
                       },
                       token_pair: pair.pair,
                       time: new Date(),
-                      user_hedera: user,
+                      user_hedera: hedera_account_id,
                       price: pair.price,
                       type: "buy",
                     };
@@ -312,12 +312,12 @@ export default async function process_transaction(
                             },
                             token_pair: pair.pair,
                             time: new Date(),
-                            user_hedera: user,
+                            user_hedera: hedera_account_id,
                             price: pair.price,
                             type: "buy",
                           }, smartContract);
 
-                          console.log("Trade for", followingUser, "has been copied");
+                          console.log("Trade for", followingUser.address, "has been copied");
                         }
                       } catch (err) {
                         console.error("Could not copy trade for user");

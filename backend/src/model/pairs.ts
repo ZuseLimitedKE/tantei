@@ -46,7 +46,7 @@ export class PairsModel {
         throw new MyError(Errors.INVALID_PAIR);
       }
 
-      const doc = await PAIRS_COLLECTION.findOne({ pair });
+      const doc = await PAIRS_COLLECTION.findOne({ pair: {$all: pair} });
       return doc;
     } catch (err) {
       if (err instanceof MyError) {

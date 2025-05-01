@@ -16,7 +16,7 @@ interface updateUserArgs {
 export class UserModel {
   async register(address: string, evm_address: string) {
     try {
-      await USERS_COLLECTION.insertOne({ address, evm_address, agents: [], trades: [], topic_id: null });
+      await USERS_COLLECTION.insertOne({ address, evm_address, agents: [], trades: [], topic_id: null, time_registered: new Date() });
     } catch (err) {
       console.log("Error registering user in db", err);
       throw new MyError(Errors.NOT_REGISTER_USER);
@@ -58,3 +58,8 @@ export class UserModel {
 
 const userModel = new UserModel();
 export default userModel;
+(async () => {
+  const now = new Date();
+  const registered = now.setDate(now.getDate() - 1);
+  await USERS_COLLECTION.updateMany({}, {$set: {time_registered: new Date(registered)}});
+})()
