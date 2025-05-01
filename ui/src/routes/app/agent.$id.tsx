@@ -1,3 +1,10 @@
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useAccountId, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
+import { toast } from "sonner";
+import axios from "axios";
+import { BASEHOST } from "@/integrations/basehost";
+
 import { createFileRoute, Link } from "@tanstack/react-router";
 import PerformanceChart from "@/components/agents/PerformanceChart";
 import TradeHistoryTable from "@/components/agents/TradeHistoryTable";
@@ -26,6 +33,38 @@ export const Route = createFileRoute("/app/agent/$id")({
 
 function AgentDetailComponent() {
   const { id } = Route.useParams();
+
+  const [isCopying, setIsCopying] = useState(false);
+  const { data: accountId } = useAccountId();
+  const { isConnected } = useWallet();
+
+  const handleCopyTrades = async () => {
+    if (!agent) return;
+    
+    if (!isConnected) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    setIsCopying(true);
+    try {
+      const response = await axios.post(`${BASEHOST}/api/v1/users/follow`, {
+        user_hedera_account: accountId,
+        agent_hedera_account: agent.address
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(`Successfully started copying ${agent.agent_name}`);
+      } else {
+        toast.error("Failed to copy trades");
+      }
+    } catch (error) {
+      console.error("Error copying trades:", error);
+      toast.error("Failed to copy trades");
+    } finally {
+      setIsCopying(false);
+    }
+  };
 
   const { data: agent, isLoading } = useQuery({
     queryKey: ['agent', id],
@@ -110,8 +149,43 @@ function AgentDetailComponent() {
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" className="cursor-pointer">Follow Agent</Button>
-                <Button className="cursor-pointer">Start Copying Trades</Button>
+              <Button variant="outline" className="cursor-pointer" asChild>
+                <Link 
+                  to={`https://hashscan.io/testnet/topic/${agent.topic_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Check Agent Topic
+                </Link>
+              </Button>
+              <TooltipProvider>
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger asChild>
+        <span className="inline-block cursor-pointer"> {/* Wrapper for tooltip positioning */}
+          <Button 
+            size="lg" 
+            className="px-8 cursor-pointer"
+            onClick={handleCopyTrades}
+            disabled={isCopying || !isConnected}
+          >
+            {isCopying ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Start Copying Trades"
+            )}
+          </Button>
+        </span>
+      </TooltipTrigger>
+      {!isConnected && (
+        <TooltipContent side="top" className="bg-foreground text-background">
+          <p>Please connect your wallet first</p>
+        </TooltipContent>
+      )}
+    </Tooltip>
+  </TooltipProvider>
               </div>
             </div>
           </div>
@@ -256,18 +330,30 @@ function AgentDetailComponent() {
 
           {/* CTA Section */}
           <div className="text-center my-10">
-            <h2 className="text-2xl font-bold mb-4">
-              Ready to start copying this agent?
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              Connect your wallet and set up automated trading with{" "}
-              {agent.agent_name}. You'll be able to customize risk levels and
-              maximum exposure.
-            </p>
-            <Button size="lg" className="px-8 cursor-pointer">
-              Start Copying Trades
-            </Button>
-          </div>
+    <h2 className="text-2xl font-bold mb-4">
+      Ready to start copying this agent?
+    </h2>
+    <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+      Connect your wallet and set up automated trading with{" "}
+      {agent.agent_name}. You'll be able to customize risk levels and
+      maximum exposure.
+    </p>
+    <Button 
+      size="lg" 
+      className="px-8 cursor-pointer"
+      onClick={handleCopyTrades}
+      disabled={isCopying || !isConnected}
+    >
+      {isCopying ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Processing...
+        </>
+      ) : (
+        "Start Copying Trades"
+      )}
+    </Button>
+  </div>
         </div>
       </main>
     </div>
