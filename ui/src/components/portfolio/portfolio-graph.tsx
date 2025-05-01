@@ -4,7 +4,9 @@ import { useAccountId } from "@buidlerlabs/hashgraph-react-wallets";
 import { GetPortfolioGraphData } from "@/services/portfolio";
 import { Card, CardContent } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
-import { AlertCircle, LineChart } from "lucide-react";
+import { LineChart } from "lucide-react";
+import { QueryError } from "@/components/tanstack/query-error";
+import { EmptyState } from "@/components/tanstack/empty-state";
 
 export function PortfolioGraph() {
   const { data: accountId } = useAccountId();
@@ -42,55 +44,30 @@ export function PortfolioGraph() {
     );
   }
 
+  // Error state
   if (isError) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center text-center py-8">
-            <div className="rounded-full bg-red-100 p-4 mb-4">
-              <AlertCircle className="h-8 w-8 text-red-600" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">
-              Error Loading Portfolio Data
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              We encountered an error while retrieving your portfolio
-              performance data.
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Please check your connection and try again later.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <QueryError
+        title="Error Loading Portfolio Data"
+        message="We encountered an error while retrieving your portfolio performance data."
+        queryKey={["performance", accountId]}
+      />
     );
   }
 
+  // Empty state
   if (!performanceData || performanceData.length === 0) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center text-center py-8">
-            <div className="rounded-full bg-primary/10 p-4 mb-4">
-              <LineChart className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">
-              No Portfolio Performance Data
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              It looks like you don't have any portfolio statistics available
-              yet.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              This could be because you haven't copied any agent trades, or your
-              portfolio is still being set up.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <EmptyState
+        title="No Portfolio Performance Data"
+        message="It looks like you don't have any portfolio statistics available yet."
+        subMessage="This could be because you haven't copied any agent trades, or your portfolio is still being set up."
+        icon={<LineChart className="h-8 w-8 text-primary" />}
+      />
     );
   }
 
+  // Data available state
   return (
     <PerformanceChart data={performanceData} title="Portfolio Performance" />
   );
