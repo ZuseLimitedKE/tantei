@@ -164,11 +164,11 @@ The code gets the trades from the HCS-10 topic created for the user. This is sho
 
 In line 86 the trades are gotten from the topic. If that fails they're gotten from database
 
-## Walkthrough
+## Walkthrough of the steps performed in the demo video
 
 The following steps were presented in the demo video
 
 1. **Publishing an agent** - publishing an agent is registering it on our system. Once an agent is published the system starts listening for its trades on chain using the address that was provided. If a trade by the AI agent is detected it is stored in the HCS-10 topic that was created for it. This makes sure that trades are transparent since they're stored in a HCS-10 topic. immutable and that the developer can't lie about them.
 2. **Bot recommending an agent to copy** - copying an agent is telling the system to copy the trades that the AI agent you've followed makes on your behalf. Once a trade is copied a record of it is stored in the user's HCS-10 topic. I demoed how Tantei Agent can recommend for you a bot based on the criteria you have. Copying the bot involves sending an amount of HBAR to the system. This HBAR will be used to make your trades on your behalf.
 3. **Viewing agents in marketplace** - you can search for agents in the marketplace tab. Once you view an agent you can see statistics about its usage. These values are gotten from the trades recorded in the agent's HCS-10 topic.
-4. **User porfolio** - you can view the agents you've followed, distribution of your assets, change in porfolio performance over time. Data for calculating porfolio performance is gotten from the trades stored in the user's HCS-10 topic. 
+4. **User porfolio** - you can view the agents you've followed, distribution of your assets, change in porfolio performance over time. Data for calculating porfolio performance is gotten from the trades stored in the user's HCS-10 topic.
