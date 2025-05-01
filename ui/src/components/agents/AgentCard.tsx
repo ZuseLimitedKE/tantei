@@ -3,8 +3,8 @@ import { Users } from "lucide-react";
 import {
   ChevronRight,
   Star,
-  // TrendingUp,
-  // TrendingDown,
+  TrendingUp,
+  TrendingDown,
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,8 +21,10 @@ interface AgentCardProps {
 
 const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
 
-  // const roi = agent.performance.roi_30d;
-  // const isPositiveRoi = roi >= 0;
+  const roi = agent.roi ?? 0;
+  const isPositiveRoi = roi >= 0;
+  const formattedRoi = roi.toFixed(2);
+
 
   return (
     <Link
@@ -57,11 +59,11 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                 )}
               </div>
               <div className="flex items-center gap-1">
-  <Badge variant="secondary" className="gap-1">
-    <Users className="h-3 w-3" />
-    {agent.num_followers.toLocaleString()}
-  </Badge>
-</div>
+                <Badge variant="secondary" className="gap-1">
+                  <Users className="h-3 w-3" />
+                  {agent.num_followers.toLocaleString()}
+                </Badge>
+              </div>
             </div>
               <p className="text-muted-foreground text-sm truncate">
                 {agent.strategy_type}
@@ -81,7 +83,7 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
               compact ? "grid-cols-2" : "grid-cols-3",
             )}
           >
-            {/* <div className="stats-card">
+            <div className="stats-card">
               <p className="text-xs text-muted-foreground mb-1">ROI (30d)</p>
               <div className="flex items-center">
                 {isPositiveRoi ? (
@@ -96,10 +98,10 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                   )}
                 >
                   {isPositiveRoi ? "+" : ""}
-                  {mockRoi}%
+                  {formattedRoi}%
                 </span>
               </div>
-            </div> */}
+            </div>
 
             <div className="stats-card">
               <p className="text-xs text-muted-foreground mb-1">Risk Level</p>

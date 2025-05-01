@@ -27,6 +27,8 @@ export interface AgentData {
   address: string; // Address
   num_followers: number;
   time_created: Date;
+  roi: number;
+  drawdown: number;
 }
 export interface Token {
   name: string;
@@ -41,4 +43,9 @@ export interface TradeData {
   amount: number;
   price: number;
   profit: number | null; // null means active trade
+}
+
+export interface TradeResponse {
+  trades: TradeData[];
+  total_trades: number;
 }

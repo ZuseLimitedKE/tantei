@@ -1,7 +1,7 @@
 import type { publishAgentType } from "@/types/zod";
 import Api from "./api";
 import type { AgentData } from "./types";
-import type { TradeData } from "./types";
+import type { TradeResponse } from "./types";
 
 export const fetchAgents = async (): Promise<AgentData[]> => {
   const res = await fetch(`${import.meta.env.VITE_PROD_BACKEND_URL}/api/v1/agents`);
@@ -15,13 +15,10 @@ export const fetchAgentDetails = async (id: string): Promise<AgentData> => {
   return res.json();
 };
 
-export const fetchAgentTrades = async (id: string): Promise<TradeData[]> => {
+export const fetchAgentTrades = async (id: string): Promise<TradeResponse> => {
   const res = await fetch(`${import.meta.env.VITE_PROD_BACKEND_URL}/api/v1/agents/trades/${id}`);
   if (!res.ok) throw new Error('Failed to fetch trades');
-  const data = await res.json();
-  console.log('Fetched trades:', data);
-  // return an array
-  return Array.isArray(data) ? data : [];
+  return res.json();
 };
 
 export function PublishAgent(agent: publishAgentType) {

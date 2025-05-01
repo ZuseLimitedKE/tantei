@@ -36,10 +36,11 @@ function AgentDetailComponent() {
     queryFn: () => fetchAgentDetails(id),
   });
 
-  const { data: trades } = useQuery({
+  const { data: tradesData } = useQuery({
     queryKey: ['trades', id],
     queryFn: () => fetchAgentTrades(id),
   });
+  
   
   // Fetch performance data
   // const { data: performance } = useQuery({
@@ -134,12 +135,14 @@ function AgentDetailComponent() {
                   </div>
                   <div>
                     <h3 className="font-medium">ROI (30d)</h3>
-                    {/* <p
-                      className={`text-2xl font-bold ${isPositiveRoi ? "text-green-500" : "text-red-500"}`}
+                    <p
+                      className={`text-2xl font-bold ${
+                        agent.roi >= 0 ? "text-green-500" : "text-red-500"
+                      }`}
                     >
-                      {isPositiveRoi ? "+" : ""}
-                      {mockRoi}%
-                    </p> */}
+                      {agent.roi >= 0 ? "+" : ""}
+                      {agent.roi.toFixed(2)}%
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -210,12 +213,12 @@ function AgentDetailComponent() {
                         <AlertCircle className="h-5 w-5 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[300px]">
-                        <p>The peak-to-trough decline of the asset price over a certain timeframe.</p>
+                        <p>The peak-to-trough decline of this agent asset's price since its date of publish.</p>
                       </TooltipContent>
                     </Tooltip>
                     <div>
                       <p className="text-sm text-muted-foreground">Max Drawdown</p>
-                      <p className="font-medium">12.4%</p>
+                      <p className="font-medium">{agent.drawdown} %</p>
                     </div>
                   </div>
                 </TooltipProvider>
@@ -235,7 +238,7 @@ function AgentDetailComponent() {
                         Total Trades
                       </p>
                       {/*Find A way to get this data*/}
-                      <p className="font-medium">100</p>
+                      <p className="font-medium">{tradesData?.total_trades}</p>
                     </div>
                   </div>
                 </div>
@@ -253,7 +256,7 @@ function AgentDetailComponent() {
 
           {/* Trade History */}
           <div className="mb-8">
-            <TradeHistoryTable trades={trades || []} />
+          <TradeHistoryTable data={tradesData || { trades: [], total_trades: 0 }} />
           </div> 
 
           {/* CTA Section */}
