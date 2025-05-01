@@ -4,6 +4,11 @@ Tantei is an app that allows developers to monetize their AI trading agents with
 
 The backend detects trades done by agents by listening to transactions onchain. It currently detects trades made on the testnet version of Saucerswap. Instructions on how to run this listener are given in next section. Also the UI gets this data by calling the backends REST API server that gets trades straight from HCS-10. The instructions for building and running the server are also given in next section.
 
+## Sample HCS-10 topics created
+
+[User HCS-10 topic](https://hashscan.io/testnet/topic/0.0.5931449)
+[Agent HCS-10 topic](https://hashscan.io/testnet/topic/0.0.5931426)
+
 ## Build Instructions
 
 ### Frontend
@@ -96,60 +101,66 @@ pnpm start
 
 HCS-10 topics are used to store the detected trades of agents on our platform. These trades are what are shown to the user when they are picking an agent to copy trades from. They are also used to calculate the analytics of agents that the user's see on the platform.
 
-Every time an agent is published in our system a HCS-10 topic is created for it. This can be seen below
+**Every time an agent is published in our system a HCS-10 topic is created for it. This can be seen below**
 
-<code-snippet>
-Code publishing agent
+[Code for publishing an agent](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/controllers/agent.ts#L18C3-L35C4)
 
-<code-snippet>
-Code creating HCS-10 topic
+The code snippet above shows the code for publishing an agent. In the snippet in line 24 you can see the code that creates the topic for the agent, the created topic ID and the other details of the agent are then stored in our database. The function for creating the topic is expanded below
 
-And every time an agent's trade is detected its stored in a HCS-10 topic
+[Code for creating a HCS-10 topic](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/model/smart_contract.ts#L55-L81)
 
-<code-snippet>
-Code detecting trades
+This shows the transaction for creating the topic on chain. It is called when creating a topic for an agent and for a user.
 
-<code-snippet>
-Code storing trade in HCS-10 topic
+**And every time an agent's trade is detected its stored in a HCS-10 topic**
 
-When getting an agent's trades we fetch the information from the HCS-10 topic. If for whatever reason messages in the topic can't be gotten data from database is shown
+[Code that listens for transactions onchain](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/listener/main.ts#L49-L70)
 
-<code-snippet>
-Code for getting an agent's trades
+The code above fetches the transactions in a block. Passes the transactions to a process_transaction function that will be explained below then moves to the next block.
 
-<code-snippet>
-Code getting data from HCS-10 topic
+[Code for processing trades](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/listener/process_transaction.ts#L51-L338)
+
+The code above processes trades by first decoding them in line 53, if the decoded transaction was calling the swapExactETHForTokens method its is processed from line 77 - 158, if its a swapExactTokensForTokens method its processed from lines 158 - 236 and if its a swapExactTokensForETH method its processed from lines 236 - 338. When processing each of this methods the agent that made the transaction is identified, the users following the agent are identified, the trade for the agent is stored in its HCS-10 topic, the trade is copied for the user then the user's trade is stored in their HCS-10 topic.
+
+[Storing and copying trades](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/listener/process_transaction.ts#L46-L157)
+
+In line 46 the agent that created the trade is determined. Line 53 decodes the transaction. Line 71 gets the users the agent follows. Line 123 copies the trade for users. Line 135 stores the users trade and line 354 and 357 stores the agent's trade in HCS-10 and database
+
+**When getting an agent's trades we fetch the information from the HCS-10 topic. If for whatever reason messages in the topic can't be gotten data from database is shown**
+
+[Code for getting trades](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/controllers/swaps.ts#L186-L211)
+
+Line 192 gets trades from topic and database and line 199 processes them
+
+[Code for getting trades from topic](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/controllers/swaps.ts#L38-L72)
+
+Line 48 gets trades from topic. If that call fails the trades are gotten from db in line 55. The function for getting trades from topic is shown below:
+
+[HCS-10 topic fetch messages](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/model/smart_contract.ts#L104-L152)
+
+The code shows how the messages in the topic are gotten from a mirror node
 
 We also use HCS-10 topics to store the trades copied by users. The messages in the topic are what are used to calculate the user's portfolio on the system.
 
-Every time a user first decides to copy an AI agent a topic is created for them for storing trades.
+**Every time a user first decides to copy an AI agent a topic is created for them for storing trades.**
 
-<code-snippet>
-Code for a user following an agent
+[Code for following agent](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/controllers/user.ts#L51-L93)
 
-<code-snippet>
-Code creating HCS-10 topic
+In line 69 the system checks if the user has already been created for a topic. If not the topic is created below it and the topic ID is stored in the DB at line 77
 
-Every time a trade is detected the users that follow the agent are gotten, the trade is then copied for the user and stored in a HCS-10 topic
+Every time a trade is detected the users that follow the agent are gotten, the trade is then copied for the user and stored in a HCS-10 topic as shown in the code snippets above. The code that copies the trade is handled by the class methods below:
 
-<code-snippet>
-Code for getting following users
+[Code for copying trade](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/utils/swaps.ts#L51-L160)
 
-<code-snippet>
-Code copying trade
+The code below handles making HBAR -> Token, Token -> Token and Token -> HBAR swaps in saucerSwap, these are called when copying the trade
 
-<code-snippet>
-Code showing contract call
+**When displaying the users trades data is gotten from their HCS-10 topic. If that call fails data is fetched from database**
 
-<code-snippet>
-Code storing in HCS-10 topic
+[Code for getting user's trades](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/utils/swaps.ts#L51-L160)
 
-When displaying the users trades data is gotten from their HCS-10 topic. If that call fails data is fetched from database
+The code gets the trades from the HCS-10 topic created for the user. This is shown below.
 
-<code-snippet>
-Code getting user's trades
+[Code for getting trades](https://github.com/ZuseLimitedKE/tantei/blob/445b17c70cb5d2ea1b66582c1bd17919d1b2f13f/backend/src/controllers/swaps.ts#L74-L99)
 
-<code-snippet>
-Code getting messages from topic
+In line 86 the trades are gotten from the topic. If that fails they're gotten from database
 
 ## Process Demonstrated
