@@ -58,12 +58,12 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                   </Badge>
                 )}
               </div>
-              <div className="flex items-center gap-1">
+              {/* <div className="flex items-center gap-1">
                 <Badge variant="secondary" className="gap-1">
                   <Users className="h-3 w-3" />
                   {agent.num_followers.toLocaleString()}
                 </Badge>
-              </div>
+              </div> */}
             </div>
               <p className="text-muted-foreground text-sm truncate">
                 {agent.strategy_type}
