@@ -3,6 +3,12 @@ export interface PortfolioStats {
   value: number;
   last_trade: Date | null;
 }
+
+export interface PortfolioGraph {
+  time: Date;
+  value: number;
+}
+
 export interface AgentData {
   _id: string;
   agent_name: string; //the name of the agent
