@@ -1,5 +1,12 @@
 import type { TradeResponse } from "@/services/types";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -12,21 +19,21 @@ const TradeHistoryTable = ({ data }: TradeHistoryTableProps) => {
   const { trades } = data; // Destructure the data
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit', 
-      minute: '2-digit'
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
 
   const getTradeStatus = (profit: number | null) => {
-    return profit === null ? 'Active' : 'Closed';
+    return profit === null ? "Active" : "Closed";
   };
 
   // Sort trades by time in descending order (latest trades first)
-  const sortedTrades = [...trades].sort((a, b) => 
-    new Date(b.time).getTime() - new Date(a.time).getTime()
+  const sortedTrades = [...trades].sort(
+    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
   );
 
   return (
@@ -56,35 +63,48 @@ const TradeHistoryTable = ({ data }: TradeHistoryTableProps) => {
                   </TableCell>
                   <TableCell>{trade.tokenPair}</TableCell>
                   <TableCell>
-                    <Badge 
+                    <Badge
                       variant={trade.type === "buy" ? "default" : "destructive"}
                       className="flex w-16 items-center justify-center"
                     >
                       {trade.type === "buy" ? (
-                        <><ArrowUp className="mr-1 h-3 w-3 text-white" /> <p className="text-white">Buy</p></>
+                        <>
+                          <ArrowUp className="mr-1 h-3 w-3 text-white" />{" "}
+                          <p className="text-white">Buy</p>
+                        </>
                       ) : (
-                        <><ArrowDown className="mr-1 h-3 w-3 text-white" /> <p className="text-white">Sell</p></>
+                        <>
+                          <ArrowDown className="mr-1 h-3 w-3 text-white" />{" "}
+                          <p className="text-white">Sell</p>
+                        </>
                       )}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={trade.profit === null ? "secondary" : "outline"}>
+                    <Badge
+                      variant={trade.profit === null ? "secondary" : "outline"}
+                    >
                       {getTradeStatus(trade.profit)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">{trade.amount.toLocaleString()}</TableCell>
-                  <TableCell className="text-right">{trade.price.toFixed(4)} HBAR</TableCell>
-                  <TableCell className={`text-right ${
-                    trade.profit && trade.profit > 0 
-                      ? 'text-green-500' 
-                      : trade.profit && trade.profit < 0 
-                        ? 'text-red-500' 
-                        : ''
-                  }`}>
-                    {trade.profit === null 
-                      ? '-' 
-                      : trade.profit > 0 
-                        ? `+${trade.profit.toFixed(2)} HBAR` 
+                  <TableCell className="text-right">
+                    {trade.amount.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {trade.price.toFixed(4)} HBAR
+                  </TableCell>
+                  <TableCell
+                    className={`text-right ${trade.profit && trade.profit > 0
+                        ? "text-green-500"
+                        : trade.profit && trade.profit < 0
+                          ? "text-red-500"
+                          : ""
+                      }`}
+                  >
+                    {trade.profit === null
+                      ? "-"
+                      : trade.profit > 0
+                        ? `+${trade.profit.toFixed(2)} HBAR`
                         : `-${Math.abs(trade.profit).toFixed(2)} HBAR`}
                   </TableCell>
                 </TableRow>

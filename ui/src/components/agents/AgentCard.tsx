@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-// import { Users } from "lucide-react";
 import {
   ChevronRight,
   Star,
@@ -20,11 +19,9 @@ interface AgentCardProps {
 }
 
 const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
-
   const roi = agent.roi ?? 0;
   const isPositiveRoi = roi >= 0;
   const formattedRoi = roi.toFixed(2);
-
 
   return (
     <Link
@@ -38,33 +35,33 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
         <CardContent className={cn("p-5", compact ? "pb-2" : "")}>
           <div className="flex items-start gap-4 mb-4">
             <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <h3
-                  className={cn(
-                    "font-semibold truncate",
-                    compact ? "text-base" : "text-lg",
-                  )}
-                >
-                  {agent.agent_name}
-                </h3>
-                {agent.risk_level === "low" && (
-                  <Badge
-                    variant="outline"
-                    className="bg-blue-50 text-blue-600 border-blue-200"
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <h3
+                    className={cn(
+                      "font-semibold truncate",
+                      compact ? "text-base" : "text-lg",
+                    )}
                   >
-                    <Star className="h-3 w-3 mr-1 fill-blue-500 text-blue-500" />{" "}
-                    Verified
-                  </Badge>
-                )}
-              </div>
-              {/* <div className="flex items-center gap-1">
+                    {agent.agent_name}
+                  </h3>
+                  {agent.risk_level === "low" && (
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-50 text-blue-600 border-blue-200"
+                    >
+                      <Star className="h-3 w-3 mr-1 fill-blue-500 text-blue-500" />{" "}
+                      Verified
+                    </Badge>
+                  )}
+                </div>
+                {/* <div className="flex items-center gap-1">
                 <Badge variant="secondary" className="gap-1">
                   <Users className="h-3 w-3" />
                   {agent.num_followers.toLocaleString()}
                 </Badge>
               </div> */}
-            </div>
+              </div>
               <p className="text-muted-foreground text-sm truncate">
                 {agent.strategy_type}
               </p>
@@ -122,10 +119,11 @@ const AgentCard = ({ agent, compact = false }: AgentCardProps) => {
                   {agent.subscription_fee} HBAR
                 </span>
               </div>
-            )}  
+            )}
           </div>
 
-          <p className="mt-7 text-muted-foreground text-sm">Published {formatTimeSince(agent.time_created)}
+          <p className="mt-7 text-muted-foreground text-sm">
+            Published {formatTimeSince(agent.time_created)}
           </p>
         </CardContent>
 

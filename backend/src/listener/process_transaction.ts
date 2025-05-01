@@ -72,7 +72,7 @@ export default async function process_transaction(
             const copyAgent = TopicId.fromString(process.env.OPERATOR_ID);
             const userSwapToAddress = copyAgent.toSolidityAddress();
             const today = new Date();
-            const deadline = today.setMinutes(today.getMinutes() + 5);
+            const deadline = today.setMinutes(today.getHours() + 5);
 
             if (decoded.method.includes("swapExactETHForTokens")) {
               console.log("HBAR -> Token found");
@@ -115,8 +115,8 @@ export default async function process_transaction(
               try {
                 for (const followingUser of usersFollowingAgent) {
                   // Copy trade
-                  const inputHbar = Math.ceil((hbarSent ?? 0) * (HBAR_DIVIDER / 10));
-                  const amountOutMin = Math.ceil(swapDetails.out.amount / 10);
+                  const inputHbar = Math.max(Math.ceil((hbarSent ?? 0) * (HBAR_DIVIDER / 10)), 1);
+                  const amountOutMin = Math.max(Math.ceil(swapDetails.out.amount / 20), 1);
 
                   // Try the swap
                   await swapMethods.HBARforToken({
@@ -190,8 +190,8 @@ export default async function process_transaction(
               if (decoded.amountIn && decoded.amountOut) {
                 try {
                   for (const followingUser of usersFollowingAgent) {
-                    const amountIn = Math.ceil(decoded.amountIn / 10);
-                    const amountOut = Math.ceil(decoded.amountOut / 10);
+                    const amountIn = Math.max(Math.ceil(decoded.amountIn / 10), 1);
+                    const amountOut = Math.max(Math.ceil(decoded.amountOut / 20), 1);
                     await swapMethods.TokensForTokens({
                       amountIn,
                       amountOutMin: amountOut,
@@ -287,8 +287,8 @@ export default async function process_transaction(
                     if (decoded.amountOut && decoded.amountIn) {
                       try {
                         for (const followingUser of usersFollowingAgent) {
-                          const amountIn = Math.ceil(decoded.amountIn / 10);
-                          const amountOut = Math.ceil(decoded.amountOut / 10);
+                          const amountIn = Math.max(Math.ceil(decoded.amountIn / 10));
+                          const amountOut = Math.max(Math.ceil(decoded.amountOut / 20));
 
                           await swapMethods.TokensForHBAR({
                             amountIn,
