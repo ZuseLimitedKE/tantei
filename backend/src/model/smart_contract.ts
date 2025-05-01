@@ -180,18 +180,18 @@ export class SmartContract {
 
   async getUserTokens(user_wallet: string): Promise<Token[]> {
     try {
-      if (!process.env.HEDERA_MIRROR_NODE) {
-        console.error("Set HEDERA_MIRROR_NODE in env");
+      if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
+        console.error("Set HEDERA_TESTNET_MIRROR_NODE in env");
         throw new MyError(Errors.INVALID_SETUP);
       }
 
       let result: AxiosResponse;
 
       try {
-        result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
+        result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
       } catch (err) {
         try {
-          result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
+          result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/accounts/${user_wallet}`);
         } catch (err) {
           console.error("Could not get user's tokens", err);
           throw new MyError(Errors.NOT_GET_USER_TOKENS);
@@ -296,12 +296,12 @@ export class SmartContract {
 
   async _getTokenDetails(hedera_id: string): Promise<TokenDetails | null> {
     try {
-      if (!process.env.HEDERA_MIRROR_NODE) {
-        console.error("Set HEDERA_MIRROR_NODE in env");
+      if (!process.env.HEDERA_TESTNET_MIRROR_NODE) {
+        console.error("Set HEDERA_TESTNET_MIRROR_NODE in env");
         throw new MyError(Errors.INVALID_SETUP);
       }
 
-      const result = await axios.get(`${process.env.HEDERA_MIRROR_NODE}api/v1/tokens/${hedera_id}`);
+      const result = await axios.get(`${process.env.HEDERA_TESTNET_MIRROR_NODE}api/v1/tokens/${hedera_id}`);
       if (result.status !== 200) {
         console.error("Error in request", result.data);
         throw new MyError(Errors.NOT_GET_TOKEN_DETAILS);
