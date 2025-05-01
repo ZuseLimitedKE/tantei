@@ -14,6 +14,11 @@ export interface AgentTrades {
   profit: number | null;
 }
 
+export interface PortfolioGraph {
+  time: Date,
+  value: number,
+}
+
 interface GetAgentSwaps {
   id: string;
 }
@@ -218,6 +223,15 @@ export class SwapsController {
     } catch(err) {
       console.error("Could not get trades", err);
       throw new MyError(Errors.NOT_GET_TRADES);
+    }
+  }
+
+  async processTrades(trades: AgentTrades[]): Promise<PortfolioGraph[]> {
+    try {
+      return []
+    } catch(err) {
+      console.error("Error processing trades", err);
+      throw new MyError(Errors.NOT_PROCESS_TRADES);
     }
   }
 }
