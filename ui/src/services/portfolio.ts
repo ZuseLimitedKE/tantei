@@ -1,5 +1,5 @@
 import Api from "./api";
-import type { PortfolioGraph, PortfolioStats } from "./types";
+import type { PortfolioGraphRawData, PortfolioStats } from "./types";
 export function GetPortfolioStats(
   account_address: string,
 ): Promise<PortfolioStats> {
@@ -8,6 +8,6 @@ export function GetPortfolioStats(
 
 export function GetPortfolioGraphData(
   account_address: string,
-): Promise<PortfolioGraph[]> {
+): Promise<PortfolioGraphRawData[]> {
   return Api.get(`/users/portfolio/performance_history/${account_address}`);
 }

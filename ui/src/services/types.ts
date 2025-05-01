@@ -5,6 +5,11 @@ export interface PortfolioStats {
 }
 
 export interface PortfolioGraph {
+  date: string; // Format: "YYYY-MM-DD"
+  value: number;
+}
+
+export interface PortfolioGraphRawData {
   time: Date;
   value: number;
 }
