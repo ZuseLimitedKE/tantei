@@ -22,7 +22,7 @@ function RouteComponent() {
             </div>
             <h3 className="text-xl font-medium mb-2">Wallet not connected</h3>
             <p className="text-muted-foreground mb-4">
-              We encountered an error while trying to fetch your portfolio.
+              We encountered an issue while trying to fetch your portfolio.
             </p>
             <p className="text-sm text-muted-foreground">
               Please connect your wallet to proceed.
