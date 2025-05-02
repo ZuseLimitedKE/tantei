@@ -116,7 +116,7 @@ export default async function process_transaction(
                 for (const followingUser of usersFollowingAgent) {
                   // Copy trade
                   const inputHbar = Math.max(Math.ceil((hbarSent ?? 0) * (HBAR_DIVIDER / 10)), 1);
-                  const amountOutMin = Math.max(Math.ceil(swapDetails.out.amount / 20), 1);
+                  const amountOutMin = Math.max(Math.ceil(swapDetails.out.amount / 10), 1);
 
                   try {
                     // Try the swap
@@ -195,7 +195,7 @@ export default async function process_transaction(
                 try {
                   for (const followingUser of usersFollowingAgent) {
                     const amountIn = Math.max(Math.ceil(decoded.amountIn / 10), 1);
-                    const amountOut = Math.max(Math.ceil(decoded.amountOut / 20), 1);
+                    const amountOut = Math.max(Math.ceil(decoded.amountOut / 10), 1);
                     
                     try {
                       await swapMethods.TokensForTokens({
@@ -296,8 +296,8 @@ export default async function process_transaction(
                     if (decoded.amountOut && decoded.amountIn) {
                       try {
                         for (const followingUser of usersFollowingAgent) {
-                          const amountIn = Math.max(Math.ceil(decoded.amountIn / 10));
-                          const amountOut = Math.max(Math.ceil(decoded.amountOut / 20));
+                          const amountIn = Math.max(Math.ceil(decoded.amountIn / 10), 1);
+                          const amountOut = Math.max(Math.ceil(decoded.amountOut / 10), 1);
 
                           try {
                             await swapMethods.TokensForHBAR({
